@@ -718,6 +718,343 @@ def detect_api_auth(url: str) -> dict:
     return result
 
 
+# ─── Certificate Intelligence Enhancements ──────────────────────────────────
+
+# Load CA PQC readiness data
+_CA_PQC_READINESS = _load_json("ca_pqc_readiness.json")
+
+# CRQC arrival year (pessimistic scenario) — used for effective expiry
+_CRQC_PESSIMISTIC_YEAR = 2029
+
+
+def compute_effective_security_expiry(
+    valid_to: datetime,
+    key_type: str,
+    key_length: int | None = None,
+) -> dict:
+    """
+    Compute CRQC-adjusted effective security expiry.
+
+    Returns the earlier of:
+      - The certificate's calendar expiry date
+      - The estimated date at which the cert's key becomes quantum-breakable
+
+    This is per 02-OUTPUTS.md Module 7: "effective security remaining".
+    """
+    from datetime import datetime, timezone
+
+    crqc_date = datetime(_CRQC_PESSIMISTIC_YEAR, 1, 1, tzinfo=timezone.utc)
+
+    # Check if key type is quantum-vulnerable
+    level_info = get_nist_quantum_level(key_type, key_length)
+    is_vulnerable = level_info.get("is_quantum_vulnerable", True)
+
+    if is_vulnerable:
+        effective_expiry = min(valid_to, crqc_date) if valid_to else crqc_date
+    else:
+        effective_expiry = valid_to  # PQC key — no CRQC adjustment needed
+
+    effective_remaining_days = (effective_expiry - datetime.now(timezone.utc)).days if effective_expiry else None
+
+    return {
+        "effective_expiry": effective_expiry.isoformat() if effective_expiry else None,
+        "calendar_expiry": valid_to.isoformat() if valid_to else None,
+        "crqc_adjusted": is_vulnerable,
+        "effective_remaining_days": effective_remaining_days,
+        "limited_by": "crqc" if (is_vulnerable and valid_to and crqc_date < valid_to) else "calendar",
+    }
+
+
+def lookup_ca_pqc_readiness(ca_name: str | None) -> dict:
+    """
+    Look up whether the issuing CA has committed to issuing PQC certificates.
+
+    Uses static data from ca_pqc_readiness.json.
+    Per 02-OUTPUTS.md Module 2.2: "Certificate Authority PQC Readiness".
+    """
+    if not ca_name:
+        return _CA_PQC_READINESS.get("Unknown", {})
+
+    # Fuzzy match CA name against known CAs
+    ca_lower = ca_name.lower()
+    for key, info in _CA_PQC_READINESS.items():
+        if key.lower() in ca_lower or ca_lower in key.lower():
+            return info
+        # Also check the full name
+        if info.get("name", "").lower() in ca_lower:
+            return info
+
+    return _CA_PQC_READINESS.get("Unknown", {})
+
+
+def analyze_multi_san_exposure(san_list: list | None) -> dict:
+    """
+    Analyze Multi-SAN exposure — one certificate covering many subdomains.
+
+    Per 02-OUTPUTS.md Module 2.2: "Multi-SAN Exposure: One certificate
+    covering many subdomains — breach of the key = breach of all."
+    """
+    if not san_list:
+        return {"san_count": 0, "unique_domains": 0, "is_multi_san": False, "risk_note": None}
+
+    san_count = len(san_list)
+
+    # Extract unique base domains from SANs
+    unique_domains = set()
+    for san in san_list:
+        parts = san.strip("*.").split(".")
+        if len(parts) >= 2:
+            unique_domains.add(".".join(parts[-2:]))
+
+    is_multi_san = san_count > 5
+    risk_note = None
+    if san_count > 20:
+        risk_note = f"CRITICAL: Certificate covers {san_count} SANs across {len(unique_domains)} domains. Key compromise affects all."
+    elif san_count > 10:
+        risk_note = f"HIGH: Certificate covers {san_count} SANs. Consider separate certificates per service."
+    elif san_count > 5:
+        risk_note = f"MEDIUM: Certificate covers {san_count} SANs. Monitor key rotation."
+
+    return {
+        "san_count": san_count,
+        "unique_domains": len(unique_domains),
+        "is_multi_san": is_multi_san,
+        "risk_note": risk_note,
+        "domains": list(unique_domains),
+    }
+
+
+@timed(service="crypto_inspector")
+def detect_certificate_pinning(hostname: str, port: int = 443) -> dict:
+    """
+    Detect certificate pinning headers (HPKP, Expect-CT, Expect-Staple).
+
+    Per 02-OUTPUTS.md Module 7: "Certificate Pinning Detector — banks with
+    mobile apps that pin certificates face an additional migration barrier."
+    """
+    result = {
+        "hpkp_detected": False,
+        "expect_ct_detected": False,
+        "expect_staple_detected": False,
+        "is_pinned": False,
+        "pinning_headers": {},
+        "migration_note": None,
+    }
+
+    try:
+        with httpx.Client(verify=False, timeout=10.0) as client:
+            resp = client.get(f"https://{hostname}:{port}", follow_redirects=True)
+            headers = dict(resp.headers)
+
+            # Check HPKP (HTTP Public Key Pinning)
+            hpkp = headers.get("public-key-pins") or headers.get("public-key-pins-report-only")
+            if hpkp:
+                result["hpkp_detected"] = True
+                result["pinning_headers"]["public-key-pins"] = hpkp
+
+            # Check Expect-CT
+            expect_ct = headers.get("expect-ct")
+            if expect_ct:
+                result["expect_ct_detected"] = True
+                result["pinning_headers"]["expect-ct"] = expect_ct
+
+            # Check Expect-Staple
+            expect_staple = headers.get("expect-staple")
+            if expect_staple:
+                result["expect_staple_detected"] = True
+                result["pinning_headers"]["expect-staple"] = expect_staple
+
+            result["is_pinned"] = result["hpkp_detected"] or result["expect_ct_detected"]
+
+            if result["is_pinned"]:
+                result["migration_note"] = (
+                    "Pinning-Blocked: Pinned certificates cannot be silently replaced with PQC certs "
+                    "without mobile app updates. Flag as migration-blocked."
+                )
+
+    except Exception as e:
+        logger.debug(f"Pinning detection failed for {hostname}: {e}")
+
+    return result
+
+
+# ─── Infrastructure Fingerprinting ──────────────────────────────────────────
+
+# CDN/WAF detection patterns
+_CDN_PATTERNS = {
+    "Akamai": ["akamai", "akadns", "edgekey", "edgesuite", "akamaiedge", "akamaihd"],
+    "Cloudflare": ["cloudflare", "cf-ray", "cf-cache-status"],
+    "Incapsula/Imperva": ["incapsula", "imperva", "incap_ses", "visid_incap"],
+    "AWS CloudFront": ["cloudfront", "x-amz-cf"],
+    "Azure CDN": ["azure", "msedge", "afd", "azureedge"],
+    "Fastly": ["fastly", "x-fastly"],
+    "Google Cloud CDN": ["ghs.googlehosted.com", "google", "ghs.google"],
+    "StackPath": ["stackpath", "highwinds"],
+}
+
+_WAF_PATTERNS = {
+    "F5 BIG-IP": ["bigip", "big-ip", "f5"],
+    "Citrix NetScaler": ["netscaler", "citrix", "ns-"],
+    "Fortinet FortiWeb": ["fortiweb", "fortigate"],
+    "Barracuda": ["barracuda", "barra"],
+    "AWS WAF": ["awswaf", "x-amzn-waf"],
+    "Cloudflare WAF": ["cloudflare"],
+    "ModSecurity": ["mod_security", "modsecurity"],
+    "Radware": ["radware", "appwall"],
+}
+
+_HOSTING_PATTERNS = {
+    "AWS": ["amazonaws.com", "aws", "x-amz"],
+    "Azure": ["azure", "microsoft", "msedge", "windows.net"],
+    "Google Cloud": ["google", "gcp", "googleapis"],
+    "NIC India": ["nic.in", "gov.in", "nicsi"],
+    "CtrlS": ["ctrls"],
+    "Netmagic/NTT": ["netmagic", "ntt"],
+    "Tata Communications": ["tatacommunications", "tatacomm"],
+    "BSNL": ["bsnl"],
+    "Sify": ["sify"],
+}
+
+
+@timed(service="crypto_inspector")
+def detect_hosting_and_cdn(hostname: str, port: int = 443) -> dict:
+    """
+    Detect hosting provider, CDN, and WAF from HTTP response headers.
+
+    Per 02-OUTPUTS.md Module 1.1: "Hosting Entity", "Internet-Exposed",
+    "TLS Termination Point".
+    """
+    result = {
+        "hosting_provider": None,
+        "cdn_detected": None,
+        "waf_detected": None,
+        "server_header": None,
+        "via_header": None,
+        "powered_by": None,
+        "is_behind_proxy": False,
+        "http2_supported": False,
+        "response_headers_raw": {},
+    }
+
+    try:
+        # Try HTTP/2 first, fall back to HTTP/1.1
+        try:
+            client = httpx.Client(verify=False, timeout=10.0, http2=True)
+        except Exception:
+            client = httpx.Client(verify=False, timeout=10.0)
+        with client:
+            resp = client.get(f"https://{hostname}:{port}", follow_redirects=True)
+            headers = dict(resp.headers)
+
+            result["server_header"] = headers.get("server")
+            result["via_header"] = headers.get("via")
+            result["powered_by"] = headers.get("x-powered-by")
+            result["http2_supported"] = str(resp.http_version) == "HTTP/2"
+
+            # Store key headers for analysis
+            for key in headers:
+                k = key.lower()
+                if any(x in k for x in ["server", "via", "x-", "cf-", "ak-", "set-cookie"]):
+                    result["response_headers_raw"][key] = headers[key]
+
+            # Combine all header values for pattern matching
+            all_values = " ".join(str(v).lower() for v in headers.values())
+            all_keys = " ".join(k.lower() for k in headers.keys())
+            search_text = all_values + " " + all_keys
+
+            # Detect CDN
+            for cdn_name, patterns in _CDN_PATTERNS.items():
+                if any(p in search_text for p in patterns):
+                    result["cdn_detected"] = cdn_name
+                    result["is_behind_proxy"] = True
+                    break
+
+            # Detect WAF
+            for waf_name, patterns in _WAF_PATTERNS.items():
+                if any(p in search_text for p in patterns):
+                    result["waf_detected"] = waf_name
+                    break
+
+            # Detect hosting provider
+            for host_name, patterns in _HOSTING_PATTERNS.items():
+                if any(p in search_text for p in patterns):
+                    result["hosting_provider"] = host_name
+                    break
+
+            # Fallback: use server header for hosting detection
+            if not result["hosting_provider"] and result["server_header"]:
+                server = result["server_header"].lower()
+                if "nginx" in server:
+                    result["hosting_provider"] = "Self-hosted (nginx)"
+                elif "apache" in server:
+                    result["hosting_provider"] = "Self-hosted (Apache)"
+                elif "iis" in server:
+                    result["hosting_provider"] = "Self-hosted (IIS)"
+
+    except Exception as e:
+        logger.debug(f"Hosting/CDN detection failed for {hostname}: {e}")
+
+    logger.debug(
+        f"Infrastructure fingerprint for {hostname}",
+        extra={
+            "hosting": result["hosting_provider"],
+            "cdn": result["cdn_detected"],
+            "waf": result["waf_detected"],
+            "http2": result["http2_supported"],
+        },
+    )
+
+    return result
+
+
+# ─── Asset Type Classification ──────────────────────────────────────────────
+
+# Keywords for asset type classification from hostname patterns
+_ASSET_TYPE_PATTERNS = {
+    "internet_banking": ["netbanking", "onlinebanking", "ibanking", "ebanking", "online", "retail"],
+    "mobile_banking": ["mobile", "mbanking", "app", "mobilebanking"],
+    "upi_gateway": ["upi", "npci", "imps", "bhim"],
+    "swift_endpoint": ["swift", "fin", "stp"],
+    "api_gateway": ["api", "gateway", "connect", "integration", "middleware"],
+    "payment_gateway": ["pay", "payment", "pg", "merchant", "checkout"],
+    "corporate_banking": ["corporate", "corp", "wholesale", "b2b", "trade"],
+    "admin_portal": ["admin", "manage", "mgmt", "cms", "internal"],
+    "mail_server": ["mail", "smtp", "mx", "exchange", "webmail"],
+    "dns_server": ["ns1", "ns2", "ns3", "dns"],
+    "cdn_edge": ["cdn", "static", "assets", "media", "img"],
+    "cbs_interface": ["finacle", "bancs", "flexcube", "cbs"],
+}
+
+
+def classify_asset_type(hostname: str, ports: list | None = None) -> str:
+    """
+    Classify an asset's type based on hostname patterns and open ports.
+
+    Returns asset type string for persistence to Asset model.
+    Per 02-OUTPUTS.md Module 1.1: "Asset Class".
+    """
+    hostname_lower = hostname.lower()
+
+    # Check hostname patterns
+    for asset_type, patterns in _ASSET_TYPE_PATTERNS.items():
+        if any(p in hostname_lower for p in patterns):
+            return asset_type
+
+    # Port-based heuristics
+    if ports:
+        port_nums = [p.get("port") if isinstance(p, dict) else p for p in ports]
+        if 25 in port_nums or 587 in port_nums:
+            return "mail_server"
+        if 53 in port_nums:
+            return "dns_server"
+
+    # Default: if it's www or root domain with 443
+    if hostname_lower.startswith("www.") or "." not in hostname_lower.split(".", 1)[-1].split(".")[0]:
+        return "internet_banking"
+
+    return "web_server"
+
+
 # ─── P2.6: Combined Full Crypto Inspection ──────────────────────────────────
 
 
@@ -736,6 +1073,10 @@ def inspect_asset(hostname: str, port: int = 443) -> dict:
         "certificates": [],
         "pqc": None,
         "auth": None,
+        "cert_intelligence": None,
+        "pinning": None,
+        "infrastructure": None,
+        "asset_type": None,
         "quantum_summary": {
             "lowest_nist_level": -1,
             "has_vulnerable_crypto": True,
@@ -816,6 +1157,38 @@ def inspect_asset(hostname: str, port: int = 443) -> dict:
     except Exception as e:
         logger.debug(f"Auth detection skipped for {hostname}: {e}")
 
+    # Step 6: Certificate intelligence enhancements
+    cert_intel = []
+    for cert in fingerprint.get("certificates", []):
+        intel = {}
+        # Effective security expiry (CRQC-adjusted)
+        if cert.get("valid_to"):
+            valid_to_dt = datetime.fromisoformat(cert["valid_to"]) if isinstance(cert["valid_to"], str) else cert["valid_to"]
+            intel["effective_expiry"] = compute_effective_security_expiry(
+                valid_to_dt, cert.get("key_type", "RSA"), cert.get("key_length")
+            )
+        # CA PQC readiness
+        intel["ca_readiness"] = lookup_ca_pqc_readiness(cert.get("ca_name") or cert.get("issuer"))
+        # Multi-SAN exposure
+        intel["san_exposure"] = analyze_multi_san_exposure(cert.get("san_list"))
+        cert_intel.append(intel)
+    fingerprint["cert_intelligence"] = cert_intel
+
+    # Step 7: Certificate pinning detection
+    try:
+        fingerprint["pinning"] = detect_certificate_pinning(hostname, port)
+    except Exception as e:
+        logger.debug(f"Pinning detection skipped for {hostname}: {e}")
+
+    # Step 8: Infrastructure fingerprinting (hosting, CDN, WAF)
+    try:
+        fingerprint["infrastructure"] = detect_hosting_and_cdn(hostname, port)
+    except Exception as e:
+        logger.debug(f"Infrastructure detection skipped for {hostname}: {e}")
+
+    # Step 9: Asset type classification
+    fingerprint["asset_type"] = classify_asset_type(hostname)
+
     logger.info(
         f"Crypto inspection complete for {hostname}",
         extra={
@@ -825,6 +1198,9 @@ def inspect_asset(hostname: str, port: int = 443) -> dict:
             "vulnerable_algos": len(vuln_algos),
             "safe_algos": len(safe_algos),
             "has_pqc": fingerprint["quantum_summary"]["has_pqc"],
+            "asset_type": fingerprint["asset_type"],
+            "cdn": (fingerprint.get("infrastructure") or {}).get("cdn_detected"),
+            "hosting": (fingerprint.get("infrastructure") or {}).get("hosting_provider"),
         },
     )
 
@@ -890,8 +1266,26 @@ def save_crypto_results(
 
     saved_certs = []
 
+    # Get cert intelligence data for cross-referencing
+    cert_intel_list = fingerprint.get("cert_intelligence") or []
+    pinning_data = fingerprint.get("pinning") or {}
+
     # Save certificates
-    for cert_data in fingerprint.get("certificates", []):
+    for i, cert_data in enumerate(fingerprint.get("certificates", [])):
+        # Cross-reference cert intelligence data
+        cert_intel = cert_intel_list[i] if i < len(cert_intel_list) else {}
+        effective_expiry_info = cert_intel.get("effective_expiry", {})
+        ca_readiness = cert_intel.get("ca_readiness", {})
+        san_exposure = cert_intel.get("san_exposure", {})
+
+        # Parse effective_security_expiry datetime
+        effective_expiry_dt = None
+        if effective_expiry_info.get("effective_expiry"):
+            try:
+                effective_expiry_dt = datetime.fromisoformat(effective_expiry_info["effective_expiry"])
+            except (ValueError, TypeError):
+                pass
+
         cert = Certificate(
             asset_id=uuid.UUID(asset_id) if isinstance(asset_id, str) else asset_id,
             scan_id=uuid.UUID(scan_id) if isinstance(scan_id, str) else scan_id,
@@ -914,18 +1308,37 @@ def save_crypto_results(
             forward_secrecy=fingerprint.get("tls", {}).get("forward_secrecy"),
             negotiated_cipher=fingerprint.get("tls", {}).get("negotiated_cipher"),
             tls_version=fingerprint.get("tls", {}).get("negotiated_protocol"),
+            # New cert intelligence fields
+            effective_security_expiry=effective_expiry_dt,
+            ca_pqc_ready=ca_readiness.get("pqc_roadmap_published", False),
+            san_count=san_exposure.get("san_count", 1),
+            is_pinned=pinning_data.get("is_pinned", False),
         )
         db.add(cert)
         saved_certs.append(cert)
 
-    # Update asset TLS info
+    # Update asset with TLS + infrastructure info
     asset = db.query(Asset).filter(
         Asset.id == (uuid.UUID(asset_id) if isinstance(asset_id, str) else asset_id)
     ).first()
     if asset:
         tls_data = fingerprint.get("tls", {})
         asset.tls_version = tls_data.get("negotiated_protocol")
-        asset.web_server = None  # set from discovery, don't overwrite
+
+        # Infrastructure enrichment
+        infra = fingerprint.get("infrastructure") or {}
+        if infra.get("hosting_provider"):
+            asset.hosting_provider = infra["hosting_provider"]
+        if infra.get("cdn_detected"):
+            asset.cdn_detected = infra["cdn_detected"]
+        if infra.get("waf_detected"):
+            asset.waf_detected = infra["waf_detected"]
+        if infra.get("server_header"):
+            asset.web_server = infra["server_header"]
+
+        # Asset type classification
+        if fingerprint.get("asset_type"):
+            asset.asset_type = fingerprint["asset_type"]
 
     db.commit()
 

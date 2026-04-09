@@ -9,9 +9,9 @@
 ## Checklist
 
 ### P0.1 — Repository Skeleton
-- [ ] Create the directory structure exactly as in `06-DEVELOPMENT_PLAN.md → File Structure`
-- [ ] Create `backend/pyproject.toml` with project metadata
-- [ ] Create `backend/requirements.txt` with these pinned dependencies:
+- [x] Create the directory structure exactly as in `06-DEVELOPMENT_PLAN.md → File Structure`
+- [x] Create `backend/pyproject.toml` with project metadata
+- [x] Create `backend/requirements.txt` with these pinned dependencies:
   ```
   fastapi>=0.111.0
   uvicorn[standard]>=0.30.0
@@ -37,16 +37,16 @@
   pytest-asyncio>=0.23.0
   rich>=13.7.0
   ```
-- [ ] Create `.gitignore` with entries for: `.env`, `logs/`, `data/`, `__pycache__/`, `*.pyc`, `.venv/`, `node_modules/`
-- [ ] Copy `.env.example` to `.env` and fill in `POSTGRES_PASSWORD`
-- [ ] Create Python virtual environment: `python -m venv .venv && source .venv/bin/activate && pip install -r backend/requirements.txt`
+- [x] Create `.gitignore` with entries for: `.env`, `logs/`, `data/`, `__pycache__/`, `*.pyc`, `.venv/`, `node_modules/`
+- [x] Copy `.env.example` to `.env` and fill in `POSTGRES_PASSWORD`
+- [x] Create Python virtual environment: `python -m venv .venv && source .venv/bin/activate && pip install -r backend/requirements.txt`
 
 **✅ Verify**: `python -c "import fastapi, sqlalchemy, sslyze, cryptography; print('All imports OK')"` → prints "All imports OK"
 
 ---
 
 ### P0.2 — Configuration System
-- [ ] Create `backend/app/config.py`:
+- [x] Create `backend/app/config.py`:
   - Use `pydantic_settings.BaseSettings` to load from `.env`
   - Fields: `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `LOG_LEVEL`, `LOG_DIR`, `DATA_DIR`, `APP_ENV`
   - Computed property: `database_url` → `postgresql+psycopg2://{user}:{pass}@{host}:{port}/{db}`
@@ -57,14 +57,14 @@
 ---
 
 ### P0.3 — Structured Logging Framework
-- [ ] Create `backend/app/core/logging.py`:
+- [x] Create `backend/app/core/logging.py`:
   - Function `get_logger(service_name: str) -> logging.Logger`
   - Uses `python_json_logger.JsonFormatter` for structured JSON output
   - Writes to both **console** (colored, human-readable via `rich`) and **file** (`logs/{service_name}/{date}.jsonl`)
   - Every log entry includes: `timestamp`, `level`, `service`, `function`, `message`
   - Creates log directories automatically if they don't exist
 
-- [ ] Create `backend/app/core/timing.py`:
+- [x] Create `backend/app/core/timing.py`:
   - Decorator `@timed` that logs function name, arguments (truncated), return value summary, and execution time in milliseconds
   - Works with both sync and async functions
   - Logs at `DEBUG` level
@@ -89,14 +89,14 @@ result = slow_function(21)
 ---
 
 ### P0.4 — Database Setup
-- [ ] Create `backend/app/core/database.py`:
+- [x] Create `backend/app/core/database.py`:
   - `engine` = SQLAlchemy engine from `settings.database_url`
   - `SessionLocal` = sessionmaker
   - `Base` = declarative_base()
   - Function `get_db()` → dependency injection for FastAPI
   - Function `init_db()` → creates all tables (dev only)
 
-- [ ] Create `scripts/db_setup.py`:
+- [x] Create `scripts/db_setup.py`:
   - Connects to PostgreSQL
   - Creates the `qushield` database if it doesn't exist
   - Runs `Base.metadata.create_all(engine)` to create all tables
@@ -107,13 +107,13 @@ result = slow_function(21)
 ---
 
 ### P0.5 — Database Models (SQLAlchemy ORM)
-- [ ] Create `backend/app/models/scan.py`:
+- [x] Create `backend/app/models/scan.py`:
   ```
   scan_jobs: id (UUID), targets (JSON list), config (JSON), status (enum: queued/running/completed/failed),
              current_phase (int), created_at, started_at, completed_at, error_message
   ```
 
-- [ ] Create `backend/app/models/asset.py`:
+- [x] Create `backend/app/models/asset.py`:
   ```
   assets: id (UUID), scan_id (FK), hostname, url, ip_v4, ip_v6, asset_type (enum),
           discovery_method, is_shadow (bool), hosting_provider,
@@ -121,7 +121,7 @@ result = slow_function(21)
   asset_ports: id, asset_id (FK), port (int), protocol, service_name, banner
   ```
 
-- [ ] Create `backend/app/models/certificate.py`:
+- [x] Create `backend/app/models/certificate.py`:
   ```
   certificates: id (UUID), asset_id (FK), scan_id (FK),
                 common_name, san_list (JSON), issuer, ca_name,
@@ -132,7 +132,7 @@ result = slow_function(21)
                 is_quantum_vulnerable (bool), chain_depth (int)
   ```
 
-- [ ] Create `backend/app/models/cbom.py`:
+- [x] Create `backend/app/models/cbom.py`:
   ```
   cbom_records: id (UUID), scan_id (FK), asset_id (FK),
                 component_count (int), vulnerable_count (int),
@@ -142,7 +142,7 @@ result = slow_function(21)
                    is_quantum_vulnerable (bool), usage_context, pqc_replacement
   ```
 
-- [ ] Create `backend/app/models/risk.py`:
+- [x] Create `backend/app/models/risk.py`:
   ```
   risk_scores: id (UUID), asset_id (FK), scan_id (FK),
                quantum_risk_score (int 0-1000), risk_classification (enum),
@@ -154,7 +154,7 @@ result = slow_function(21)
                 factor_weight (float), rationale (text)
   ```
 
-- [ ] Create `backend/app/models/compliance.py`:
+- [x] Create `backend/app/models/compliance.py`:
   ```
   compliance_results: id (UUID), asset_id (FK), scan_id (FK),
                       fips_203_deployed (bool), fips_204_deployed (bool), fips_205_deployed (bool),
@@ -163,7 +163,7 @@ result = slow_function(21)
                       computed_at
   ```
 
-- [ ] Create `backend/app/models/__init__.py` that imports all models and exports `Base`
+- [x] Create `backend/app/models/__init__.py` that imports all models and exports `Base`
 
 **✅ Verify**: `python scripts/db_setup.py` → creates all tables. Then verify with:
 ```bash
@@ -174,28 +174,28 @@ psql -U qushield -d qushield -c "\dt"
 ---
 
 ### P0.6 — Pydantic Schemas
-- [ ] Create `backend/app/schemas/scan.py`: `ScanRequest`, `ScanResponse`, `ScanStatus`
-- [ ] Create `backend/app/schemas/asset.py`: `AssetCreate`, `AssetResponse`, `AssetList`
-- [ ] Create `backend/app/schemas/cbom.py`: `CBOMResponse`, `CBOMComponentResponse`
-- [ ] Create `backend/app/schemas/risk.py`: `RiskScoreResponse`, `MoscaInput`, `MoscaResult`
-- [ ] Create `backend/app/schemas/compliance.py`: `ComplianceResponse`
+- [x] Create `backend/app/schemas/scan.py`: `ScanRequest`, `ScanResponse`, `ScanStatus`
+- [x] Create `backend/app/schemas/asset.py`: `AssetCreate`, `AssetResponse`, `AssetList`
+- [x] Create `backend/app/schemas/cbom.py`: `CBOMResponse`, `CBOMComponentResponse`
+- [x] Create `backend/app/schemas/risk.py`: `RiskScoreResponse`, `MoscaInput`, `MoscaResult`
+- [x] Create `backend/app/schemas/compliance.py`: `ComplianceResponse`
 
 **✅ Verify**: `python -c "from app.schemas.scan import ScanRequest; print(ScanRequest.model_json_schema())"` → prints valid JSON schema
 
 ---
 
 ### P0.7 — Static Data Files
-- [ ] Create `backend/app/data/nist_quantum_levels.json` — the full algorithm→level mapping table from `05-ALGORITHM_RESEARCH.md` § 3.2
-- [ ] Create `backend/app/data/pqc_oids.json` — PQC signature algorithm OIDs from § 2.3
-- [ ] Create `backend/app/data/data_shelf_life_defaults.json` — asset-type→years mapping from § 4.1
-- [ ] Create `backend/app/data/regulatory_deadlines.json` — Indian regulatory deadlines with dates
+- [x] Create `backend/app/data/nist_quantum_levels.json` — the full algorithm→level mapping table from `05-ALGORITHM_RESEARCH.md` § 3.2
+- [x] Create `backend/app/data/pqc_oids.json` — PQC signature algorithm OIDs from § 2.3
+- [x] Create `backend/app/data/data_shelf_life_defaults.json` — asset-type→years mapping from § 4.1
+- [x] Create `backend/app/data/regulatory_deadlines.json` — Indian regulatory deadlines with dates
 
 **✅ Verify**: `python -c "import json; d = json.load(open('backend/app/data/nist_quantum_levels.json')); print(f'{len(d)} algorithms mapped')"` → prints count
 
 ---
 
 ### P0.8 — Log Viewer Script
-- [ ] Create `scripts/log_viewer.py`:
+- [x] Create `scripts/log_viewer.py`:
   - Reads `.jsonl` files from `logs/` directory
   - Command-line args: `--level`, `--service`, `--function`, `--scan-id`, `--last N`, `--since DATETIME`
   - Uses `rich` library for colored table output
@@ -210,7 +210,7 @@ python scripts/log_viewer.py --service test --last 5
 ---
 
 ### P0.9 — Smoke Test Script Shell
-- [ ] Create `scripts/smoke_test.py`:
+- [x] Create `scripts/smoke_test.py`:
   - Takes a domain as argument
   - Currently just validates: config loads OK, DB connects OK, logging works
   - Future phases will add pipeline stages to this script
@@ -221,6 +221,6 @@ python scripts/log_viewer.py --service test --last 5
 ---
 
 ### P0.10 — Dev Log Initialization
-- [ ] Create `docs/DEV_LOG.md` with header and format example (as shown in `06-DEVELOPMENT_PLAN.md`)
+- [x] Create `docs/DEV_LOG.md` with header and format example (as shown in `06-DEVELOPMENT_PLAN.md`)
 
 **✅ Phase 0 Complete** when: All verify steps pass, `scripts/smoke_test.py` shows all green, and `DEV_LOG.md` has entries for each P0 item.

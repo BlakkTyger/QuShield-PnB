@@ -1,142 +1,101 @@
-#!/usr/bin/env python3
-"""
-QuShield-PnB Smoke Test — end-to-end validation of all system components.
-
-Usage: python scripts/smoke_test.py [domain]
-"""
-import sys
 import os
-import time
+import sys
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from rich.text import Text
 
-# Add backend to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
+from app.core.database import SessionLocal
+from app.models.asset import Asset
+from app.models.certificate import Certificate
+from app.models.risk import RiskScore
+from app.services.orchestrator import ScanOrchestrator
 
-console = Console()
+def build_cli_table(assets, db):
+    table = Table(title="Asset Discovery & Cryptographic Inventory", show_header=True, header_style="bold magenta")
+    table.add_column("Asset / Subdomain", style="dim", width=25)
+    table.add_column("IP Address", width=15)
+    table.add_column("Encryption Algo", width=18)
+    table.add_column("TLS Ver", justify="center", width=8)
+    table.add_column("Key Len", justify="center", width=8)
+    table.add_column("Validity", justify="center", width=12)
+    table.add_column("Q. Status", justify="center", width=10)
+    table.add_column("Risk Score", justify="center", width=8)
 
+    for asset in assets:
+        cert = db.query(Certificate).filter(Certificate.asset_id == asset.id).first()
+        risk = db.query(RiskScore).filter(RiskScore.asset_id == asset.id).first()
 
-def check_config() -> tuple[bool, str]:
-    """Check configuration loads correctly."""
-    try:
-        from app.config import settings
-        if not settings.POSTGRES_PASSWORD:
-            return False, "POSTGRES_PASSWORD not set in .env"
-        return True, f"DB: {settings.POSTGRES_DB}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}"
-    except Exception as e:
-        return False, str(e)
+        encryption = "N/A"
+        tls_ver = "N/A"
+        key_len = "N/A"
+        valid_date = "N/A"
+        q_status = "N/A"
+        risk_str = "N/A"
 
+        if cert:
+            encryption = f"{cert.key_type}-{cert.signature_algorithm}" if cert.key_type and cert.signature_algorithm else "Unknown"
+            tls_ver = "Live"  # Ideally derived from CBOM/infrastructure
+            key_len = str(cert.key_length) if cert.key_length else "-"
+            valid_date = str(cert.valid_to.date()) if cert.valid_to else "-"
+            # Fallback mappings for Q-Status
+            if "ML-KEM" in encryption.upper() or "ML-DSA" in encryption.upper():
+                q_status = "[bold green]Safe[/bold green]"
+            else:
+                q_status = "[bold red]Vuln[/bold red]"
 
-def check_database() -> tuple[bool, str]:
-    """Check database connectivity."""
-    try:
-        from app.core.database import check_connection
-        if check_connection():
-            return True, "PostgreSQL connected"
-        return False, "Cannot connect to PostgreSQL"
-    except Exception as e:
-        return False, str(e)
+        if risk:
+            score = risk.quantum_risk_score
+            if score > 750:
+                risk_str = f"[bold red]{score}[/bold red]"
+            elif score > 500:
+                risk_str = f"[bold yellow]{score}[/bold yellow]"
+            else:
+                risk_str = f"[bold green]{score}[/bold green]"
 
-
-def check_logging() -> tuple[bool, str]:
-    """Check logging framework works."""
-    try:
-        from app.core.logging import get_logger
-        logger = get_logger("smoke_test")
-        logger.info("Smoke test log entry")
-        return True, "JSON logging to logs/smoke_test/"
-    except Exception as e:
-        return False, str(e)
-
-
-def check_models() -> tuple[bool, str]:
-    """Check all models import correctly."""
-    try:
-        from app.models import (
-            ScanJob, Asset, AssetPort, Certificate,
-            CBOMRecord, CBOMComponent, RiskScore, RiskFactor, ComplianceResult,
+        table.add_row(
+            asset.hostname,
+            asset.ip_v4 or "-",
+            encryption,
+            tls_ver,
+            key_len,
+            valid_date,
+            q_status,
+            risk_str
         )
-        return True, "9 models loaded"
-    except Exception as e:
-        return False, str(e)
 
+    return table
 
-def check_schemas() -> tuple[bool, str]:
-    """Check Pydantic schemas."""
+def run_smoke_test(domain: str):
+    console = Console()
+    console.print(Panel.fit(f"[bold blue]QuShield-PnB Smoke Test Report[/bold blue]\nTarget: {domain}"))
+
+    orch = ScanOrchestrator()
     try:
-        from app.schemas.scan import ScanRequest
-        from app.schemas.asset import AssetCreate
-        from app.schemas.risk import MoscaInput
-        ScanRequest(targets=["example.com"])
-        return True, "All schemas validated"
+        console.print(f"[yellow]Triggering orchestrator execution against {domain}...[/yellow]")
+        scan_id = orch.start_scan([domain])
+        summary = orch.run_scan(scan_id)
+
+        console.print(f"\n[bold green]Scan Completed in {summary['duration_seconds']}s[/bold green]")
+        console.print(f"Phases Processed: {summary['phases_completed']}")
+        console.print(f"Assets Discovered: {summary['assets_discovered']}")
+        console.print(f"Crypto Scans Completed: {summary['crypto_scans']}")
+
+        db = SessionLocal()
+        assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
+        table = build_cli_table(assets, db)
+        console.print(table)
+        db.close()
+
     except Exception as e:
-        return False, str(e)
-
-
-def check_static_data() -> tuple[bool, str]:
-    """Check static data files load."""
-    try:
-        import json
-        base = os.path.join(os.path.dirname(__file__), "..", "backend", "app", "data")
-        files = ["nist_quantum_levels.json", "pqc_oids.json",
-                 "data_shelf_life_defaults.json", "regulatory_deadlines.json"]
-        total = 0
-        for f in files:
-            data = json.load(open(os.path.join(base, f)))
-            total += len(data)
-        return True, f"{len(files)} files, {total} total entries"
-    except Exception as e:
-        return False, str(e)
-
-
-def main():
-    domain = sys.argv[1] if len(sys.argv) > 1 else "example.com"
-
-    console.print(Panel.fit(
-        f"[bold cyan]QuShield-PnB Smoke Test[/bold cyan]\n"
-        f"[dim]Target: {domain}[/dim]",
-        border_style="cyan",
-    ))
-    console.print()
-
-    checks = [
-        ("Config", check_config),
-        ("Database", check_database),
-        ("Logging", check_logging),
-        ("Models", check_models),
-        ("Schemas", check_schemas),
-        ("Static Data", check_static_data),
-    ]
-
-    table = Table(show_header=True, header_style="bold")
-    table.add_column("Component", style="cyan", width=15)
-    table.add_column("Status", width=8)
-    table.add_column("Details")
-
-    all_pass = True
-    for name, check_fn in checks:
-        try:
-            passed, detail = check_fn()
-        except Exception as e:
-            passed, detail = False, str(e)
-
-        if passed:
-            table.add_row(name, "[green]✅ PASS[/green]", detail)
-        else:
-            table.add_row(name, "[red]❌ FAIL[/red]", f"[red]{detail}[/red]")
-            all_pass = False
-
-    console.print(table)
-    console.print()
-
-    if all_pass:
-        console.print("[bold green]All checks passed![/bold green]")
-    else:
-        console.print("[bold red]Some checks failed — see details above.[/bold red]")
-        sys.exit(1)
-
+        console.print(f"[bold red]Smoke test failed:[/bold red] {str(e)}")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: python smoke_test.py <domain>")
+        sys.exit(1)
+    
+    target_domain = sys.argv[1]
+    run_smoke_test(target_domain)

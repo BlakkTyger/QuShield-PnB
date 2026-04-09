@@ -20,6 +20,9 @@ class Asset(Base):
     discovery_method = Column(String(100), nullable=True)  # subfinder, naabu, httpx
     is_shadow = Column(Boolean, default=False)
     hosting_provider = Column(String(255), nullable=True)
+    cdn_detected = Column(String(100), nullable=True)  # Akamai, Cloudflare, Incapsula, etc.
+    waf_detected = Column(String(100), nullable=True)   # WAF product name if detected
+    is_third_party = Column(Boolean, default=False)     # True if asset is a third-party dependency
     web_server = Column(String(255), nullable=True)
     tls_version = Column(String(20), nullable=True)
     confidence_score = Column(Float, default=0.0)

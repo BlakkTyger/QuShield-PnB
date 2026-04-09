@@ -380,11 +380,11 @@ Go is chosen specifically for this service because Phase 1 involves massively co
 **Responsibilities:**
 - Consumes `scan.discovery.start` Kafka message
 - Runs five enumeration methods in parallel goroutines:
-  1. DNS brute-force subdomain enumeration (wordlist-driven)
-  2. Certificate Transparency log mining (crt.sh API, Google CT API)
-  3. ASN/BGP sweep (RIPE NCC API, ARIN Whois)
-  4. Passive DNS (SecurityTrails / Shodan API — configurable)
-  5. Port scanning on discovered IPs (TCP SYN scan, top 1000 ports)
+  1. DNS brute-force subdomain enumeration (wordlist-driven, including financial institutions dictionaries)
+  2. Certificate Transparency & External API log mining (crt.sh API, CertSpotter API, HackerTarget API)
+  3. Active DNS Verification (Go `net.LookupIP` to aggressively filter out non-resolving domains)
+  4. ASN/BGP sweep (RIPE NCC API, ARIN Whois)
+  5. Port scanning (via Go `net.DialTimeout` on discovered live IPs) & HTTP probing extracting status codes, server headers, and titles
 - Deduplicates discovered assets across all five methods
 - Creates preliminary `Asset` records by calling Asset Registry's internal API (`POST /internal/assets/bulk`)
 - Streams progress events to Kafka `scan.discovery.progress` (consumed by WebSocket Hub via Orchestrator)

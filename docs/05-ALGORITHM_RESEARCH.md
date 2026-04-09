@@ -92,12 +92,13 @@ The scan pipeline defined in the Orchestrator's Temporal workflow has **six sequ
 |-----------|--------|------------|-------------|
 | **subfinder's built-in CT** | Integrated | N/A (handled internally) | High |
 | crt.sh JSON API | HTTP GET `/?q=%25.{domain}&output=json` | ~5 req/min (strict) | Unstable under load |
-| Google CT API (Pilot/Argon/Xenon) | Paginated merkle tree walk | Higher throughput | Complex implementation |
-| Censys Search API | Authenticated REST | 250/month (free) | Reliable |
+| CertSpotter API | HTTP GET `issuances?domain={domain}&include_subdomains=true&expand=dns_names` | Moderate | Reliable but rate-limited |
+| HackerTarget API | HTTP GET `hostsearch/?q={domain}` | Strict (50/day free) | High yield |
 
-**✅ DECISION: subfinder handles CT internally** (crt.sh, Censys, Facebook CT)
-- **Supplementary**: Direct crt.sh JSON API call with exponential backoff (2s, 4s, 8s) for domains where subfinder returns incomplete results
-- Parse `name_value` field from JSON response, deduplicate with subfinder results
+**✅ DECISION: Use comprehensive Multi-API Gathering + Validation**
+- Combine `crt.sh`, `CertSpotter API`, `HackerTarget API`, and common financial/banking dictionaries (e.g. `cbs`, `netbanking`, `corporate`).
+- Parse and deduplicate all discovered hostnames.
+- **Verification**: Run concurrent DNS lookups via Go's `net.LookupIP` on all aggregated subdomains. Subdomains without resolving IPs are aggressively filtered out to ensure legitimacy.
 
 ### 1.3 ASN/BGP IP Range Enumeration
 

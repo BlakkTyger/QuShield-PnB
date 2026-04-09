@@ -24,9 +24,9 @@ This avoids Kafka, avoids gRPC, avoids any inter-process communication complexit
 ## Checklist
 
 ### P1.1 — Go Project Setup
-- [ ] Create `discovery/go.mod` with module name `qushield/discovery`
-- [ ] Run `go mod init qushield/discovery`
-- [ ] Install dependencies:
+- [x] Create `discovery/go.mod` with module name `qushield/discovery`
+- [x] Run `go mod init qushield/discovery`
+- [x] Install dependencies:
   ```bash
   cd discovery
   go get github.com/projectdiscovery/subfinder/v2/pkg/runner
@@ -36,8 +36,8 @@ This avoids Kafka, avoids gRPC, avoids any inter-process communication complexit
   go get github.com/oschwald/geoip2-golang
   go mod tidy
   ```
-- [ ] Create `discovery/internal/config/config.go` — reads env vars for API keys
-- [ ] Create `discovery/internal/logger/logger.go` — structured JSON logger to file + stdout
+- [x] Create `discovery/internal/config/config.go` — reads env vars for API keys
+- [x] Create `discovery/internal/logger/logger.go` — structured JSON logger to file + stdout
   - Log format must match the Python logger format (same JSON fields)
   - Writes to `logs/discovery/{date}.jsonl`
 
@@ -46,13 +46,13 @@ This avoids Kafka, avoids gRPC, avoids any inter-process communication complexit
 ---
 
 ### P1.2 — Standalone: Subdomain Enumeration (subfinder)
-- [ ] Create `discovery/pkg/subdomain/subdomain.go`:
+- [x] Create `discovery/pkg/subdomain/subdomain.go`:
   - Function `Enumerate(domain string, apiKeys map[string]string) ([]string, error)`
   - Uses subfinder's `runner` package programmatically
   - Returns deduplicated list of discovered subdomains
   - Logs: domain input, source count, subdomain count, duration
 
-- [ ] Create `discovery/tests/subdomain_test.go`:
+- [x] Create `discovery/tests/subdomain_test.go`:
   - Test against `hackerone.com` (known to have many subdomains)
   - Assert: at least 5 subdomains returned
   - Assert: all subdomains end with `.hackerone.com`
@@ -69,13 +69,13 @@ cd discovery && go test ./pkg/subdomain/ -v -run TestEnumerate -count=1
 ---
 
 ### P1.3 — Standalone: DNS Resolution (dnsx)
-- [ ] Create `discovery/pkg/dns/resolver.go`:
+- [x] Create `discovery/pkg/dns/resolver.go`:
   - Function `Resolve(subdomains []string) ([]ResolvedHost, error)`
   - `ResolvedHost` struct: `Hostname, IPv4, IPv6, CNAME string`
   - Uses dnsx for concurrent A/AAAA/CNAME resolution
   - Logs: input count, resolved count, failed count, duration
 
-- [ ] Create `discovery/tests/resolver_test.go`:
+- [x] Create `discovery/tests/resolver_test.go`:
   - Input: `["www.google.com", "mail.google.com", "nonexistent.example.invalid"]`
   - Assert: google.com resolves to valid IPs
   - Assert: nonexistent returns empty/error
@@ -91,7 +91,7 @@ cd discovery && go test ./pkg/dns/ -v -run TestResolve -count=1
 ---
 
 ### P1.4 — Standalone: Port Scanning (naabu)
-- [ ] Create `discovery/pkg/portscan/scanner.go`:
+- [x] Create `discovery/pkg/portscan/scanner.go`:
   - Function `Scan(hosts []string, ports string) ([]PortResult, error)`
   - `PortResult` struct: `Host, IP string; Port int; Protocol string`
   - Uses naabu with CONNECT scan (no root needed) for POC
@@ -99,7 +99,7 @@ cd discovery && go test ./pkg/dns/ -v -run TestResolve -count=1
   - Rate limit: 500 packets/sec (polite scanning)
   - Logs: host count, open port count, duration
 
-- [ ] Create `discovery/tests/portscan_test.go`:
+- [x] Create `discovery/tests/portscan_test.go`:
   - Test against `scanme.nmap.org` (explicitly allows scanning)
   - Assert: port 80 and/or 22 found open
   - Assert: timing < 30 seconds
@@ -115,14 +115,14 @@ cd discovery && go test ./pkg/portscan/ -v -run TestScan -count=1
 ---
 
 ### P1.5 — Standalone: HTTP Probing (httpx)
-- [ ] Create `discovery/pkg/httpprobe/prober.go`:
+- [x] Create `discovery/pkg/httpprobe/prober.go`:
   - Function `Probe(targets []string) ([]HTTPResult, error)`
   - `HTTPResult` struct: `URL, Host, StatusCode, Title, WebServer, TLSVersion, ContentLength, Technologies`
   - Uses httpx for HTTP/HTTPS probing
   - Follows redirects, captures response headers
   - Logs: input count, live hosts, HTTPS count, duration
 
-- [ ] Create `discovery/tests/httpprobe_test.go`:
+- [x] Create `discovery/tests/httpprobe_test.go`:
   - Test against `["https://example.com", "https://google.com"]`
   - Assert: both return status 200 or 301
   - Assert: web server detected (e.g., "nginx", "gws")
@@ -137,14 +137,14 @@ cd discovery && go test ./pkg/httpprobe/ -v -run TestProbe -count=1
 ---
 
 ### P1.6 — Standalone: Deduplication Engine
-- [ ] Create `discovery/pkg/dedup/dedup.go`:
+- [x] Create `discovery/pkg/dedup/dedup.go`:
   - Function `Deduplicate(results []DiscoveredAsset) []DiscoveredAsset`
   - `DiscoveredAsset` struct: unifies subdomain + IP + port + HTTP probe data
   - Key: `SHA256(normalize(hostname) + ip + port)`
   - Confidence scoring: methods_that_found / total_methods
   - Logs: input count, output count (after dedup), duplicates removed
 
-- [ ] Create `discovery/tests/dedup_test.go`:
+- [x] Create `discovery/tests/dedup_test.go`:
   - Create mock assets with known duplicates
   - Assert: correct deduplication
   - Assert: confidence scores are accurate
@@ -157,7 +157,7 @@ cd discovery && go test ./pkg/dedup/ -v -run TestDeduplicate -count=1
 ---
 
 ### P1.7 — CLI Integration: Full Discovery Pipeline
-- [ ] Create `discovery/main.go`:
+- [x] Create `discovery/main.go`:
   - CLI flags: `--domain` (required), `--output` (JSON file path), `--ports` (default "top100"), `--timeout` (default 30s)
   - Orchestrates: subfinder → DNS resolve → naabu → httpx → dedup → write JSON
   - Output JSON schema:
@@ -188,7 +188,7 @@ cd discovery && go test ./pkg/dedup/ -v -run TestDeduplicate -count=1
     ```
   - Print progress to stdout: `[1/5] Subdomain enumeration... found 12 subdomains`
 
-- [ ] Build binary: `cd discovery && go build -o bin/discovery-engine .`
+- [x] Build binary: `cd discovery && go build -o bin/discovery-engine .`
 
 **✅ Integration Test**:
 ```bash
@@ -203,7 +203,7 @@ python -c "import json; d=json.load(open('/tmp/test_discovery.json')); print(f'F
 ---
 
 ### P1.8 — Python Wrapper for Discovery Engine
-- [ ] Create `backend/app/services/discovery_runner.py`:
+- [x] Create `backend/app/services/discovery_runner.py`:
   - Function `run_discovery(domain: str, scan_id: str) -> list[dict]`
   - Calls Go binary via `subprocess.run()`
   - Reads output JSON file
@@ -211,7 +211,7 @@ python -c "import json; d=json.load(open('/tmp/test_discovery.json')); print(f'F
   - Handles: binary not found, timeout (60s), non-zero exit code
   - Logs: subprocess command, exit code, asset count, duration
 
-- [ ] Create `backend/tests/standalone/test_discovery_runner.py`:
+- [x] Create `backend/tests/standalone/test_discovery_runner.py`:
   - Test against `example.com`
   - Assert: returns list of assets
   - Assert: each asset has required fields (hostname, ip_v4)
@@ -226,7 +226,7 @@ cd backend && python -m pytest tests/standalone/test_discovery_runner.py -v
 ---
 
 ### P1.9 — Asset Persistence
-- [ ] Create `backend/app/services/asset_manager.py`:
+- [x] Create `backend/app/services/asset_manager.py`:
   - Function `save_discovered_assets(scan_id: str, assets: list[dict], db: Session) -> list[Asset]`
   - For each discovered asset:
     - Create `Asset` record in database
@@ -234,7 +234,7 @@ cd backend && python -m pytest tests/standalone/test_discovery_runner.py -v
   - Handle duplicates: if asset with same hostname+ip exists, update `last_seen_at`
   - Logs: assets created, assets updated, ports created
 
-- [ ] Create `backend/tests/standalone/test_asset_manager.py`:
+- [x] Create `backend/tests/standalone/test_asset_manager.py`:
   - Create mock discovery output (3 assets)
   - Save to database
   - Query back and verify all fields

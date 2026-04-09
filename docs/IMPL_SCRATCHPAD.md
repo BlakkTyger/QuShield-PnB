@@ -5,8 +5,12 @@
 - https://onlinesbi.sbi.bank.in  
 - https://www.hdfc.bank.in
 
-## Current Task: ✅ Done — Phase 2, 3, 4 Complete
-Next: Phase 5 — Compliance + Graph Service (if needed)
+## Current Task: 📝 Planning — Phase 5 and 6
+User requested to:
+1. Update OUTPUT_diffs.md to reflect current vs expected output for 100+ assets orchestration.
+2. Implement Phase 5 (Scan Orchestrator) to run discovery and deep crypto inspection across ALL subdomains.
+3. Implement Phase 6 (Compliance & Graph).
+4. Do NOT use exponential backoff, use OSINT fallback.
 
 ## Key Dependencies
 - sslyze (TLS scanning)

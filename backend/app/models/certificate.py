@@ -32,5 +32,9 @@ class Certificate(Base):
     forward_secrecy = Column(Boolean, nullable=True)
     negotiated_cipher = Column(String(100), nullable=True)
     tls_version = Column(String(20), nullable=True)
+    effective_security_expiry = Column(DateTime(timezone=True), nullable=True)  # min(valid_to, CRQC)
+    ca_pqc_ready = Column(Boolean, nullable=True)  # CA issuer has PQC roadmap
+    san_count = Column(Integer, default=1)  # Number of SANs — multi-SAN exposure
+    is_pinned = Column(Boolean, default=False)  # HPKP/Expect-CT detected
 
     asset = relationship("Asset", back_populates="certificates")
