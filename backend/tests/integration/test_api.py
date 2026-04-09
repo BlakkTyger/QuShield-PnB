@@ -149,6 +149,14 @@ class TestRiskAPI:
         r = client.get("/api/v1/risk/scan/00000000-0000-0000-0000-000000000000/heatmap")
         assert r.status_code == 404
 
+    def test_enterprise_rating_not_found(self):
+        r = client.get("/api/v1/risk/scan/00000000-0000-0000-0000-000000000000/enterprise-rating")
+        assert r.status_code == 404
+
+    def test_migration_plan_not_found(self):
+        r = client.get("/api/v1/risk/scan/00000000-0000-0000-0000-000000000000/migration-plan")
+        assert r.status_code == 404
+
 
 # ─── Compliance Endpoints ────────────────────────────────────────────────────
 
@@ -158,8 +166,23 @@ class TestComplianceAPI:
         assert r.status_code == 200
         data = r.json()
         assert "deadlines" in data
+        assert "as_of" in data
         assert len(data["deadlines"]) > 0
         assert data["deadlines"][0]["jurisdiction"] == "India"
+        # Countdown enrichment
+        first = data["deadlines"][0]
+        assert "urgency" in first
+        assert first["urgency"] in ("critical", "warning", "info", "overdue", "ongoing", "unknown")
+
+    def test_vendor_readiness(self):
+        r = client.get("/api/v1/compliance/vendor-readiness")
+        assert r.status_code == 200
+        data = r.json()
+        assert "vendors" in data
+        assert "summary" in data
+        assert data["summary"]["total"] > 0
+        assert data["summary"]["ready"] >= 1
+        assert len(data["summary"]["critical_blockers"]) >= 1
 
     def test_compliance_for_scan_empty(self):
         r = client.get("/api/v1/compliance/scan/00000000-0000-0000-0000-000000000000")

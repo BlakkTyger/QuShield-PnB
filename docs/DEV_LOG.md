@@ -526,8 +526,72 @@
 | GET | `/api/v1/compliance/scan/{id}/regulatory` | Regulatory compliance |
 | GET | `/api/v1/compliance/scan/{id}/agility` | Agility distribution |
 | GET | `/api/v1/compliance/asset/{id}` | Asset compliance |
-| GET | `/api/v1/compliance/deadlines` | Regulatory deadlines |
+| GET | `/api/v1/compliance/deadlines` | Regulatory deadlines + countdown |
+| GET | `/api/v1/compliance/vendor-readiness` | Vendor PQC readiness tracker |
+| GET | `/api/v1/risk/scan/{id}/enterprise-rating` | Enterprise Quantum Rating (0-1000) |
+| GET | `/api/v1/risk/scan/{id}/migration-plan` | Auto-generated 4-phase migration plan |
 | GET | `/api/v1/topology/scan/{id}` | Topology graph |
 | GET | `/api/v1/topology/scan/{id}/blast-radius` | Blast radius |
 | GET | `/api/v1/topology/scan/{id}/stats` | Topology stats |
+
+### P7.8 — Orchestrator Compliance Data Fix
+- **Date**: 2026-04-09 21:30
+- **Status**: ✅ COMPLETE
+- **Root Cause**: Orchestrator extracted TLS data via `fp.get("tls_version")` — but `inspect_asset()` returns nested `fp["tls"]["negotiated_protocol"]`. Certificate data was also extracted flat instead of from `fp["certificates"][0]`.
+- **Fix**: Updated orchestrator Phase 5 to correctly extract:
+  - `tls_data = fp.get("tls") or {}` → `negotiated_protocol`, `forward_secrecy`, `key_exchange`
+  - `first_cert = fp.get("certificates", [])[0]` → `key_type`, `key_length`, `ct_logged`, `chain_valid`
+- **Validation**: Re-scan PNB → 2 assets now show TLS 1.3 enforced (digitallending, ns4), 2 PCI-compliant, 2 SEBI-compliant
+
+### P7.9 — New Endpoints (Module 9 + Improvements)
+- **Date**: 2026-04-09 21:45
+- **Status**: ✅ COMPLETE
+- **Enterprise Quantum Rating** (`GET /api/v1/risk/scan/{id}/enterprise-rating`):
+  - 6-dimension weighted model: PQC Deployment (30%), HNDL Reduction (25%), Crypto-Agility (15%), Certificate Hygiene (10%), Regulatory Compliance (10%), Migration Velocity (10%)
+  - Organization labels: Quantum Elite (900+), Ready (750+), Progressing (550+), Vulnerable (300+), Critical (<300)
+  - PNB result: **167/1000 — Quantum Critical**
+- **Migration Readiness Plan** (`GET /api/v1/risk/scan/{id}/migration-plan`):
+  - Auto-generated 4-phase roadmap from scan data (no AI required)
+  - PNB result: Phase 0 (1 critical), Phase 1 (91 hybrid deploy), Phase 2 (4 full PQC), 22 migration-blocked
+- **Vendor PQC Readiness** (`GET /api/v1/compliance/vendor-readiness`):
+  - 12 vendors tracked: OpenSSL, BouncyCastle, Nginx, Thales Luna, Entrust nShield, Finacle, BaNCS, Flexcube, DigiCert, GlobalSign, NIC India, NPCI
+  - 5 ready, 4 in-progress, 3 unknown. Critical blockers: Finacle CBS, BaNCS, NPCI UPI
+- **Regulatory Countdown** (enhanced `/api/v1/compliance/deadlines`):
+  - Now includes `days_remaining` and `urgency` (critical/warning/info/overdue/ongoing)
+  - PNB result: SEBI CSCRF 82 days (critical), RBI IT 266 days (warning), NPCI UPI -9 days (overdue)
+
+### P7 — Final PNB Scan Validation (with compliance fix)
+- **Date**: 2026-04-09 21:50
+- **Status**: ✅ COMPLETE
+- **Scan ID**: `33ad8a21-9e16-4206-8cb5-d4f7a99afc92`
+- **Results**:
+  - 96 assets, 4 certificates, 92 quantum-vulnerable
+  - TLS 1.3 enforced: 2 assets (digitallending, ns4)
+  - PCI DSS compliant: 2 assets
+  - SEBI compliant: 2 assets
+  - NPCI UPI: 96/96 (100% — non-UPI assets pass by N/A)
+  - RBI IT Framework: 0/96 (requires forward secrecy — none detected)
+  - Enterprise Rating: 167/1000 — Quantum Critical
+  - Migration Plan: 1 critical, 91 hybrid deploy, 4 full PQC, 22 blocked
+
+### P7 — Integration Test Summary
+- **Date**: 2026-04-09 21:55
+- **Results**: 26/26 PASS, 6 skipped (network), 2.77s
+
+| Test Class | Tests | Status |
+|---|---|---|
+| TestHealthAndDocs | 4 | ✅ ALL PASS |
+| TestScanAPI | 4 | ✅ ALL PASS |
+| TestAssetAPI | 5 | ✅ ALL PASS |
+| TestCBOMAPI | 3 | ✅ ALL PASS |
+| TestRiskAPI | 5 | ✅ ALL PASS |
+| TestComplianceAPI | 3 | ✅ ALL PASS |
+| TestTopologyAPI | 1 | ✅ ALL PASS |
+| TestFullScanE2E | 6 | ⏭️ SKIPPED (network) |
+| **Total** | **31** | **26 PASS / 6 SKIP** |
+
+### Documentation Created
+- **`docs/OUTPUT_diffs.md`** — Comprehensive module-by-module gap analysis (02-OUTPUTS.md vs implementation)
+- **`docs/07-PQC_IMPROVEMENTS.md`** — PQC improvements research document with 18 proposed improvements, prioritized roadmap, and 10 references
+- **`backend/app/data/vendor_readiness.json`** — 12 vendors with PQC status, algorithms, risk levels
 
