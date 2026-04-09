@@ -15,7 +15,7 @@ from app.services.crypto_inspector import inspect_asset, save_crypto_results
 from app.services.cbom_builder import save_cbom, build_aggregate_cbom
 from app.services.risk_engine import assess_all_assets
 
-from app.services.compliance import evaluate_compliance, compute_agility_score
+from app.services.compliance import evaluate_compliance, compute_agility_score, save_compliance_result
 from app.services.graph_builder import build_topology_graph
 
 logger = logging.getLogger(__name__)
@@ -109,27 +109,29 @@ class ScanOrchestrator:
 
             # Phase 2: Crypto Inspection
             logger.info(f"[{scan_id}] Phase 2: Crypto Inspection on {len(db_assets)} assets")
-            scan_job.current_phase = 2
-            db.commit()
+            raw_asset_map = {a.get("hostname"): a for a in all_assets}
+            mapped_assets = [(str(a.id), a.hostname) for a in db_assets]
 
-            def process_crypto(asset):
+            def process_crypto(asset_id_str, asset_hostname):
                 try:
-                    fp = inspect_asset(asset.hostname)
+                    raw_data = raw_asset_map.get(asset_hostname, {})
+                    tls_results = raw_data.get("tls_results")
+                    fp = inspect_asset(asset_hostname, pre_fetched_tls=tls_results)
                     # Use a local session since we are threading
                     local_db = SessionLocal()
                     try:
-                        save_crypto_results(scan_id, str(asset.id), fp, local_db)
+                        save_crypto_results(scan_id, asset_id_str, fp, local_db)
                     finally:
                         local_db.close()
-                    return str(asset.id), fp
+                    return asset_id_str, fp
                 except Exception as e:
-                    logger.error(f"Crypto scan failed for {asset.hostname}: {e}")
-                    return str(asset.id), None
+                    logger.error(f"Crypto scan failed for {asset_hostname}: {e}")
+                    return asset_id_str, None
 
             successful_crypto = 0
             asset_crypto_map = {}
             with ThreadPoolExecutor(max_workers=10) as executor:
-                futures = {executor.submit(process_crypto, asset): asset for asset in db_assets}
+                futures = {executor.submit(process_crypto, a_id, a_host): a_id for a_id, a_host in mapped_assets}
                 for future in as_completed(futures):
                     result_id, fp = future.result()
                     if fp is not None:
@@ -185,14 +187,54 @@ class ScanOrchestrator:
             successful_compliance = 0
             for asset in db_assets:
                 try:
-                    # POC: evaluate compliance without pushing directly to a new DB table
-                    # We just run the engine to make sure it doesn't fail.
-                    comp = evaluate_compliance(str(asset.id), {}, {})
-                    ag = compute_agility_score({})
+                    # Build crypto_data dict from the asset's crypto fingerprint
+                    fp = asset_crypto_map.get(str(asset.id), {})
+                    tls_data = fp.get("tls") or {}
+                    certs_list = fp.get("certificates") or []
+                    first_cert = certs_list[0] if certs_list else {}
+                    auth_data = fp.get("auth") or {}
+                    crypto_data = {
+                        "tls": {
+                            "negotiated_protocol": tls_data.get("negotiated_protocol", "") or "",
+                            "negotiated_cipher": tls_data.get("negotiated_cipher", "") or "",
+                            "forward_secrecy": tls_data.get("forward_secrecy", False),
+                            "key_exchange": tls_data.get("key_exchange", "") or "",
+                        },
+                        "certificate": {
+                            "key_type": first_cert.get("key_type", "") or "",
+                            "key_length": first_cert.get("key_length", 0) or 0,
+                            "ct_logged": first_cert.get("ct_logged", False),
+                            "chain_valid": first_cert.get("chain_valid", False),
+                            "signature_algorithm": first_cert.get("signature_algorithm", "") or "",
+                        },
+                        "asset_type": asset.asset_type or "",
+                        "auth_mechanisms": auth_data.get("mechanisms", []) if isinstance(auth_data, dict) else [],
+                    }
+                    # Build cbom_data from DB
+                    from app.models.cbom import CBOMRecord, CBOMComponent
+                    cbom_rec = db.query(CBOMRecord).filter(
+                        CBOMRecord.asset_id == asset.id,
+                        CBOMRecord.scan_id == scan_id,
+                    ).first()
+                    cbom_data = {"components": []}
+                    if cbom_rec:
+                        comps = db.query(CBOMComponent).filter(CBOMComponent.cbom_id == cbom_rec.id).all()
+                        cbom_data["components"] = [{"name": c.name, "component_type": c.component_type} for c in comps]
+
+                    comp_result = evaluate_compliance(str(asset.id), cbom_data, crypto_data)
+                    agility_data_dict = {
+                        "tls_version": tls_data.get("negotiated_protocol", "") or asset.tls_version or "",
+                        "cert_issuer": first_cert.get("issuer", "") or "",
+                        "cdn_detected": asset.cdn_detected,
+                        "waf_detected": asset.waf_detected,
+                    }
+                    ag = compute_agility_score(agility_data_dict)
+                    save_compliance_result(scan_id, str(asset.id), comp_result, ag, db)
                     successful_compliance += 1
                 except Exception as e:
-                    logger.error(f"Compliance failed for {asset.hostname}: {e}")
+                    logger.error(f"Compliance failed for {asset.hostname}: {e}", exc_info=True)
 
+            db.commit()
             summary["compliance_scores_computed"] = successful_compliance
             summary["phases_completed"].append(5)
 
@@ -208,6 +250,18 @@ class ScanOrchestrator:
                 summary["phases_completed"].append(6)
             except Exception as e:
                 logger.error(f"Graph topology failed for scan {scan_id}: {e}")
+
+            # Update scan summary stats
+            from app.models.certificate import Certificate as CertModel
+            from app.models.risk import RiskScore as RiskModel
+            scan_job.total_assets = len(db_assets)
+            cert_count = db.query(CertModel).filter(CertModel.scan_id == scan_id).count()
+            scan_job.total_certificates = cert_count
+            vuln_count = db.query(RiskModel).filter(
+                RiskModel.scan_id == scan_id,
+                RiskModel.risk_classification.in_(["quantum_critical", "quantum_vulnerable"])
+            ).count()
+            scan_job.total_vulnerable = vuln_count
 
             # Mark scan complete
             scan_job.status = "completed"

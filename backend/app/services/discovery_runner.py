@@ -24,7 +24,7 @@ DISCOVERY_BINARY = PROJECT_ROOT / "discovery" / "bin" / "discovery-engine"
 def run_discovery(
     domain: str,
     scan_id: Optional[str] = None,
-    timeout_seconds: int = 120,
+    timeout_seconds: int = 400,
     port_mode: str = "top20",
 ) -> dict:
     """

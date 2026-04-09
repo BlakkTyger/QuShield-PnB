@@ -22,7 +22,10 @@ class Asset(Base):
     hosting_provider = Column(String(255), nullable=True)
     cdn_detected = Column(String(100), nullable=True)  # Akamai, Cloudflare, Incapsula, etc.
     waf_detected = Column(String(100), nullable=True)   # WAF product name if detected
+    auth_mechanisms = Column(String(255), nullable=True) # Listed mechanisms (JWT, APIKey)
+    jwt_algorithm = Column(String(50), nullable=True)    # Extracted JWT Algorithm
     is_third_party = Column(Boolean, default=False)     # True if asset is a third-party dependency
+    third_party_vendor = Column(String(255), nullable=True) # NPCI, Banks, Payment Gateways
     web_server = Column(String(255), nullable=True)
     tls_version = Column(String(20), nullable=True)
     confidence_score = Column(Float, default=0.0)

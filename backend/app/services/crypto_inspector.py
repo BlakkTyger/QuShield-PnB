@@ -311,7 +311,9 @@ def _get_cn(cert) -> str:
 
 
 @timed(service="crypto_inspector")
-def parse_certificate(cert_pem: bytes) -> dict:
+def parse_certificate(cert_pem: bytes | str) -> dict:
+    if isinstance(cert_pem, str):
+        cert_pem = cert_pem.encode("utf-8")
     """
     Parse a PEM-encoded certificate and extract all relevant fields.
 
@@ -435,7 +437,7 @@ def _normalize_sig_algo(hash_algo, key_type: str) -> str:
 
 
 @timed(service="crypto_inspector")
-def parse_certificate_chain(chain_pems: list[bytes]) -> list[dict]:
+def parse_certificate_chain(chain_pems: list[bytes | str]) -> list[dict]:
     """
     Parse a full certificate chain.
 
@@ -447,6 +449,8 @@ def parse_certificate_chain(chain_pems: list[bytes]) -> list[dict]:
 
     parsed = []
     for i, pem in enumerate(chain_pems):
+        if isinstance(pem, str):
+            pem = pem.encode("utf-8")
         cert_data = parse_certificate(pem)
         cert_data["chain_depth"] = i
         if i == 0:
@@ -695,7 +699,7 @@ def detect_api_auth(url: str) -> dict:
             except Exception:
                 pass
 
-            # Check main URL for auth headers
+            # Check main URL for auth headers and cookies
             try:
                 resp = client.get(base_url, follow_redirects=True)
                 www_auth = resp.headers.get("www-authenticate", "")
@@ -704,6 +708,26 @@ def detect_api_auth(url: str) -> dict:
                         result["auth_mechanisms"].append("Bearer")
                 if resp.headers.get("x-api-key") or "api-key" in resp.headers.get("www-authenticate", "").lower():
                     result["auth_mechanisms"].append("API-Key")
+
+                # Hunt for JWTs in cookies
+                set_cookie = resp.headers.get("set-cookie", "")
+                if "eyJ" in set_cookie:
+                    import base64, json
+                    parts = set_cookie.split("eyJ")
+                    for p in parts[1:]:
+                        try:
+                            # JWT headers start with eyJ (which is '{"' in b64). Reconstruct the first segment.
+                            jwt_header_b64 = "eyJ" + p.split(".")[0]
+                            # Pad base64
+                            jwt_header_b64 += "=" * ((4 - len(jwt_header_b64) % 4) % 4)
+                            header_json = json.loads(base64.urlsafe_b64decode(jwt_header_b64).decode("utf-8"))
+                            if "alg" in header_json:
+                                result["auth_mechanisms"].append("JWT")
+                                result["jwt_algorithm"] = header_json["alg"]
+                                break
+                        except Exception:
+                            continue
+
             except Exception:
                 pass
 
@@ -1059,7 +1083,7 @@ def classify_asset_type(hostname: str, ports: list | None = None) -> str:
 
 
 @timed(service="crypto_inspector")
-def inspect_asset(hostname: str, port: int = 443) -> dict:
+def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) -> dict:
     """
     Full cryptographic inspection of a single asset.
 
@@ -1090,14 +1114,17 @@ def inspect_asset(hostname: str, port: int = 443) -> dict:
     # Step 1: TLS scan
     tls_result = {}  # ensure tls_result is always defined
     try:
-        tls_result = scan_tls(hostname, port)
+        if pre_fetched_tls:
+            tls_result = pre_fetched_tls
+        else:
+            tls_result = scan_tls(hostname, port)
         fingerprint["tls"] = {
-            "versions_supported": tls_result["tls_versions_supported"],
-            "cipher_suites": tls_result["cipher_suites"],
-            "negotiated_cipher": tls_result["negotiated_cipher"],
-            "negotiated_protocol": tls_result["negotiated_protocol"],
-            "key_exchange": tls_result["key_exchange"],
-            "forward_secrecy": tls_result["forward_secrecy"],
+            "versions_supported": tls_result.get("tls_versions_supported", []),
+            "cipher_suites": tls_result.get("cipher_suites", []),
+            "negotiated_cipher": tls_result.get("negotiated_cipher"),
+            "negotiated_protocol": tls_result.get("negotiated_protocol"),
+            "key_exchange": tls_result.get("key_exchange"),
+            "forward_secrecy": tls_result.get("forward_secrecy", False),
         }
     except Exception as e:
         fingerprint["error"] = f"TLS scan failed: {e}"
@@ -1116,7 +1143,7 @@ def inspect_asset(hostname: str, port: int = 443) -> dict:
     safe_algos = []
     all_levels = []
 
-    for cs in fingerprint.get("tls", {}).get("cipher_suites", []):
+    for cs in (fingerprint.get("tls") or {}).get("cipher_suites", []):
         level = get_nist_quantum_level(cs["name"])
         cs["quantum"] = level
         if level["is_quantum_vulnerable"]:
@@ -1335,6 +1362,13 @@ def save_crypto_results(
             asset.waf_detected = infra["waf_detected"]
         if infra.get("server_header"):
             asset.web_server = infra["server_header"]
+
+        # API Auth enrichment
+        auth_data = fingerprint.get("auth") or {}
+        if auth_data.get("auth_mechanisms"):
+            asset.auth_mechanisms = ",".join(auth_data["auth_mechanisms"])
+        if auth_data.get("jwt_algorithm"):
+            asset.jwt_algorithm = auth_data["jwt_algorithm"]
 
         # Asset type classification
         if fingerprint.get("asset_type"):

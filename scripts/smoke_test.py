@@ -21,8 +21,11 @@ def build_cli_table(assets, db):
     table.add_column("TLS Ver", justify="center", width=8)
     table.add_column("Key Len", justify="center", width=8)
     table.add_column("Validity", justify="center", width=12)
+    table.add_column("Context", justify="center", width=18)
     table.add_column("Q. Status", justify="center", width=10)
     table.add_column("Risk Score", justify="center", width=8)
+
+    from app.models.cbom import CBOMComponent
 
     for asset in assets:
         cert = db.query(Certificate).filter(Certificate.asset_id == asset.id).first()
@@ -34,13 +37,32 @@ def build_cli_table(assets, db):
         valid_date = "N/A"
         q_status = "N/A"
         risk_str = "N/A"
+        context_str = "Native"
+
+        # Shadow / 3rd Party UI Mapping
+        if asset.is_shadow:
+            context_str = "[yellow]Shadow[/yellow]"
+        if asset.is_third_party and asset.third_party_vendor:
+            context_str = f"[cyan]{asset.third_party_vendor}[/cyan]"
+
+        from app.models.cbom import CBOMRecord, CBOMComponent
+        cbom = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset.id).first()
+        if cbom:
+            protocol_comp = db.query(CBOMComponent).filter(CBOMComponent.cbom_id == cbom.id, CBOMComponent.component_type == "protocol").first()
+            if protocol_comp:
+                tls_ver = protocol_comp.tls_version or "N/A"
+            
+            kex_comp = db.query(CBOMComponent).filter(CBOMComponent.cbom_id == cbom.id, CBOMComponent.component_type == "key_exchange").first()
+            if kex_comp:
+                encryption = kex_comp.name
 
         if cert:
-            encryption = f"{cert.key_type}-{cert.signature_algorithm}" if cert.key_type and cert.signature_algorithm else "Unknown"
-            tls_ver = "Live"  # Ideally derived from CBOM/infrastructure
+            if encryption == "N/A":
+                encryption = f"{cert.key_type}-{cert.signature_algorithm}" if cert.key_type and cert.signature_algorithm else "Unknown"
+            
             key_len = str(cert.key_length) if cert.key_length else "-"
             valid_date = str(cert.valid_to.date()) if cert.valid_to else "-"
-            # Fallback mappings for Q-Status
+            
             if "ML-KEM" in encryption.upper() or "ML-DSA" in encryption.upper():
                 q_status = "[bold green]Safe[/bold green]"
             else:
@@ -62,6 +84,7 @@ def build_cli_table(assets, db):
             tls_ver,
             key_len,
             valid_date,
+            context_str,
             q_status,
             risk_str
         )

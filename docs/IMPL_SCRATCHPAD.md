@@ -1,53 +1,51 @@
-# Implementation Scratchpad — Phase 2, 3, 4
+# Implementation Scratchpad — Phase 7
 
 ## Test Targets (PERSISTED)
 - https://pnb.bank.in
 - https://onlinesbi.sbi.bank.in  
 - https://www.hdfc.bank.in
 
-## Current Task: 📝 Planning — Phase 5 and 6
-User requested to:
-1. Update OUTPUT_diffs.md to reflect current vs expected output for 100+ assets orchestration.
-2. Implement Phase 5 (Scan Orchestrator) to run discovery and deep crypto inspection across ALL subdomains.
-3. Implement Phase 6 (Compliance & Graph).
-4. Do NOT use exponential backoff, use OSINT fallback.
-
-## Key Dependencies
-- sslyze (TLS scanning)
-- cryptography (cert parsing)
-- cyclonedx-python-lib v11.7.0 (CBOM generation)
-- numpy (vectorized risk computation)
-- app/data/nist_quantum_levels.json (algorithm → NIST level mapping)
-- app/data/pqc_oids.json (PQC OID detection)
-- app/data/data_shelf_life_defaults.json (data shelf life by asset type)
+## Current Task: � Phase 7 — REST API Layer
 
 ---
 
-## Phase Completion Summary (2026-04-09)
+## Pre-Phase 7 Gap Analysis
 
-### Phase 2 — Crypto Inspector ✅
-- P2.1: TLS scan with SSLyze + stdlib fallback — 3 bug fixes applied
-- P2.2: Certificate chain parsing (CN, SAN, key type, chain validation)
-- P2.3: NIST quantum level assignment with normalization
-- P2.4: PQC detection via OID check + TLS group check
-- P2.5: API auth fingerprinting (OIDC, Bearer, API-Key)
-- P2.6: Full crypto inspection pipeline
-- P2.7: DB persistence (Certificate records)
+### Critical Gaps Found in Orchestrator Phase 5/6
+1. **Compliance not using real data**: `orchestrator.py:192` calls `evaluate_compliance(str(asset.id), {}, {})` with EMPTY dicts. Must pass actual CBOM + crypto data.
+2. **Compliance results NOT persisted to DB**: The orchestrator runs compliance but never creates `ComplianceResult` rows.
+3. **Compliance model missing fields**: No `rbi_compliant`, `sebi_compliant`, `pci_compliant`, `npci_compliant` from 04-SYSTEM_ARCHITECTURE.md.
+4. **Graph builder doesn't compute blast radius per cert**: Only builds topology; blast_radius is separate function not called during scan.
+5. **ScanJob.total_assets/total_certificates/total_vulnerable never updated**: Orchestrator completes but doesn't write summary stats back.
 
-### Phase 3 — CBOM Builder ✅
-- P3.1: CycloneDX 1.6 BOM assembly with AlgorithmProperties, CertificateProperties, ProtocolProperties
-- P3.2: File storage (data/cbom/{scan_id}/{asset_id}.cdx.json) + DB persistence
-- P3.3: Aggregate CBOM with deduplication and statistics
-- P3.4: CVE cross-referencing via NVD API v2
+### Fixes Required Before Phase 7
+- Fix orchestrator to pass real cbom_data and crypto_data to compliance
+- Add compliance DB persistence in orchestrator 
+- Update ScanJob summary stats on completion
+- Add India-specific regulatory checks (RBI, SEBI, PCI, NPCI) to compliance model + service
 
-### Phase 4 — Risk Engine ✅
-- P4.1: Mosca's inequality (X+Y>Z for 3 CRQC scenarios)
-- P4.2: 5-factor quantum risk score (0-1000) — RSA-only=775, PQC=225, Hybrid=525
-- P4.3: HNDL exposure window computation
-- P4.4: TNFL assessment (rule-based, SWIFT=CRITICAL, JWT=MEDIUM, PQC=safe)
-- P4.5: Combined risk assessment with DB persistence
+### Phase 7 Implementation Plan (from 06f-PLAN_P7_P8.md)
+1. **P7.1**: FastAPI main.py — lifespan, CORS, exception handlers, health check, Swagger
+2. **P7.2**: Scan API — POST/GET/list/summary
+3. **P7.3**: Assets API — paginated, filterable, searchable, shadow
+4. **P7.4**: CBOM API — per-asset, aggregate, export, algorithm distribution
+5. **P7.5**: Risk API — heatmap, breakdown, HNDL window, Mosca simulate
+6. **P7.6**: Compliance API — FIPS matrix, agility distribution, regulatory deadlines
+7. **P7.6b**: Topology API — graph JSON, blast radius
+8. **P7.7**: Integration tests — E2E against banking domains
 
-### Test Summary
-- **26 non-network tests pass** in 4.5s
-- All network tests (TLS scans against Indian banking domains) also pass
-- Total: ~40 tests across 3 test files
+### Architecture Decisions
+- Monolith FastAPI app (POC, not microservices)
+- Background scan via `threading.Thread` (no Temporal/Celery)
+- Sync SQLAlchemy sessions (psycopg2-binary, not asyncpg)
+- Swagger auto-generated at `/docs`, Redoc at `/redoc`
+- All endpoints under `/api/v1/`
+
+---
+
+## Phase Completion Summary
+
+### Phase 0-4 ✅ (Completed previously)
+### Phase 5 — Orchestrator ✅ (Needs compliance fix)
+### Phase 6 — Compliance & Graph ✅ (Needs DB persistence fix)
+### Phase 7 — API Layer 🔧 (IN PROGRESS)

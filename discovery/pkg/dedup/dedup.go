@@ -23,6 +23,30 @@ type HTTPInfo struct {
 	ContentType string `json:"content_type,omitempty"`
 }
 
+// TLSInfo represents basic TLS configuration and negotiated parameters.
+type TLSInfo struct {
+	SupportedVersions []string          `json:"tls_versions_supported"`
+	CipherSuites      []CipherSuiteInfo `json:"cipher_suites"`
+	NegotiatedCipher  string            `json:"negotiated_cipher"`
+	NegotiatedVersion string            `json:"negotiated_protocol"`
+	Certificates      []string          `json:"certificate_chain_pem"`
+	ServerName        string            `json:"server_name,omitempty"`
+	Error             string            `json:"error,omitempty"`
+}
+
+// CipherSuiteInfo matches the expected output format of Python fallback.
+type CipherSuiteInfo struct {
+	Name       string `json:"name"`
+	TLSVersion string `json:"tls_version"`
+	KeySize    int    `json:"key_size,omitempty"`
+}
+
+// ASNInfo represents ASN logic.
+type ASNInfo struct {
+	Number string `json:"number,omitempty"`
+	Org    string `json:"org,omitempty"`
+}
+
 // DiscoveredAsset is the unified discovery output per asset.
 type DiscoveredAsset struct {
 	Hostname         string   `json:"hostname"`
@@ -30,6 +54,8 @@ type DiscoveredAsset struct {
 	IPv6             string   `json:"ip_v6,omitempty"`
 	Ports            []PortInfo `json:"ports,omitempty"`
 	HTTP             *HTTPInfo  `json:"http,omitempty"`
+	TLS              *TLSInfo   `json:"tls_results,omitempty"`
+	ASN              *ASNInfo   `json:"asn,omitempty"`
 	DiscoveryMethods []string `json:"discovery_methods"`
 	ConfidenceScore  float64  `json:"confidence_score"`
 }

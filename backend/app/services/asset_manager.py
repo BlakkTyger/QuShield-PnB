@@ -47,6 +47,22 @@ def save_discovered_assets(
             Asset.ip_v4 == ip_v4,
         ).first()
 
+        # Shadow IT Heuristics
+        is_shadow = any(k in hostname.lower() for k in ["dev", "uat", "test", "staging", "legacy", "old", "beta", "demo"])
+
+        # Supply chain Heuristics
+        vendor_match = None
+        hostname_parts = hostname.lower()
+        if any(v in hostname_parts for v in ["npci", "rupay", "upi", "bhim", "aeps"]): vendor_match = "NPCI"
+        elif "finacle" in hostname_parts: vendor_match = "Infosys Finacle"
+        elif "bancs" in hostname_parts: vendor_match = "TCS BaNCS"
+        elif "flexcube" in hostname_parts: vendor_match = "Oracle Flexcube"
+        elif "razorpay" in hostname_parts: vendor_match = "Razorpay"
+        elif "billdesk" in hostname_parts: vendor_match = "BillDesk"
+        elif "payu" in hostname_parts: vendor_match = "PayU"
+        elif "swift" in hostname_parts: vendor_match = "SWIFT Network"
+        elif "fss" in hostname_parts: vendor_match = "FSS"
+
         if existing:
             # Update existing asset
             existing.last_seen_at = datetime.now(timezone.utc)
@@ -57,6 +73,11 @@ def save_discovered_assets(
                 existing.tls_version = asset_data["http"]["tls_version"]
             existing.confidence_score = asset_data.get("confidence_score", 0.0)
             existing.discovery_method = ", ".join(asset_data.get("discovery_methods", []))
+            existing.is_shadow = is_shadow
+            if vendor_match:
+                existing.is_third_party = True
+                existing.third_party_vendor = vendor_match
+
             result_assets.append(existing)
             updated += 1
         else:
@@ -73,6 +94,9 @@ def save_discovered_assets(
                 web_server=http_info.get("web_server"),
                 tls_version=http_info.get("tls_version"),
                 confidence_score=asset_data.get("confidence_score", 0.0),
+                is_shadow=is_shadow,
+                is_third_party=vendor_match is not None,
+                third_party_vendor=vendor_match,
             )
             db.add(asset)
             db.flush()  # Get the ID

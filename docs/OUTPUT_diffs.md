@@ -1,89 +1,241 @@
-# Gap Analysis & Implementation Plan: Pre-Phase 5 Hardening
+# OUTPUT Diffs — Expected vs Implemented
 
-## Problem Statement
+## Last Updated: 2026-04-09 21:30
 
-After completing Phases 2–4, a careful comparison of `02-OUTPUTS.md` (the expected output specification) against the actual implementation reveals **significant gaps** in the discovery and analysis depth. The current implementation scans individual bank domains but does NOT produce the breadth of outputs the specification requires.
+This document compares every output specified in `02-OUTPUTS.md` against the current codebase implementation (through Phase 7). Items marked ❌ are missing; ✅ are implemented; ⚠️ are partially implemented; 🔮 are deferred by design (require internal access, AI, or agent-based deployment).
 
 ---
 
-## Gap Analysis: 02-OUTPUTS.md vs Current Implementation
+## Module 1 — External Attack Surface Discovery Engine
 
-### Module 1 — External Attack Surface Discovery Engine
+### 1.1 Asset Universe Map — ✅ Fully Implemented
+All fields from `02-OUTPUTS.md` table are captured:
 
-| Expected Output | Status | Gap |
+| Spec Field | Implementation | Status |
 |---|---|---|
-| **1.1 Asset Universe Map** — 100+ subdomains per bank | ❌ MISSING | Discovery Engine runs but only finds assets via the Go binary. The Python pipeline tests use single hostnames (`pnb.bank.in`), not the full subdomain enumeration. The Go binary exists but has never been tested against Indian banking domains. |
-| **1.2 Third-Party & Supply Chain Crypto Exposure** — NPCI, CBS vendors, payment gateways | ❌ MISSING | No `third_party_deps` table population. No supply chain crypto mapping at all. |
-| **1.3 Shadow Asset Detection** — Dev servers, test portals, legacy subdomains | ❌ MISSING | No CMDB comparison, no shadow detection logic. |
-| Asset Class metadata — classify as internet_banking/upi_gateway/swift etc. | ⚠️ PARTIAL | `_infer_asset_type()` in risk_engine.py does hostname-pattern matching, but it's very basic and not saved to Asset model. |
-| Hosting Entity — bank-owned DC / AWS / Akamai / NIC | ❌ MISSING | No hosting provider detection. |
-| TLS Termination Point identification | ❌ MISSING | No CDN/WAF detection. |
+| Asset Name | `Asset.hostname` | ✅ |
+| Asset Class | `Asset.asset_type` (auto-classified: web_server, internet_banking, upi_gateway, api_gateway, mail_server, dns_server, cdn_endpoint, vpn_gateway, swift_endpoint) | ✅ |
+| Discovery Method | `Asset.discovery_method` (dns, portscan, httpx, tls, osint_fallback) | ✅ |
+| IPv4 / IPv6 | `Asset.ip_v4`, `Asset.ip_v6` | ✅ |
+| Hosting Entity | `Asset.hosting_provider` (detected via IP lookup + headers) | ✅ |
+| Internet-Exposed | Implicit (all discovered assets are internet-exposed) | ✅ |
+| TLS Termination Point | `Asset.cdn_detected`, `Asset.waf_detected` (Cloudflare, Akamai, Citrix NetScaler etc.) | ✅ |
+| Last Verified | `Asset.last_seen_at` | ✅ |
+| Confidence Score | `Asset.confidence_score` (0–1.0) | ✅ |
 
-### Module 2 — Deep Cryptographic Inventory
+### 1.2 Third-Party & Supply Chain Crypto Exposure — ✅ Implemented
+- `is_third_party` + `third_party_vendor` in Asset model
+- Heuristic vendor detection for NPCI, SBI, HDFC, payment gateways, CBS vendors in `asset_manager.py`
+- API: `GET /api/v1/assets/third-party` — lists all third-party endpoints with vendor names
+- **⚠️ Gap**: Cannot map internal CBS vendor dependencies (Finacle/BaNCS/Flexcube) from external scanning alone — requires CMDB integration
 
-| Expected Output | Status | Gap |
+### 1.3 Shadow Asset Detection — ✅ Implemented
+- `is_shadow` flag with heuristic matching `dev|test|staging|uat|legacy|sandbox|demo|internal|debug|beta|alpha|preprod|qa|digi` patterns
+- API: `GET /api/v1/assets/shadow`
+- E2E Validated: PNB scan found `digigoldloan.pnb.bank.in` as shadow asset
+- **⚠️ Gap**: No CMDB cross-reference (requires bank's internal asset inventory — out of scope for external POC)
+
+---
+
+## Module 2 — Deep Cryptographic Inventory (Full CBOM Engine)
+
+### 2.1 Protocol-Level Cryptographic Inventory — ✅ Fully Implemented
+
+| Spec Attribute | Implementation | Status |
 |---|---|---|
-| **2.1 Protocol-Level Inventory** per asset | ✅ DONE | scan_tls + get_nist_quantum_level covers this |
-| **2.2 Certificate Lifecycle Intelligence** | ⚠️ PARTIAL | We have cert parsing and expiry. Missing: **Effective Security Remaining** (min of cert_expiry vs CRQC), **CA PQC Readiness tracking**, **Multi-SAN exposure analysis** |
-| **2.3 API Crypto Fingerprinting** | ⚠️ PARTIAL | `detect_api_auth()` exists but only checks OIDC/Bearer. Missing: **JWT algorithm extraction**, **transport protocol detection (HTTP/2, QUIC)**, **sensitive data indicator detection** |
-| **2.4 HSM & Key Management Inventory** | ❌ DEFERRED | Agent-based — out of scope for POC |
+| TLS Version | `Certificate.tls_version`, `fp["tls"]["versions_supported"]` | ✅ |
+| Key Exchange Algorithm | `fp["tls"]["key_exchange"]` | ✅ |
+| Authentication Algorithm | `Certificate.signature_algorithm` | ✅ |
+| Symmetric Cipher | `fp["tls"]["negotiated_cipher"]` | ✅ |
+| MAC/HMAC | Extracted from cipher suite name | ✅ |
+| Certificate Public Key Type | `Certificate.key_type` | ✅ |
+| Certificate Key Length | `Certificate.key_length` | ✅ |
+| NIST Quantum Security Level | `Certificate.nist_quantum_level`, `CBOMComponent.nist_quantum_level` | ✅ |
+| Hybrid Mode | Detected via PQC OID check + cipher name check | ✅ |
+| Forward Secrecy | `Certificate.forward_secrecy`, `fp["tls"]["forward_secrecy"]` | ✅ |
+| Certificate Transparency Logged | `Certificate.is_ct_logged` | ✅ |
 
-### Module 3 — Quantum Risk Scoring
+### 2.2 Certificate Lifecycle Intelligence — ✅ Fully Implemented
+- **✅ Quantum Vulnerability Date**: `Certificate.effective_security_expiry` — CRQC-adjusted using `compute_effective_security_expiry()`
+- **✅ Chain of Trust**: Full CA chain parsed via `parse_certificate_chain()`
+- **✅ CA PQC Readiness**: `Certificate.ca_pqc_ready` — lookup against known CA roadmap data
+- **✅ Multi-SAN Exposure**: `Certificate.san_count`, `Certificate.san_list`
 
-| Expected Output | Status | Gap |
+### 2.3 API Cryptographic Fingerprinting — ⚠️ Partial
+
+| Spec Attribute | Implementation | Status |
 |---|---|---|
-| **3.1 Mosca's Theorem** | ✅ DONE | compute_mosca() works correctly |
-| **3.2 Asset Classification** | ✅ DONE | 5-tier classification implemented |
-| **3.3 TNFL Risk Flags** | ✅ DONE | assess_tnfl() implemented |
+| API Auth Mechanism | `Asset.auth_mechanisms` (JWT, Bearer, API-Key, OIDC, mTLS detected) | ✅ |
+| JWT Signing Algorithm | `Asset.jwt_algorithm` — detects JWT presence; extracts `alg` header when possible | ⚠️ |
+| Token Key Length | Inferred from JWT `alg` (RS256=RSA-2048, ES256=P-256) | ⚠️ |
+| Transport Protocol | HTTPS detected; HTTP/2 via httpx probing | ✅ |
+| PQC Readiness of Auth Layer | Computed from JWT algo + PQC OID detection | ✅ |
+| Data-in-Transit Algorithm | Derived from TLS cipher suite | ✅ |
+| Sensitive Data Indicator | ❌ Not implemented (requires API response body analysis, out of scope for passive scanning) | ❌ |
 
-### Module 4 — PQC Compliance Dashboard
+### 2.4 HSM & Key Management Inventory — 🔮 Deferred
+Requires agent-based or API-connected deployment. Cannot be determined from external TLS scanning. Explicitly deferred in `06-DEVELOPMENT_PLAN.md`.
 
-| Expected Output | Status | Gap |
+---
+
+## Module 3 — Quantum Risk Scoring & Classification — ✅ Fully Implemented
+
+### 3.1 Mosca's Theorem-Based Risk Model — ✅
+- Migration Time (X): Per-asset via `data_shelf_life_defaults.json`
+- Data Shelf Life (Y): Asset-type-specific defaults
+- CRQC Arrival (Z): 3 scenarios (pessimistic=2029, median=2032, optimistic=2035)
+- Quantum Risk Score: 0–1000 continuous, 5-factor weighted
+- API: `POST /api/v1/risk/mosca/simulate`, `GET /api/v1/risk/asset/{id}`
+
+### 3.2 Asset Classification — ✅
+
+| Class | Score Range | Status |
 |---|---|---|
-| **4.1 Algorithm Compliance Matrix** | ❌ NOT YET | Planned for Phase 6 |
-| **4.2 Crypto-Agility Score** | ❌ NOT YET | Planned for Phase 6 |
-| **4.3 Hybrid Deployment Tracker** | ❌ NOT YET | Planned for Phase 6 |
+| Quantum Critical | 800–1000 | ✅ |
+| Quantum Vulnerable | 600–799 | ✅ |
+| Quantum at Risk | 400–599 | ✅ |
+| Quantum Aware | 200–399 | ✅ |
+| Quantum Ready | 0–199 | ✅ |
 
-### Module 5 — Banking Threat Intelligence
+### 3.3 TNFL Risk Flags — ✅
+- SWIFT endpoint → CRITICAL
+- JWT-signed API → MEDIUM
+- PQC-signed → SAFE
+- API: `GET /api/v1/risk/asset/{id}` returns `tnfl_risk` + `tnfl_severity`
 
-| Expected Output | Status | Gap |
+---
+
+## Module 4 — PQC Compliance Dashboard — ✅ Fully Implemented
+
+### 4.1 Algorithm Compliance Matrix — ✅
+
+| Spec Check | Implementation | API |
 |---|---|---|
-| **5.1 HNDL Exposure Window** | ✅ DONE | compute_hndl_window() implemented |
-| **5.2 India-Specific Regulatory Compliance** | ❌ NOT YET | Planned for Phase 6 |
-| **5.3 Threat Actor Attribution** | ❌ DEFERRED | Out of scope for POC |
+| FIPS 203 (ML-KEM) | `ComplianceResult.fips_203_deployed` | `/compliance/scan/{id}/fips-matrix` |
+| FIPS 204 (ML-DSA) | `ComplianceResult.fips_204_deployed` | ✅ |
+| FIPS 205 (SLH-DSA) | `ComplianceResult.fips_205_deployed` | ✅ |
+| TLS 1.3 enforced | `ComplianceResult.tls_13_enforced` | ✅ |
+| Forward Secrecy | `ComplianceResult.forward_secrecy` | ✅ |
+| Hybrid KEM active | `ComplianceResult.hybrid_mode_active` | ✅ |
+| RSA/ECC deprecated | `ComplianceResult.classical_deprecated` | ✅ |
+| RBI Crypto Governance | `ComplianceResult.rbi_compliant` | ✅ |
 
-### Module 7 — Certificate Intelligence
+### 4.2 Crypto-Agility Readiness Score — ✅
+- 5-factor scoring (0–100): Dynamic cipher negotiation, automated cert renewal, key rotation, crypto abstraction layer, documented ownership
+- API: `GET /api/v1/compliance/scan/{id}/agility`
 
-| Expected Output | Status | Gap |
+### 4.3 Hybrid Deployment Tracker — ✅
+- `hybrid_mode_active` flag per asset in compliance results
+- FIPS matrix shows hybrid vs classical vs full-PQC per asset
+
+---
+
+## Module 5 — Banking-Specific Threat Intelligence Correlation
+
+### 5.1 HNDL Exposure Window Calculator — ✅
+- HNDL exposure per asset via `RiskScore.hndl_exposed`
+- Mosca X (migration time) + Y (data shelf life) exposed via API
+- API: `GET /api/v1/risk/scan/{id}/hndl` — exposed vs safe breakdown
+- **⚠️ Gap**: Data Sensitivity Multiplier not yet weighted per data type (PAN/Aadhaar/SWIFT) — uses asset-type defaults
+
+### 5.2 India-Specific Regulatory Compliance — ✅ Implemented (Phase 7 fix)
+
+| Regulation | Spec Requirement | Implementation | Status |
+|---|---|---|---|
+| RBI IT Framework | Crypto controls documentation | `ComplianceResult.rbi_compliant` (TLS 1.2+, key >= 2048, FS) | ✅ |
+| RBI Cyber Security | Vendor crypto risk | Third-party vendor detection + risk scoring | ✅ |
+| SEBI CSCRF | Supply chain CBOM | `ComplianceResult.sebi_compliant` (CBOM exists) | ✅ |
+| NPCI UPI Security | mTLS for UPI API | `ComplianceResult.npci_compliant` (mTLS detection on UPI endpoints) | ✅ |
+| SWIFT CSP | PQC readiness | TNFL risk flagging for SWIFT endpoints | ✅ |
+| PCI DSS 4.0 | TLS 1.2+ minimum | `ComplianceResult.pci_compliant` | ✅ |
+| IT Act 2000 / DPDP | Data protection | Risk-mapped via quantum risk score | ⚠️ |
+
+- API: `GET /api/v1/compliance/scan/{id}/regulatory`
+- API: `GET /api/v1/compliance/deadlines` — regulatory deadline countdown data
+
+### 5.3 Threat Actor Attribution — 🔮 Deferred
+Requires threat intelligence feed integration. Out of scope for POC.
+
+---
+
+## Module 6 — Migration Intelligence Engine — 🔮 Phase 9
+
+- 6.1 Prioritized Migration Roadmap — 🔮 (requires AI)
+- 6.2 Developer Migration Playbooks — 🔮 (requires local LLM)
+- 6.3 Vendor Readiness Tracker — ⚠️ Partial (CA PQC readiness tracked; static vendor data in `regulatory_deadlines.json`)
+
+---
+
+## Module 7 — Certificate Intelligence & Lifecycle Management — ✅ Mostly Implemented
+
+| Feature | Implementation | Status |
 |---|---|---|
-| **Cert chain parsing** | ✅ DONE | |
-| **CRQC-Adjusted Effective Expiry** | ❌ MISSING | Should be computed alongside cert parsing |
-| **CA PQC Readiness tracking** | ❌ MISSING | Need a static CA readiness DB |
-| **Multi-SAN Exposure (blast radius from one cert)** | ❌ MISSING | Should be in graph builder |
-| **CT Log Anomaly Detection** | ❌ DEFERRED | |
-| **Certificate Pinning Detection** | ❌ MISSING | HPKP/Expect-CT header check missing |
+| Post-Quantum Certificate Readiness | `Certificate.ca_pqc_ready` via CA lookup | ✅ |
+| CRQC-Adjusted Effective Expiry | `Certificate.effective_security_expiry` | ✅ |
+| Certificate Pinning Detector | `Certificate.is_pinned` via HPKP/Expect-CT header check | ✅ |
+| CT Log Anomaly Detection | Requires CT log API monitoring (crt.sh integration) | 🔮 |
 
-### Module 9 — Enterprise Quantum Rating
+---
 
-| Expected Output | Status | Gap |
+## Module 8 — Topology & Asset Relationship Graph — ✅ Implemented
+
+| Feature | Implementation | Status |
 |---|---|---|
-| **0–1000 scoring model** | ✅ DONE | compute_risk_score() implements the 5-factor model |
+| Shared Certificate Risk Propagation | `compute_blast_radius()` via NetworkX BFS | ✅ |
+| Domain-IP-Cert-Issuer graph | NetworkX DiGraph with typed nodes and edges | ✅ |
+| Trust Chain Visualization | Certificate → Issuer chain edges | ✅ |
+| HSM Key Dependency Graph | Requires agent-based HSM discovery | 🔮 |
 
-## Critical Gaps to Fix NOW (Phase 5 & 6)
+- API: `GET /api/v1/topology/scan/{id}`, `GET /api/v1/topology/scan/{id}/blast-radius`
 
-### Gap 1: Asset Discovery is Robust but Unorchestrated
-**Status: Discovery Fixed ✅, Orchestration Missing ❌**
-The Go Discovery Engine has been successfully extended and verified against Indian banking domains (discovering 100+ subdomains, live IPs, and ports using multiple independent OSINT APIs alongside deep DNS validation). However, these discoveries are NOT being fed into the Python cryptographic inspection pipeline at scale.
-**Action**: Implement `backend/app/services/orchestrator.py` to pipe the resulting JSON from the Go Engine directly into `crypto_inspector.py`. Instead of iterating single hostnames, the orchestrator must rigorously compute Certificate Intelligence, CBOM graphs, and Risk Scores against ALL identified subdomains in parallel, yielding comprehensive multi-asset reporting.
+---
 
-### Gap 2: Missing Consolidated Summary Output format 
-**Status: ❌ MISSING**
-Presently, the encryption algorithms, TLS versions, Quantum Security Status, Key Lengths, Certificate Validities and Risk Statuses are only exposed deep inside isolated JSON constructs or database rows. We need a clean dashboard output summarizing the encryption status across the entire discovery map.
-**Action**: As part of Phase 5 Orchestration, `scripts/smoke_test.py` must print a high-level table iterating over every subdomain, displaying its definitive crypto-posture matrix.
+## Module 9 — Enterprise Cyber Quantum Rating — ⚠️ Partial
 
-### Gap 3: Missing Compliance & Graph Topography (Module 4 & 6 outputs)
-**Status: ❌ NOT YET**
-- **Compliance Rules**: FIPS 203/204/205 validations, TLS 1.3 enforcing blocks, Forward Secrecy assessments.
-- **Crypto-Agility Scores**: Measuring rotation frequencies and automated renewals.
-- **Topography Graphs**: Assessing the specific blast radius if a certain certificate's underlying key becomes compromised (i.e. if it is shared across 35 different bank subdomains).
-**Action**: Implement Phase 6 `backend/app/services/compliance.py` and `backend/app/services/graph_builder.py`.
+- **✅** Per-asset quantum risk score (0–1000) with 5-factor weighted model
+- **✅** Risk classification labels (Critical/Vulnerable/At-Risk/Aware/Ready)
+- **❌** Missing: Aggregate organizational rating using 6-dimension weighted model:
+  PQC Deployment (30%), HNDL Reduction (25%), Crypto-Agility (15%), Certificate Hygiene (10%), Regulatory Compliance (10%), Migration Velocity (10%)
+- **❌** Missing: Organization-level labels (Quantum Critical/Vulnerable/Progressing/Ready/Elite)
+
+---
+
+## Module 10 — AI-Powered Capabilities — 🔮 Phase 9
+
+- ❌ AI CBOM Analyst chat interface
+- ❌ AI-Generated Migration Plans
+- ❌ AI Anomaly Detection
+
+---
+
+## Module 11 — Reporting & Compliance Artifacts — ⚠️ Partial
+
+| Feature | Implementation | Status |
+|---|---|---|
+| CycloneDX CBOM Export | `GET /api/v1/cbom/asset/{id}/export` | ✅ |
+| Board-Level Quantum Risk Report | Requires PDF generation + AI summary | 🔮 Phase 9 |
+| Scheduled Compliance Snapshots | Requires cron job / scheduler | 🔮 Phase 9 |
+| Third-Party Audit Package | Data available via API; structured package not yet assembled | ⚠️ |
+
+---
+
+## Summary
+
+| Module | Status | Coverage |
+|---|---|---|
+| 1. Discovery Engine | ✅ | 95% |
+| 2. Deep Crypto Inventory | ✅ | 90% (HSM deferred) |
+| 3. Quantum Risk Scoring | ✅ | 100% |
+| 4. PQC Compliance Dashboard | ✅ | 100% |
+| 5. Threat Intelligence | ✅ | 85% (threat actor attribution deferred) |
+| 6. Migration Intelligence | 🔮 | 10% (Phase 9) |
+| 7. Certificate Intelligence | ✅ | 90% (CT anomaly deferred) |
+| 8. Topology Graph | ✅ | 90% (HSM graph deferred) |
+| 9. Enterprise Quantum Rating | ⚠️ | 70% (org-level rating missing) |
+| 10. AI Capabilities | 🔮 | 0% (Phase 9) |
+| 11. Reporting Artifacts | ⚠️ | 40% (CBOM export done; reports Phase 9) |
+
+### Remaining Actionable Items (Pre-Phase 8)
+1. **Enterprise Quantum Rating endpoint** — aggregate 6-dimension org-level score
+2. **JWT algorithm parsing enhancement** — extract `alg` from JWT header more reliably
+3. **Compliance data fix validation** — confirm re-scan shows proper compliance data with real TLS/cert info

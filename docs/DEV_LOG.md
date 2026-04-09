@@ -386,3 +386,148 @@
 | test_risk_score.py | 13 | ✅ ALL PASS | 15.14s |
 | **Total** | **44** | **✅ ALL PASS** | |
 
+---
+
+## Phase 7 — REST API Layer
+
+### P7.0 — Pre-Phase 7 Fixes
+- **Date**: 2026-04-09 20:45
+- **Status**: ✅ COMPLETE
+- **Issues Found**:
+  1. **Compliance service used empty dicts**: `orchestrator.py` called `evaluate_compliance(asset_id, {}, {})` — no real CBOM/TLS data passed
+  2. **Compliance results never persisted to DB**: Orchestrator ran compliance but never saved `ComplianceResult` rows
+  3. **Missing India-specific regulatory checks**: No RBI, SEBI, PCI DSS, NPCI compliance fields
+  4. **ScanJob summary stats not updated**: `total_assets`, `total_certificates`, `total_vulnerable` always 0
+- **Fixes Applied**:
+  - Rewrote `compliance.py` with 14 checks: FIPS 203/204/205, TLS 1.3, Forward Secrecy, Hybrid KEM, Classical Deprecated, Cert Key Adequate, CT Logged, Chain Valid, RBI IT Framework, SEBI CSCRF, PCI DSS 4.0, NPCI UPI mTLS
+  - Added `save_compliance_result()` function for DB persistence
+  - Updated `ComplianceResult` model: added `hybrid_mode_active`, `classical_deprecated`, `rbi_compliant`, `sebi_compliant`, `pci_compliant`, `npci_compliant`, `compliance_pct`, `checks_json`
+  - Fixed orchestrator to pass real `fp["tls"]` and `fp["certificates"]` data to compliance
+  - Added ScanJob summary stat updates on completion
+- **Test**: Standalone compliance test → 57% compliance for classical RSA-2048/TLSv1.2 config (correct: fails PQC checks, passes RBI/PCI/SEBI)
+
+### P7.1 — FastAPI App Foundation
+- **Date**: 2026-04-09 21:00
+- **Status**: ✅ COMPLETE
+- **Created**: `backend/app/main.py`
+- **Features**:
+  - Lifespan handler (DB init on startup)
+  - CORS middleware for Next.js frontend dev server
+  - Exception handlers: QuShieldError (400), ScanError (422), generic (500)
+  - Health check endpoint: `/health` → `{"status": "ok", "db": "connected", "version": "0.1.0"}`
+  - Swagger UI at `/docs`, ReDoc at `/redoc`
+- **Verify**: `curl http://localhost:8000/health` → ✅ OK
+
+### P7.2 — Scan API Router
+- **Date**: 2026-04-09 21:05
+- **Status**: ✅ COMPLETE
+- **File**: `backend/app/api/v1/scans.py`
+- **Endpoints**:
+  - `POST /api/v1/scans/` — Start scan (background thread)
+  - `GET /api/v1/scans/{scan_id}` — Poll status
+  - `GET /api/v1/scans/` — List all scans (paginated, filterable by status)
+  - `GET /api/v1/scans/{scan_id}/summary` — Full results with risk breakdown + compliance summary
+
+### P7.3 — Assets API Router
+- **Date**: 2026-04-09 21:10
+- **Status**: ✅ COMPLETE
+- **File**: `backend/app/api/v1/assets.py`
+- **Endpoints**:
+  - `GET /api/v1/assets/` — Paginated, filterable (scan_id, risk_class, asset_type, is_shadow, is_third_party, q), sortable
+  - `GET /api/v1/assets/search?q=` — Full-text search across hostname, IP, type
+  - `GET /api/v1/assets/shadow` — Shadow IT assets list
+  - `GET /api/v1/assets/third-party` — Third-party vendor endpoints
+  - `GET /api/v1/assets/{asset_id}` — Full detail with ports, certs, risk, compliance
+
+### P7.4 — CBOM API Router
+- **Date**: 2026-04-09 21:12
+- **Status**: ✅ COMPLETE
+- **File**: `backend/app/api/v1/cbom.py`
+- **Endpoints**:
+  - `GET /api/v1/cbom/scan/{scan_id}` — List CBOMs for scan
+  - `GET /api/v1/cbom/asset/{asset_id}` — CBOM with components
+  - `GET /api/v1/cbom/asset/{asset_id}/export` — CycloneDX JSON download
+  - `GET /api/v1/cbom/scan/{scan_id}/aggregate` — Aggregate stats (algo/type/NIST dist)
+  - `GET /api/v1/cbom/scan/{scan_id}/algorithms` — Algorithm frequency distribution
+
+### P7.5 — Risk API Router
+- **Date**: 2026-04-09 21:14
+- **Status**: ✅ COMPLETE
+- **File**: `backend/app/api/v1/risk.py`
+- **Endpoints**:
+  - `GET /api/v1/risk/scan/{scan_id}` — All risk scores (filterable, sortable)
+  - `GET /api/v1/risk/scan/{scan_id}/heatmap` — Risk heatmap with classification distribution
+  - `GET /api/v1/risk/asset/{asset_id}` — Detailed risk breakdown with Mosca + factors
+  - `GET /api/v1/risk/scan/{scan_id}/hndl` — HNDL exposure (exposed vs safe)
+  - `POST /api/v1/risk/mosca/simulate` — Mosca inequality simulator
+
+### P7.6 — Compliance & Topology API Routers
+- **Date**: 2026-04-09 21:16
+- **Status**: ✅ COMPLETE
+- **Files**: `backend/app/api/v1/compliance.py`, `backend/app/api/v1/topology.py`
+- **Compliance Endpoints**:
+  - `GET /api/v1/compliance/scan/{scan_id}` — All results
+  - `GET /api/v1/compliance/scan/{scan_id}/fips-matrix` — FIPS 203/204/205 deployment matrix
+  - `GET /api/v1/compliance/scan/{scan_id}/regulatory` — India-specific (RBI/SEBI/PCI/NPCI)
+  - `GET /api/v1/compliance/scan/{scan_id}/agility` — Crypto-agility score distribution
+  - `GET /api/v1/compliance/asset/{asset_id}` — Detailed checks for one asset
+  - `GET /api/v1/compliance/deadlines` — Regulatory deadline reference data
+- **Topology Endpoints**:
+  - `GET /api/v1/topology/scan/{scan_id}` — Full graph (nodes + edges)
+  - `GET /api/v1/topology/scan/{scan_id}/blast-radius?cert_fingerprint=` — Cert blast radius
+  - `GET /api/v1/topology/scan/{scan_id}/stats` — Node/edge type distributions
+
+### P7.7 — API Integration Tests
+- **Date**: 2026-04-09 21:20
+- **Status**: ✅ COMPLETE
+- **File**: `backend/tests/integration/test_api.py`
+- **Results** (non-network): 23/23 PASS, 6 skipped (network), 2.70s
+- **Test Classes**: TestHealthAndDocs, TestScanAPI, TestAssetAPI, TestCBOMAPI, TestRiskAPI, TestComplianceAPI, TestTopologyAPI, TestFullScanE2E
+
+### P7 — First E2E Scan via API (pnb.bank.in)
+- **Date**: 2026-04-09 21:14
+- **Status**: ✅ COMPLETE
+- **Command**: `curl -X POST http://localhost:8000/api/v1/scans/ -d '{"targets":["pnb.bank.in"]}'`
+- **Results**:
+  - 96 assets discovered, 4 certificates, 92 quantum-vulnerable
+  - Risk: avg 763/1000, 91 vulnerable + 1 critical + 4 at-risk
+  - Compliance: 0% FIPS, 0% RBI, 2.1% SEBI, 0% PCI, 100% NPCI
+  - Agility: avg 44/100 (range 30-50)
+  - Topology: 182 nodes (96 domains, 78 IPs, 4 certs, 4 issuers), 104 edges
+  - Shadow assets: 1 (digigoldloan.pnb.bank.in)
+  - Third-party: 2 (npciservices.pnb.bank.in, upi.pnb.bank.in)
+- **Note**: Compliance data was empty (all false) due to orchestrator bug — fixed, re-running
+
+### API Route Summary
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Health check |
+| POST | `/api/v1/scans/` | Start scan |
+| GET | `/api/v1/scans/{id}` | Scan status |
+| GET | `/api/v1/scans/` | List scans |
+| GET | `/api/v1/scans/{id}/summary` | Scan summary |
+| GET | `/api/v1/assets/` | List assets |
+| GET | `/api/v1/assets/search` | Search assets |
+| GET | `/api/v1/assets/shadow` | Shadow assets |
+| GET | `/api/v1/assets/third-party` | Third-party assets |
+| GET | `/api/v1/assets/{id}` | Asset detail |
+| GET | `/api/v1/cbom/scan/{id}` | CBOMs for scan |
+| GET | `/api/v1/cbom/asset/{id}` | CBOM for asset |
+| GET | `/api/v1/cbom/asset/{id}/export` | CycloneDX export |
+| GET | `/api/v1/cbom/scan/{id}/aggregate` | Aggregate CBOM |
+| GET | `/api/v1/cbom/scan/{id}/algorithms` | Algorithm distribution |
+| GET | `/api/v1/risk/scan/{id}` | Risk scores |
+| GET | `/api/v1/risk/scan/{id}/heatmap` | Risk heatmap |
+| GET | `/api/v1/risk/asset/{id}` | Risk detail |
+| GET | `/api/v1/risk/scan/{id}/hndl` | HNDL exposure |
+| POST | `/api/v1/risk/mosca/simulate` | Mosca simulator |
+| GET | `/api/v1/compliance/scan/{id}` | Compliance results |
+| GET | `/api/v1/compliance/scan/{id}/fips-matrix` | FIPS matrix |
+| GET | `/api/v1/compliance/scan/{id}/regulatory` | Regulatory compliance |
+| GET | `/api/v1/compliance/scan/{id}/agility` | Agility distribution |
+| GET | `/api/v1/compliance/asset/{id}` | Asset compliance |
+| GET | `/api/v1/compliance/deadlines` | Regulatory deadlines |
+| GET | `/api/v1/topology/scan/{id}` | Topology graph |
+| GET | `/api/v1/topology/scan/{id}/blast-radius` | Blast radius |
+| GET | `/api/v1/topology/scan/{id}/stats` | Topology stats |
+

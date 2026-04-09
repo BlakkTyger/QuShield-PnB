@@ -16,10 +16,12 @@ import (
 
 	"qushield/discovery/internal/config"
 	"qushield/discovery/internal/logger"
+	"qushield/discovery/pkg/asnlookup"
 	"qushield/discovery/pkg/dedup"
 	"qushield/discovery/pkg/httpprobe"
 	"qushield/discovery/pkg/portscan"
 	"qushield/discovery/pkg/subdomain"
+	"qushield/discovery/pkg/tls_scan"
 )
 
 func main() {
@@ -182,8 +184,49 @@ func main() {
 	})
 	fmt.Fprintf(os.Stderr, "    Found %d live HTTP hosts (%.1fs)\n", len(httpResults), time.Since(phaseStart).Seconds())
 
+	// ─── Phase 5: TLS Scanning ──────────────────────────────────────────
+	fmt.Fprintf(os.Stderr, "[5/6] TLS Handshake scanning...\n")
+	phaseStart = time.Now()
+
+	tlsResults := tls_scan.Probe(resolvedHosts, 20, 10*time.Second)
+	tlsByHost := make(map[string]*dedup.TLSInfo)
+	for i := range tlsResults {
+		tlsByHost[tlsResults[i].Host] = tlsResults[i].Info
+	}
+	for i := range allAssets {
+		if ti, ok := tlsByHost[allAssets[i].Hostname]; ok {
+			allAssets[i].TLS = ti
+			if ti.Error == "" {
+				allAssets[i].DiscoveryMethods = append(allAssets[i].DiscoveryMethods, "tls")
+			}
+		}
+	}
+	log.Info("TLSScan", fmt.Sprintf("Completed %d TLS handshakes", len(tlsResults)), map[string]interface{}{
+		"duration_ms": time.Since(phaseStart).Milliseconds(),
+	})
+	fmt.Fprintf(os.Stderr, "    Completed TLS handshakes (%.1fs)\n", time.Since(phaseStart).Seconds())
+
+	// ─── Phase 6: ASN Lookup ────────────────────────────────────────────
+	fmt.Fprintf(os.Stderr, "[6/6] ASN Lookups...\n")
+	phaseStart = time.Now()
+
+	asnResults := asnlookup.Lookup(ips, 50)
+	asnByIP := make(map[string]*dedup.ASNInfo)
+	for i := range asnResults {
+		asnByIP[asnResults[i].IP] = asnResults[i].Info
+	}
+	for i := range allAssets {
+		if ai, ok := asnByIP[allAssets[i].IPv4]; ok {
+			allAssets[i].ASN = ai
+		}
+	}
+	log.Info("ASNLookup", fmt.Sprintf("Found ASN info for %d IPs", len(asnResults)), map[string]interface{}{
+		"duration_ms": time.Since(phaseStart).Milliseconds(),
+	})
+	fmt.Fprintf(os.Stderr, "    Found ASN details for %d IPs (%.1fs)\n", len(asnResults), time.Since(phaseStart).Seconds())
+
 	// ─── Deduplication ──────────────────────────────────────────────────
-	totalMethods := 3 // dns, portscan, httpx
+	totalMethods := 4 // dns, portscan, httpx, tls
 	dedupedAssets := dedup.Deduplicate(allAssets, totalMethods)
 
 	result.Assets = dedupedAssets
