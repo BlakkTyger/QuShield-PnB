@@ -1,0 +1,15 @@
+{
+  "ML-DSA-44": {"oid": "2.16.840.1.101.3.4.3.17", "nist_level": 2, "type": "signature"},
+  "ML-DSA-65": {"oid": "2.16.840.1.101.3.4.3.18", "nist_level": 3, "type": "signature"},
+  "ML-DSA-87": {"oid": "2.16.840.1.101.3.4.3.19", "nist_level": 5, "type": "signature"},
+  "SLH-DSA-SHA2-128s": {"oid": "2.16.840.1.101.3.4.3.20", "nist_level": 1, "type": "signature"},
+  "SLH-DSA-SHA2-128f": {"oid": "2.16.840.1.101.3.4.3.21", "nist_level": 1, "type": "signature"},
+  "SLH-DSA-SHA2-192s": {"oid": "2.16.840.1.101.3.4.3.22", "nist_level": 3, "type": "signature"},
+  "SLH-DSA-SHA2-192f": {"oid": "2.16.840.1.101.3.4.3.23", "nist_level": 3, "type": "signature"},
+  "SLH-DSA-SHA2-256s": {"oid": "2.16.840.1.101.3.4.3.24", "nist_level": 5, "type": "signature"},
+  "SLH-DSA-SHA2-256f": {"oid": "2.16.840.1.101.3.4.3.27", "nist_level": 5, "type": "signature"},
+  "SLH-DSA-SHAKE-128s": {"oid": "2.16.840.1.101.3.4.3.28", "nist_level": 1, "type": "signature"},
+  "SLH-DSA-SHAKE-128f": {"oid": "2.16.840.1.101.3.4.3.29", "nist_level": 1, "type": "signature"},
+  "SLH-DSA-SHAKE-256s": {"oid": "2.16.840.1.101.3.4.3.32", "nist_level": 5, "type": "signature"},
+  "SLH-DSA-SHAKE-256f": {"oid": "2.16.840.1.101.3.4.3.33", "nist_level": 5, "type": "signature"}
+}

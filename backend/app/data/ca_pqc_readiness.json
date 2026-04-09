@@ -1,0 +1,83 @@
+{
+  "DigiCert": {
+    "name": "DigiCert Inc.",
+    "pqc_roadmap_published": true,
+    "pqc_hybrid_certs_available": true,
+    "pqc_target_date": "2025-Q2",
+    "pqc_algorithms_supported": ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87"],
+    "hybrid_mode_available": true,
+    "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+  },
+  "GlobalSign": {
+    "name": "GlobalSign nv-sa",
+    "pqc_roadmap_published": true,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "2025-H2",
+    "pqc_algorithms_supported": ["ML-DSA-44"],
+    "hybrid_mode_available": false,
+    "notes": "GlobalSign has published PQC readiness roadmap."
+  },
+  "Let's Encrypt": {
+    "name": "Internet Security Research Group (ISRG)",
+    "pqc_roadmap_published": true,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "2026-H1",
+    "pqc_algorithms_supported": [],
+    "hybrid_mode_available": false,
+    "notes": "ISRG committed to PQC but no production timeline yet."
+  },
+  "Sectigo": {
+    "name": "Sectigo Ltd.",
+    "pqc_roadmap_published": true,
+    "pqc_hybrid_certs_available": true,
+    "pqc_target_date": "2025-Q1",
+    "pqc_algorithms_supported": ["ML-DSA-44", "ML-DSA-65"],
+    "hybrid_mode_available": true,
+    "notes": "Sectigo offers PQC hybrid certificates."
+  },
+  "Entrust": {
+    "name": "Entrust Corporation",
+    "pqc_roadmap_published": true,
+    "pqc_hybrid_certs_available": true,
+    "pqc_target_date": "2025-Q2",
+    "pqc_algorithms_supported": ["ML-DSA-44", "ML-DSA-65", "SLH-DSA-SHA2-128s"],
+    "hybrid_mode_available": true,
+    "notes": "Entrust PKI supports PQC hybrid issuance."
+  },
+  "NIC India (NICCA)": {
+    "name": "National Informatics Centre",
+    "pqc_roadmap_published": false,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "Unknown",
+    "pqc_algorithms_supported": [],
+    "hybrid_mode_available": false,
+    "notes": "India government CA. No PQC roadmap published."
+  },
+  "(n)Code Solutions (IDRBT)": {
+    "name": "(n)Code Solutions - IDRBT",
+    "pqc_roadmap_published": false,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "Unknown",
+    "pqc_algorithms_supported": [],
+    "hybrid_mode_available": false,
+    "notes": "India banking CA under IDRBT."
+  },
+  "CDAC India": {
+    "name": "Centre for Development of Advanced Computing",
+    "pqc_roadmap_published": false,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "Unknown",
+    "pqc_algorithms_supported": [],
+    "hybrid_mode_available": false,
+    "notes": "Indian government IT organization."
+  },
+  "Unknown": {
+    "name": "Unknown / Generic CA",
+    "pqc_roadmap_published": false,
+    "pqc_hybrid_certs_available": false,
+    "pqc_target_date": "Unknown",
+    "pqc_algorithms_supported": [],
+    "hybrid_mode_available": false,
+    "notes": "Default entry for unrecognized CAs."
+  }
+}

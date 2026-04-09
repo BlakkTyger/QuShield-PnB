@@ -1,0 +1,102 @@
+[
+  {
+    "id": "rbi_it_framework",
+    "name": "RBI IT Framework - Cryptographic Governance",
+    "jurisdiction": "India",
+    "authority": "Reserve Bank of India",
+    "requirement": "Banks must maintain crypto inventory and PQC migration plan",
+    "deadline": "2026-12-31",
+    "enforcement_status": "Active — ongoing compliance",
+    "relevance_to_pqc": "Requires documentation of cryptographic controls. PQC migration must be documented."
+  },
+  {
+    "id": "rbi_cyber_security",
+    "name": "RBI Cyber Security Framework",
+    "jurisdiction": "India",
+    "authority": "Reserve Bank of India",
+    "requirement": "Vendor crypto risk assessment, incident reporting, continuous monitoring",
+    "deadline": null,
+    "enforcement_status": "Active",
+    "relevance_to_pqc": "Banks must assess cryptographic risks from vendors and third parties."
+  },
+  {
+    "id": "sebi_cscrf",
+    "name": "SEBI CSCRF - Crypto Inventory",
+    "jurisdiction": "India",
+    "authority": "Securities and Exchange Board of India",
+    "requirement": "Market intermediaries must inventory cryptographic dependencies (CBOM)",
+    "deadline": "2026-06-30",
+    "enforcement_status": "Deadline approaching",
+    "relevance_to_pqc": "CBOM generation is directly relevant. First regulatory push for crypto inventory in India."
+  },
+  {
+    "id": "npci_upi_security",
+    "name": "NPCI UPI - mTLS Requirement",
+    "jurisdiction": "India",
+    "authority": "National Payments Corporation of India",
+    "requirement": "UPI API endpoints must enforce mutual TLS authentication",
+    "deadline": "2026-03-31",
+    "enforcement_status": "Active — mandatory for UPI participants",
+    "relevance_to_pqc": "mTLS certificates on UPI rail are quantum-vulnerable. Must track PQC migration for UPI endpoints."
+  },
+  {
+    "id": "swift_csp",
+    "name": "SWIFT Customer Security Programme (CSP)",
+    "jurisdiction": "Global",
+    "authority": "SWIFT",
+    "requirement": "PQC readiness acknowledgement, secure messaging, key management",
+    "deadline": "2027-12-31",
+    "enforcement_status": "Annual self-attestation required",
+    "relevance_to_pqc": "SWIFT has acknowledged quantum risk. CSP v2027 expected to mandate PQC readiness assessment."
+  },
+  {
+    "id": "pci_dss_4",
+    "name": "PCI DSS 4.0 - TLS Minimum Version",
+    "jurisdiction": "Global",
+    "authority": "PCI Security Standards Council",
+    "requirement": "Payment processing must enforce TLS 1.2+ with strong ciphers",
+    "deadline": "2025-03-31",
+    "enforcement_status": "v4.0 mandatory since March 2025",
+    "relevance_to_pqc": "TLS 1.2+ with forward secrecy mandated. Future PCI versions expected to address PQC."
+  },
+  {
+    "id": "it_act_dpdp",
+    "name": "IT Act 2000 / DPDP Act 2023",
+    "jurisdiction": "India",
+    "authority": "Government of India / MEITY",
+    "requirement": "Data protection via strong cryptography, breach notification",
+    "deadline": null,
+    "enforcement_status": "DPDP Act rules being finalized",
+    "relevance_to_pqc": "DPDP Act mandates reasonable security practices. Quantum-vulnerable encryption may not qualify."
+  },
+  {
+    "id": "cert_in",
+    "name": "CERT-In Vulnerability Disclosure",
+    "jurisdiction": "India",
+    "authority": "CERT-In",
+    "requirement": "Report cryptographic vulnerabilities within 6 hours",
+    "deadline": "2025-12-31",
+    "enforcement_status": "Active",
+    "relevance_to_pqc": "Crypto vulnerabilities require rapid disclosure."
+  },
+  {
+    "id": "nist_pqc",
+    "name": "NIST PQC Standards (FIPS 203/204/205)",
+    "jurisdiction": "Global reference",
+    "authority": "NIST",
+    "requirement": "Finalized ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205). Federal mandate by 2035.",
+    "deadline": "2035-12-31",
+    "enforcement_status": "Standards finalized Aug 2024. Phased transition.",
+    "relevance_to_pqc": "Reference standards for PQC algorithm deployment worldwide."
+  },
+  {
+    "id": "cnsa_2_0",
+    "name": "NSA CNSA 2.0 Suite",
+    "jurisdiction": "Global reference",
+    "authority": "NSA",
+    "requirement": "Transition to PQC by 2030 for NSS systems, 2033 for software/firmware signing",
+    "deadline": "2033-12-31",
+    "enforcement_status": "Guidance published, phased transition timeline",
+    "relevance_to_pqc": "US government timeline creates market pressure for all financial sector PQC adoption."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "swift_endpoint": {"shelf_life_years": 10, "description": "SWIFT messages, regulatory retention"},
+  "core_banking_api": {"shelf_life_years": 20, "description": "Account data, lifelong confidentiality"},
+  "internet_banking": {"shelf_life_years": 5, "description": "Session data, relatively short-lived"},
+  "upi_gateway": {"shelf_life_years": 3, "description": "Transaction data, moderate shelf life"},
+  "otp_2fa": {"shelf_life_years": 0.01, "description": "Ephemeral authentication tokens (~4 days)"},
+  "mobile_banking": {"shelf_life_years": 7, "description": "Mix of session + PII data"},
+  "web_server": {"shelf_life_years": 5, "description": "General web server, default shelf life"},
+  "api": {"shelf_life_years": 7, "description": "API endpoint, moderate data sensitivity"},
+  "mail_server": {"shelf_life_years": 10, "description": "Email communications, long retention"},
+  "dns": {"shelf_life_years": 1, "description": "DNS infrastructure, low data sensitivity"},
+  "unknown": {"shelf_life_years": 5, "description": "Default for unclassified assets"}
+}

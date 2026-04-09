@@ -1,3 +1,11 @@
+# === QuShield-PnB Project Specific ===
+logs/
+/data/
+*.mmdb
+discovery/bin/
+node_modules/
+frontend/.next/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -215,10 +223,3 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# === QuShield-PnB Project Specific ===
-logs/
-data/
-*.mmdb
-discovery/bin/
-node_modules/
-frontend/.next/
