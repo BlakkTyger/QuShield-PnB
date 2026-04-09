@@ -104,7 +104,7 @@ cd backend && python -m pytest tests/integration/test_api.py -v
 ### P8.2 — Design System & Layout
 - [ ] Create shared layout: dark theme, sidebar navigation, header with org name
 - [ ] Sidebar nav items: Quick Scan, Dashboard, Assets, CBOM Explorer, Risk, Compliance, Topology
-- [ ] Color palette: dark background (#0a0a0f), glassmorphism cards, neon accent (quantum teal #00e5ff)
+- [ ] Color palette: Deep dark background (#0a0a0f) featuring glassmorphism cards, accented with Royal Gold (#FBBC09) and Reddish Magenta (#A20E37) for a premium, high-contrast aesthetic
 - [ ] Typography: Inter font from Google Fonts
 - [ ] Component library: Card, Badge, ProgressBar, DataTable, ScoreGauge, StatusPill
 
