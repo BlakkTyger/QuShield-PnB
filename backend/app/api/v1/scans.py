@@ -40,7 +40,7 @@ def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Opti
         ScanCache.expires_at > datetime.now(timezone.utc)
     ).order_by(ScanCache.cached_at.desc()).all()
 
-@router.post("/", response_model=ScanResponse, status_code=201)
+@router.post("", response_model=ScanResponse, status_code=201)
 async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     for cache in caches:
         scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
@@ -238,7 +238,7 @@ async def stream_scan_events(
     )
 
 
-@router.get("/", response_model=list[ScanStatus])
+@router.get("", response_model=list[ScanStatus])
 def list_scans(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),

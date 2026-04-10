@@ -17,7 +17,7 @@ from app.models.compliance import ComplianceResult
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 def list_assets(
     scan_id: Optional[UUID] = Query(None, description="Filter by scan ID"),
     risk_class: Optional[str] = Query(None, description="Filter by risk classification"),
