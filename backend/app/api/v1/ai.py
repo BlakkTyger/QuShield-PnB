@@ -101,7 +101,7 @@ def refresh_embeddings(background_tasks: BackgroundTasks, current_user: User = D
                 
             risks = local_db.query(RiskScore).filter(
                 RiskScore.scan_id.in_(scan_ids),
-                RiskScore.risk_classification.in_(["critical", "high"])
+                RiskScore.risk_classification.in_(["quantum_critical", "quantum_vulnerable"])
             ).all()
 
             texts = []
@@ -109,7 +109,7 @@ def refresh_embeddings(background_tasks: BackgroundTasks, current_user: User = D
             ids = []
 
             for r in risks:
-                texts.append(f"Asset ID {r.asset_id} has a {r.risk_classification} quantum risk. Base Score: {r.base_score}. Recommendation: {r.mitigation_recommendation}")
+                texts.append(f"Asset ID {r.asset_id} has {r.risk_classification} quantum risk. Score: {r.quantum_risk_score}/1000. HNDL exposed: {r.hndl_exposed}.")
                 # Note: vector_store forcefully injects user_id into this dict
                 metadatas.append({"source": f"risk_score_{r.asset_id}", "scan_id": str(r.scan_id)})
                 ids.append(f"risk_{r.asset_id}")

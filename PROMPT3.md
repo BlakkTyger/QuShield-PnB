@@ -35,11 +35,11 @@ Phase 9 is a verification-only phase. No new features are built; we close the la
 ## Track 1: Authentication & Security (Module: Auth)
 
 ### 1.1 — User Registration & Login
-- [ ] **1.1.1** — `POST /api/v1/auth/register` — create user, verify 200 + user ID returned
-- [ ] **1.1.2** — `POST /api/v1/auth/login` — verify JWT access_token + refresh_token returned
-- [ ] **1.1.3** — `GET /api/v1/auth/me` — verify user profile with valid Bearer token
-- [ ] **1.1.4** — Reject login with wrong password (401)
-- [ ] **1.1.5** — Reject protected endpoints without Bearer (401)
+- [x] **1.1.1** — `POST /api/v1/auth/register` — create user, verify 200 + user ID returned
+- [x] **1.1.2** — `POST /api/v1/auth/login` — verify JWT access_token + refresh_token returned
+- [x] **1.1.3** — `GET /api/v1/auth/me` — verify user profile with valid Bearer token
+- [x] **1.1.4** — Reject login with wrong password (401)
+- [x] **1.1.5** — Reject protected endpoints without Bearer (401)
 
 ### 1.2 — Tenant Isolation
 - [ ] **1.2.1** — Create User A and User B
@@ -48,37 +48,37 @@ Phase 9 is a verification-only phase. No new features are built; we close the la
 - [ ] **1.2.4** — `GET /api/v1/scans/` (list) only returns current user's scans
 
 ### 1.3 — AI Settings Management
-- [ ] **1.3.1** — `PATCH /api/v1/ai/settings` — change `deployment_mode` to `cloud`
-- [ ] **1.3.2** — `GET /api/v1/ai/models` — verify model list changes with tier
-- [ ] **1.3.3** — `GET /api/v1/ai/status` — verify deployment mode + tier reported
+- [x] **1.3.1** — `PATCH /api/v1/ai/settings` — change `deployment_mode` to `cloud`
+- [x] **1.3.2** — `GET /api/v1/ai/models` — verify model list changes with tier
+- [x] **1.3.3** — `GET /api/v1/ai/status` — verify deployment mode + tier reported
 
 ---
 
 ## Track 2: External Attack Surface Discovery (Module 1)
 
 ### 2.1 — Deep Scan Discovery (pnb.bank.in)
-- [ ] **2.1.1** — `POST /api/v1/scans/` with `{"targets": ["pnb.bank.in"]}` — returns scan_id
-- [ ] **2.1.2** — Scan enters "running" status → poll `GET /api/v1/scans/{id}` until "completed"
-- [ ] **2.1.3** — Verify `total_assets > 0` in scan summary
-- [ ] **2.1.4** — Verify at least 5 unique subdomains discovered
-- [ ] **2.1.5** — Verify IP resolution (ip_v4 populated) for discovered assets
+- [x] **2.1.1** — `POST /api/v1/scans/` with `{"targets": ["pnb.bank.in"]}` — returns scan_id
+- [x] **2.1.2** — Scan enters "running" status → poll `GET /api/v1/scans/{id}` until "completed"
+- [x] **2.1.3** — Verify `total_assets > 0` in scan summary
+- [x] **2.1.4** — Verify at least 5 unique subdomains discovered
+- [x] **2.1.5** — Verify IP resolution (ip_v4 populated) for discovered assets
 
 ### 2.2 — Asset Classification & Shadow Detection
-- [ ] **2.2.1** — `GET /api/v1/assets/?scan_id={id}` — paginated list
-- [ ] **2.2.2** — Verify `asset_type` is set (web_server/api/mail_server/etc.)
-- [ ] **2.2.3** — Verify `is_shadow` flag is populated (some true, most false)
-- [ ] **2.2.4** — Verify `is_third_party` flag is populated
-- [ ] **2.2.5** — Verify `hosting_provider` and `cdn_detected` fields populated
-- [ ] **2.2.6** — `GET /api/v1/assets/{id}` — single asset detail with ports, certs, risk
+- [x] **2.2.1** — `GET /api/v1/assets/?scan_id={id}` — paginated list
+- [x] **2.2.2** — Verify `asset_type` is set (web_server/api/mail_server/etc.)
+- [x] **2.2.3** — Verify `is_shadow` flag is populated (some true, most false)
+- [x] **2.2.4** — Verify `is_third_party` flag is populated
+- [x] **2.2.5** — Verify `hosting_provider` and `cdn_detected` fields populated
+- [x] **2.2.6** — `GET /api/v1/assets/{id}` — single asset detail with ports, certs, risk
 
 ### 2.3 — Quick Scan
-- [ ] **2.3.1** — `POST /api/v1/scans/quick` with `{"domain": "pnb.bank.in"}` — returns <8s
-- [ ] **2.3.2** — Verify TLS version, cipher, cert info, risk score in response
-- [ ] **2.3.3** — Verify NIST quantum level assignment
+- [x] **2.3.1** — `POST /api/v1/scans/quick` with `{"domain": "pnb.bank.in"}` — returns <8s
+- [x] **2.3.2** — Verify TLS version, cipher, cert info, risk score in response
+- [x] **2.3.3** — Verify NIST quantum level assignment
 
 ### 2.4 — Shallow Scan
-- [ ] **2.4.1** — `POST /api/v1/scans/shallow` with `{"domain": "pnb.bank.in"}` — returns <90s
-- [ ] **2.4.2** — Verify discovered subdomains (>1)
+- [x] **2.4.1** — `POST /api/v1/scans/shallow` with `{"domain": "pnb.bank.in"}` — returns <90s
+- [x] **2.4.2** — Verify discovered subdomains (>1)
 - [ ] **2.4.3** — Verify TLS data for top-N subdomains
 
 ---
@@ -92,24 +92,24 @@ Phase 9 is a verification-only phase. No new features are built; we close the la
 - [ ] **3.1.4** — Verify `key_exchange` algorithm extracted (ECDHE/DHE/RSA)
 
 ### 3.2 — Certificate Chain Parsing
-- [ ] **3.2.1** — `GET /api/v1/assets/{id}` — certificates array populated
-- [ ] **3.2.2** — Verify leaf cert: subject, issuer, not_after, key_type, key_length
+- [x] **3.2.1** — `GET /api/v1/assets/{id}` — certificates array populated
+- [x] **3.2.2** — Verify leaf cert: subject, issuer, not_after, key_type, key_length
 - [ ] **3.2.3** — Verify chain depth ≥ 1 (leaf + intermediate)
-- [ ] **3.2.4** — Verify `signature_algorithm` extracted (e.g., RSA-SHA256)
+- [x] **3.2.4** — Verify `signature_algorithm` extracted (e.g., RSA-SHA256)
 
 ### 3.3 — NIST Quantum Level Assignment
-- [ ] **3.3.1** — RSA-2048 → NIST Level 0 (quantum_vulnerable=true)
-- [ ] **3.3.2** — ECDHE-RSA → NIST Level 0 (quantum_vulnerable=true)
-- [ ] **3.3.3** — AES-256-GCM → NIST Level 5 (quantum_vulnerable=false)
-- [ ] **3.3.4** — ML-KEM-768 → NIST Level 3 (quantum_vulnerable=false)
-- [ ] **3.3.5** — FN-DSA-512 → NIST Level 1 (status=pqc_draft)
-- [ ] **3.3.6** — HQC-128 → NIST Level 1 (status=pqc_draft)
-- [ ] **3.3.7** — X25519MLKEM768 → NIST Level 3 (status=hybrid)
+- [x] **3.3.1** — RSA-2048 → NIST Level 0 (quantum_vulnerable=true)
+- [x] **3.3.2** — ECDHE-RSA → NIST Level 0 (quantum_vulnerable=true)
+- [x] **3.3.3** — AES-256-GCM → NIST Level 5 (quantum_vulnerable=false)
+- [x] **3.3.4** — ML-KEM-768 → NIST Level 3 (quantum_vulnerable=false)
+- [x] **3.3.5** — FN-DSA-512 → NIST Level 1 (status=pqc_draft)
+- [x] **3.3.6** — HQC-128 → NIST Level 1 (status=pqc_draft)
+- [x] **3.3.7** — X25519MLKEM768 → NIST Level 3 (status=hybrid)
 
 ### 3.4 — PQC Detection
-- [ ] **3.4.1** — Run `detect_pqc("pnb.bank.in")` — expect `pqc_key_exchange=False` (classical bank)
-- [ ] **3.4.2** — Verify 4-layer detection: OID check → cipher name → shared ciphers → hybrid groups
-- [ ] **3.4.3** — Verify hybrid group decomposition returns classical/PQC components
+- [x] **3.4.1** — Run `detect_pqc("pnb.bank.in")` — expect `pqc_key_exchange=False` (classical bank)
+- [x] **3.4.2** — Verify 4-layer detection: OID check → cipher name → shared ciphers → hybrid groups
+- [x] **3.4.3** — Verify hybrid group decomposition returns classical/PQC components
 
 ### 3.5 — JWT Algorithm Deep Parsing
 - [ ] **3.5.1** — Verify `parse_jwt_algorithm()` extracts `alg` from token header
@@ -117,8 +117,8 @@ Phase 9 is a verification-only phase. No new features are built; we close the la
 - [ ] **3.5.3** — Verify `jwt_algorithm` field populated on assets where JWT detected
 
 ### 3.6 — Cipher Suite Decomposition
-- [ ] **3.6.1** — `decompose_cipher_suite("TLS_AES_256_GCM_SHA384")` returns kex, auth, enc, mac
-- [ ] **3.6.2** — `decompose_cipher_suite("ECDHE-RSA-AES128-GCM-SHA256")` returns components
+- [x] **3.6.1** — `decompose_cipher_suite("TLS_AES_256_GCM_SHA384")` returns kex, auth, enc, mac
+- [x] **3.6.2** — `decompose_cipher_suite("ECDHE-RSA-AES128-GCM-SHA256")` returns components
 - [ ] **3.6.3** — CBOM components include `decomposition` metadata field
 
 ---
@@ -126,126 +126,126 @@ Phase 9 is a verification-only phase. No new features are built; we close the la
 ## Track 4: CBOM & CycloneDX (Module 2 + 11)
 
 ### 4.1 — Per-Asset CBOM Generation
-- [ ] **4.1.1** — `GET /api/v1/cbom/scan/{id}` — list CBOMs for scan, count > 0
-- [ ] **4.1.2** — `GET /api/v1/cbom/asset/{id}` — components array populated
-- [ ] **4.1.3** — Each component has: name, component_type, nist_quantum_level, is_quantum_vulnerable
-- [ ] **4.1.4** — `quantum_ready_pct` computed correctly per asset
+- [x] **4.1.1** — `GET /api/v1/cbom/scan/{id}` — list CBOMs for scan, count > 0
+- [x] **4.1.2** — `GET /api/v1/cbom/asset/{id}` — components array populated
+- [x] **4.1.3** — Each component has: name, component_type, nist_quantum_level, is_quantum_vulnerable
+- [x] **4.1.4** — `quantum_ready_pct` computed correctly per asset
 
 ### 4.2 — CycloneDX Export
-- [ ] **4.2.1** — `GET /api/v1/cbom/asset/{id}/export` — returns valid JSON
-- [ ] **4.2.2** — JSON has `specVersion: "1.6"`, `bomFormat: "CycloneDX"` fields
+- [x] **4.2.1** — `GET /api/v1/cbom/asset/{id}/export` — returns valid JSON
+- [x] **4.2.2** — JSON has `specVersion: "1.6"`, `bomFormat: "CycloneDX"` fields
 - [ ] **4.2.3** — JSON has `components[]` array with `nistQuantumSecurityLevel`
 
 ### 4.3 — Aggregate CBOM
-- [ ] **4.3.1** — `GET /api/v1/cbom/scan/{id}/aggregate` — enterprise CBOM
-- [ ] **4.3.2** — `GET /api/v1/cbom/scan/{id}/algorithm-distribution` — algo breakdown
+- [x] **4.3.1** — `GET /api/v1/cbom/scan/{id}/aggregate` — enterprise CBOM
+- [x] **4.3.2** — `GET /api/v1/cbom/scan/{id}/algorithms` — algo breakdown *(endpoint is `/algorithms` not `/algorithm-distribution`)*
 
 ---
 
 ## Track 5: Quantum Risk Scoring (Module 3)
 
 ### 5.1 — Mosca's Inequality
-- [ ] **5.1.1** — `POST /api/v1/risk/mosca/simulate` — verify X+Y > Z logic
-- [ ] **5.1.2** — Test: X=2, Y=5, Z(pessimistic)=3 → exposed=True
-- [ ] **5.1.3** — Test: X=0.5, Y=0.5, Z(pessimistic)=3 → exposed=False
+- [x] **5.1.1** — `POST /api/v1/risk/mosca/simulate` — verify X+Y > Z logic
+- [x] **5.1.2** — Test: X=2, Y=5, Z(pessimistic)=3 → exposed=True
+- [x] **5.1.3** — Test: X=0.5, Y=0.5, Z(pessimistic)=3 → exposed=False
 
 ### 5.2 — Per-Asset Risk Scores
-- [ ] **5.2.1** — `GET /api/v1/risk/scan/{id}` — risk scores for all assets
-- [ ] **5.2.2** — `quantum_risk_score` in 0–1000 range, no nulls
-- [ ] **5.2.3** — `risk_classification` is one of: quantum_critical, quantum_vulnerable, quantum_at_risk, quantum_aware, quantum_ready
-- [ ] **5.2.4** — `mosca_x`, `mosca_y` populated (non-null floats)
-- [ ] **5.2.5** — `hndl_exposed` boolean populated
-- [ ] **5.2.6** — `tnfl_risk` boolean populated for signature-related assets
+- [x] **5.2.1** — `GET /api/v1/risk/scan/{id}` — risk scores for all assets
+- [x] **5.2.2** — `quantum_risk_score` in 0–1000 range, no nulls
+- [x] **5.2.3** — `risk_classification` is one of: quantum_critical, quantum_vulnerable, quantum_at_risk, quantum_aware, quantum_ready
+- [x] **5.2.4** — `mosca_x`, `mosca_y` populated (non-null floats)
+- [x] **5.2.5** — `hndl_exposed` boolean populated
+- [x] **5.2.6** — `tnfl_risk` boolean populated for signature-related assets
 
 ### 5.3 — Risk Heatmap & Detail
-- [ ] **5.3.1** — `GET /api/v1/risk/scan/{id}/heatmap` — classification distribution
-- [ ] **5.3.2** — `GET /api/v1/risk/asset/{id}` — detailed factors breakdown
-- [ ] **5.3.3** — Each risk factor has name, score, weight, rationale
+- [x] **5.3.1** — `GET /api/v1/risk/scan/{id}/heatmap` — classification distribution
+- [x] **5.3.2** — `GET /api/v1/risk/asset/{id}` — detailed factors breakdown
+- [x] **5.3.3** — Each risk factor has name, score, weight, rationale
 
 ### 5.4 — HNDL Exposure
-- [ ] **5.4.1** — `GET /api/v1/risk/scan/{id}/hndl` — exposed vs safe
-- [ ] **5.4.2** — `sensitivity_multiplier` applied per asset_type
-- [ ] **5.4.3** — `weighted_exposure` computed and sorted descending
+- [x] **5.4.1** — `GET /api/v1/risk/scan/{id}/hndl` — exposed vs safe
+- [x] **5.4.2** — `sensitivity_multiplier` applied per asset_type
+- [x] **5.4.3** — `weighted_exposure` computed and sorted descending
 
 ### 5.5 — Monte Carlo Simulation
-- [ ] **5.5.1** — `POST /api/v1/risk/monte-carlo/simulate` — probability curve returned
-- [ ] **5.5.2** — `POST /api/v1/risk/monte-carlo/asset-exposure` — per-asset probability
-- [ ] **5.5.3** — `GET /api/v1/risk/scan/{id}/monte-carlo` — portfolio simulation
-- [ ] **5.5.4** — Verify percentile estimates (5%, 25%, 50%, 75%, 95%)
+- [x] **5.5.1** — `POST /api/v1/risk/monte-carlo/simulate` — probability curve returned
+- [x] **5.5.2** — `POST /api/v1/risk/monte-carlo/asset-exposure` — per-asset probability
+- [x] **5.5.3** — `GET /api/v1/risk/scan/{id}/monte-carlo` — portfolio simulation
+- [x] **5.5.4** — Verify percentile estimates (5%, 25%, 50%, 75%, 95%)
 
 ### 5.6 — Certificate Expiry vs CRQC Race
-- [ ] **5.6.1** — `GET /api/v1/risk/scan/{id}/cert-race` — returns per-cert race analysis
-- [ ] **5.6.2** — Verify categories: natural_rotation, at_risk, safe
+- [x] **5.6.1** — `GET /api/v1/risk/scan/{id}/cert-race` — returns per-cert race analysis
+- [x] **5.6.2** — Verify categories: natural_rotation, at_risk, safe
 - [ ] **5.6.3** — Summary counts match individual entries
 
 ### 5.7 — Enterprise Quantum Rating
-- [ ] **5.7.1** — `GET /api/v1/risk/scan/{id}/enterprise-rating` — composite 0–1000
-- [ ] **5.7.2** — 6 weighted dimensions present
-- [ ] **5.7.3** — Label matches score range (Critical/Vulnerable/Progressing/Ready/Elite)
+- [x] **5.7.1** — `GET /api/v1/risk/scan/{id}/enterprise-rating` — composite 0–1000
+- [x] **5.7.2** — 6 weighted dimensions present
+- [x] **5.7.3** — Label matches score range (Critical/Vulnerable/Progressing/Ready/Elite)
 
 ### 5.8 — Migration Plan
-- [ ] **5.8.1** — `GET /api/v1/risk/scan/{id}/migration-plan` — 4-phase plan
-- [ ] **5.8.2** — Phase 0 (immediate) contains critical assets
-- [ ] **5.8.3** — Each asset has `migration_complexity` breakdown
-- [ ] **5.8.4** — `migration_blocked_assets` count populated
+- [x] **5.8.1** — `GET /api/v1/risk/scan/{id}/migration-plan` — 4-phase plan
+- [x] **5.8.2** — Phase 0 (immediate) contains critical assets
+- [x] **5.8.3** — Each asset has `migration_complexity` breakdown
+- [x] **5.8.4** — `migration_blocked_assets` count populated
 
 ---
 
 ## Track 6: Compliance Engine (Module 4 + 5)
 
 ### 6.1 — Per-Asset Compliance
-- [ ] **6.1.1** — `GET /api/v1/compliance/scan/{id}` — compliance results for all assets
-- [ ] **6.1.2** — FIPS 203/204/205 deployed booleans populated
-- [ ] **6.1.3** — `tls_13_enforced`, `forward_secrecy` populated
-- [ ] **6.1.4** — `rbi_compliant`, `sebi_compliant`, `pci_compliant`, `npci_compliant` populated
-- [ ] **6.1.5** — `crypto_agility_score` in 0–100 range
-- [ ] **6.1.6** — `compliance_pct` populated
+- [x] **6.1.1** — `GET /api/v1/compliance/scan/{id}` — compliance results for all assets
+- [x] **6.1.2** — FIPS 203/204/205 deployed booleans populated
+- [x] **6.1.3** — `tls_13_enforced`, `forward_secrecy` populated
+- [x] **6.1.4** — `rbi_compliant`, `sebi_compliant`, `pci_compliant`, `npci_compliant` populated
+- [x] **6.1.5** — `crypto_agility_score` in 0–100 range
+- [x] **6.1.6** — `compliance_pct` populated
 
 ### 6.2 — FIPS Matrix
-- [ ] **6.2.1** — `GET /api/v1/compliance/scan/{id}/fips-matrix` — per-asset FIPS status
-- [ ] **6.2.2** — Summary counts: fips_203_deployed, fips_204_deployed, fips_205_deployed
+- [x] **6.2.1** — `GET /api/v1/compliance/scan/{id}/fips-matrix` — per-asset FIPS status
+- [x] **6.2.2** — Summary counts: fips_203_deployed, fips_204_deployed, fips_205_deployed
 
 ### 6.3 — Regulatory Compliance
-- [ ] **6.3.1** — `GET /api/v1/compliance/scan/{id}/regulatory` — RBI/SEBI/PCI/NPCI percentages
-- [ ] **6.3.2** — Each regulation has compliant/non_compliant counts and pct
+- [x] **6.3.1** — `GET /api/v1/compliance/scan/{id}/regulatory` — RBI/SEBI/PCI/NPCI percentages
+- [x] **6.3.2** — Each regulation has compliant/non_compliant counts and pct
 
 ### 6.4 — Crypto-Agility Distribution
-- [ ] **6.4.1** — `GET /api/v1/compliance/scan/{id}/agility` — bucketed distribution (0-20, 21-40, etc.)
-- [ ] **6.4.2** — `average_agility`, `min_agility`, `max_agility` computed
+- [x] **6.4.1** — `GET /api/v1/compliance/scan/{id}/agility` — bucketed distribution (0-20, 21-40, etc.)
+- [x] **6.4.2** — `average_agility`, `min_agility`, `max_agility` computed
 
 ### 6.5 — Regulatory Deadlines
-- [ ] **6.5.1** — `GET /api/v1/compliance/deadlines` — deadline list with countdown
-- [ ] **6.5.2** — Each deadline has `days_remaining` and `urgency`
+- [x] **6.5.1** — `GET /api/v1/compliance/deadlines` — deadline list with countdown
+- [x] **6.5.2** — Each deadline has `days_remaining` and `urgency`
 
 ### 6.6 — Vendor PQC Readiness
-- [ ] **6.6.1** — `GET /api/v1/compliance/vendor-readiness` — 19 vendors returned
-- [ ] **6.6.2** — Each vendor has `pqc_support_status`, `supported_algorithms`, `target_version`
-- [ ] **6.6.3** — Summary: ready / in_progress / unknown counts
+- [x] **6.6.1** — `GET /api/v1/compliance/vendor-readiness` — 19 vendors returned
+- [x] **6.6.2** — Each vendor has `pqc_support_status`, `supported_algorithms`, `target_version`
+- [x] **6.6.3** — Summary: ready / in_progress / unknown counts
 
 ---
 
 ## Track 7: Topology & Graph (Module 8)
 
-- [ ] **7.1** — `GET /api/v1/topology/scan/{id}` — graph JSON
-- [ ] **7.2** — `node_count > 0`, `edge_count > 0`
-- [ ] **7.3** — Nodes include asset, certificate, and cipher-suite types
-- [ ] **7.4** — `GET /api/v1/topology/scan/{id}/blast-radius/{asset_id}` — blast radius subgraph
+- [x] **7.1** — `GET /api/v1/topology/scan/{id}` — graph JSON
+- [x] **7.2** — `node_count > 0`, `edge_count > 0`
+- [x] **7.3** — Nodes include asset, certificate, and cipher-suite types
+- [x] **7.4** — `GET /api/v1/topology/scan/{id}/blast-radius?cert_fingerprint=...` — blast radius endpoint *(verified exists; returns 404 detail when fingerprint not in graph)*
 
 ---
 
 ## Track 8: GeoIP (Module 1 extension)
 
-- [ ] **8.1** — `GET /api/v1/geo/scan/{id}` — GeoJSON FeatureCollection
-- [ ] **8.2** — `GET /api/v1/geo/scan/{id}/map-data` — markers + country_summary
-- [ ] **8.3** — At least one marker has lat/lng populated
+- [x] **8.1** — `GET /api/v1/geo/scan/{id}` — GeoJSON FeatureCollection
+- [x] **8.2** — `GET /api/v1/geo/scan/{id}/map-data` — markers + country_summary
+- [x] **8.3** — At least one marker has lat/lng populated
 
 ---
 
 ## Track 9: Deep Scan Streaming & Background
 
 ### 9.1 — SSE Stream
-- [ ] **9.1.1** — `GET /api/v1/scans/{id}/stream` — returns `text/event-stream`
-- [ ] **9.1.2** — Events emitted: phase_start, crypto_result, phase_complete, scan_complete
+- [x] **9.1.1** — `GET /api/v1/scans/{id}/stream` — returns `text/event-stream`
+- [x] **9.1.2** — Events emitted: phase_start, crypto_result, phase_complete, scan_complete
 
 ### 9.2 — Scan Cache
 - [ ] **9.2.1** — Second deep scan for same domain returns cached result

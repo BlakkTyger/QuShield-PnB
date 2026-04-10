@@ -32,7 +32,7 @@ def generate_migration_roadmap(scan_id: str, db: Session, user: User) -> dict:
     asset_map = {str(a.id): a.hostname for a in assets}
     
     # Identify high risk items
-    high_risks = [r for r in risks if r.risk_classification in ("critical", "high")]
+    high_risks = [r for r in risks if r.risk_classification in ("quantum_critical", "quantum_vulnerable")]
     
     if not high_risks:
         return {
@@ -45,7 +45,7 @@ def generate_migration_roadmap(scan_id: str, db: Session, user: User) -> dict:
     context_lines = []
     for r in high_risks:
         hostname = asset_map.get(str(r.asset_id), "Unknown Asset")
-        context_lines.append(f"- {hostname}: Score {r.base_score}, Needs mitigation: {r.mitigation_recommendation}")
+        context_lines.append(f"- {hostname}: Risk Score {r.quantum_risk_score}/1000, Classification: {r.risk_classification}")
     
     context_str = "\n".join(context_lines)
 

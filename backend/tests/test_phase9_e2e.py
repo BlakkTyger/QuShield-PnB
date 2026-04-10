@@ -268,35 +268,37 @@ def test_track2_deep_scan():
 
     def sse_listener():
         """Background thread that connects to SSE and collects events."""
+        import requests as req_lib
         try:
             sse_url = f"{BASE_URL}/api/v1/scans/{SCAN_ID}/stream"
-            with httpx.stream("GET", sse_url, timeout=httpx.Timeout(SCAN_TIMEOUT, connect=10)) as resp:
-                if resp.status_code != 200:
-                    sse_error[0] = f"SSE connect failed: status={resp.status_code}"
-                    sse_connected.set()
-                    return
+            resp = req_lib.get(sse_url, stream=True, timeout=(10, SCAN_TIMEOUT))
+            if resp.status_code != 200:
+                sse_error[0] = f"SSE connect failed: status={resp.status_code}"
                 sse_connected.set()
-                buffer = ""
-                for chunk in resp.iter_text():
-                    buffer += chunk
-                    while "\n\n" in buffer:
-                        raw_event, buffer = buffer.split("\n\n", 1)
-                        # Parse SSE format: event: <type>\ndata: <json>
-                        event_data = {}
-                        for line in raw_event.strip().split("\n"):
-                            if line.startswith("event:"):
-                                event_data["event_type"] = line[len("event:"):].strip()
-                            elif line.startswith("data:"):
-                                try:
-                                    event_data["payload"] = json.loads(line[len("data:"):].strip())
-                                except json.JSONDecodeError:
-                                    event_data["raw_data"] = line[len("data:"):].strip()
-                        if event_data:
-                            sse_events.append(event_data)
-                            print(f"    [SSE] {event_data.get('event_type', '?')} "
-                                  f"phase={event_data.get('payload', {}).get('phase', '?')} "
-                                  f"pct={event_data.get('payload', {}).get('progress_pct', '?')}")
-                        # Break if terminal event
+                return
+            sse_connected.set()
+            # Use iter_content and manually buffer to detect \n\n boundaries
+            buffer = ""
+            for chunk in resp.iter_content(chunk_size=256, decode_unicode=True):
+                if chunk is None:
+                    continue
+                buffer += chunk
+                while "\n\n" in buffer:
+                    raw_event, buffer = buffer.split("\n\n", 1)
+                    event_data = {}
+                    for line in raw_event.strip().split("\n"):
+                        if line.startswith("event:"):
+                            event_data["event_type"] = line[len("event:"):].strip()
+                        elif line.startswith("data:"):
+                            try:
+                                event_data["payload"] = json.loads(line[len("data:"):].strip())
+                            except json.JSONDecodeError:
+                                event_data["raw_data"] = line[len("data:"):].strip()
+                    if event_data:
+                        sse_events.append(event_data)
+                        print(f"    [SSE] {event_data.get('event_type', '?')} "
+                              f"phase={event_data.get('payload', {}).get('phase', '?')} "
+                              f"pct={event_data.get('payload', {}).get('progress_pct', '?')}")
                         if event_data.get("event_type") in ("scan_complete", "scan_failed"):
                             return
         except Exception as e:

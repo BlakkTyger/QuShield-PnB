@@ -76,8 +76,10 @@ class Settings(BaseSettings):
     # --- MaxMind GeoIP ---
     GEOIP_DB_PATH: str = str(PROJECT_ROOT / "data" / "geolite" / "GeoLite2-City.mmdb")
 
-    # --- Ollama (Phase 9) ---
+    # --- AI LLM Providers ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"
+    GROQ_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
 
     @property
     def database_url(self) -> str:

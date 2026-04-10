@@ -18,7 +18,8 @@ from app.services.risk_engine import assess_all_assets
 from app.services.compliance import evaluate_compliance, compute_agility_score, save_compliance_result
 from app.services.graph_builder import build_topology_graph
 
-logger = logging.getLogger(__name__)
+from app.core.logging import get_logger
+logger = get_logger("orchestrator")
 
 DOMAIN_REGEX = re.compile(
     r"^(?:[a-zA-Z0-9]"
@@ -79,16 +80,12 @@ class ScanOrchestrator:
         def _emit(event_type: str, phase: int = 0, pct: int = 0, msg: str = "", data: dict = None):
             """Helper to emit events to the async SSE manager safely from this sync thread."""
             from app.services.scan_events import scan_events
-            import asyncio
             logger.debug(f"{TAG} SSE emit: {event_type} phase={phase} pct={pct} msg={msg}")
             if loop and loop.is_running():
                 try:
-                    future = asyncio.run_coroutine_threadsafe(
-                        scan_events.broadcast(scan_id, event_type, phase, pct, msg, data),
-                        loop
+                    scan_events.broadcast_sync(
+                        scan_id, event_type, phase, pct, msg, data, loop=loop
                     )
-                    # Wait briefly for delivery to confirm it worked
-                    future.result(timeout=2.0)
                 except Exception as e:
                     logger.warning(f"{TAG} SSE emit failed ({event_type}): {e}")
             else:

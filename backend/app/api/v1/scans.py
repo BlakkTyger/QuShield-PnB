@@ -41,7 +41,7 @@ def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Opti
     ).order_by(ScanCache.cached_at.desc()).first()
 
 @router.post("/", response_model=ScanResponse, status_code=201)
-def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Start a new scan. The scan runs in a background thread."""
     
     # Cache check for single-target deep scan
