@@ -31,6 +31,7 @@ class Asset(Base):
     confidence_score = Column(Float, default=0.0)
     first_seen_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     last_seen_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    fingerprint_hash = Column(String(64), nullable=True, index=True)  # sha256 for delta scan
 
     # Relationships
     ports = relationship("AssetPort", back_populates="asset", cascade="all, delete-orphan")

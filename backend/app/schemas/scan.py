@@ -43,3 +43,16 @@ class ScanStatus(BaseModel):
     error_message: Optional[str] = None
 
     model_config = {"from_attributes": True}
+
+
+class QuickScanRequest(BaseModel):
+    """Request for a quick (root-domain-only) scan."""
+    domain: str = Field(..., description="Single domain to scan (e.g., 'example.com')")
+    port: int = Field(default=443, description="TLS port")
+
+
+class ShallowScanRequest(BaseModel):
+    """Request for a shallow scan (CT discovery + top-N TLS)."""
+    domain: str = Field(..., description="Root domain to scan")
+    top_n: int = Field(default=10, ge=1, le=50, description="Max subdomains to TLS-scan")
+    port: int = Field(default=443, description="TLS port")

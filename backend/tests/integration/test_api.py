@@ -70,6 +70,10 @@ class TestScanAPI:
         r = client.get("/api/v1/scans/00000000-0000-0000-0000-000000000000/summary")
         assert r.status_code == 404
 
+    def test_quick_scan_invalid(self):
+        r = client.post("/api/v1/scans/quick", json={"domain": "nonexistent.invalid.tld"})
+        assert r.status_code in (500, 502)
+
 
 # ─── Asset Endpoints ─────────────────────────────────────────────────────────
 
@@ -196,6 +200,18 @@ class TestTopologyAPI:
     def test_topology_stats_not_found(self):
         r = client.get("/api/v1/topology/scan/00000000-0000-0000-0000-000000000000/stats")
         assert r.status_code in (200, 404, 500)  # 200 if cached graph file exists from prior scan
+
+
+# ─── GeoIP Endpoints ─────────────────────────────────────────────────────────
+
+class TestGeoAPI:
+    def test_geo_scan_not_found(self):
+        r = client.get("/api/v1/geo/scan/00000000-0000-0000-0000-000000000000")
+        assert r.status_code == 404
+
+    def test_map_data_not_found(self):
+        r = client.get("/api/v1/geo/scan/00000000-0000-0000-0000-000000000000/map-data")
+        assert r.status_code == 404
 
 
 # ─── Full E2E Scan Test (requires network) ───────────────────────────────────

@@ -81,6 +81,140 @@ def _get_nist_level_for_component(algo_name: str, quantum_data: dict = None) -> 
     return None
 
 
+# ─── Cipher Suite Decomposition ──────────────────────────────────────────────
+
+# TLS 1.3 cipher suites: name only encodes symmetric + MAC.
+# Key exchange comes from supported_groups, auth from certificate.
+_TLS13_DECOMP = {
+    "TLS_AES_256_GCM_SHA384":       {"symmetric": "AES-256-GCM",      "mac": "SHA-384"},
+    "TLS_AES_128_GCM_SHA256":       {"symmetric": "AES-128-GCM",      "mac": "SHA-256"},
+    "TLS_CHACHA20_POLY1305_SHA256": {"symmetric": "ChaCha20-Poly1305", "mac": "SHA-256"},
+    "TLS_AES_128_CCM_SHA256":       {"symmetric": "AES-128-CCM",      "mac": "SHA-256"},
+    "TLS_AES_128_CCM_8_SHA256":     {"symmetric": "AES-128-CCM-8",    "mac": "SHA-256"},
+}
+
+# TLS 1.2 cipher suites: fully decomposable from name.
+# Format: {KE}(-{AUTH})?-WITH-{SYMMETRIC}-{MAC}  or OpenSSL format
+_TLS12_PATTERNS = {
+    # OpenSSL names (most common)
+    "ECDHE-RSA-AES256-GCM-SHA384":    {"key_exchange": "ECDHE", "authentication": "RSA",   "symmetric": "AES-256-GCM",      "mac": "SHA-384"},
+    "ECDHE-RSA-AES128-GCM-SHA256":    {"key_exchange": "ECDHE", "authentication": "RSA",   "symmetric": "AES-128-GCM",      "mac": "SHA-256"},
+    "ECDHE-ECDSA-AES256-GCM-SHA384":  {"key_exchange": "ECDHE", "authentication": "ECDSA", "symmetric": "AES-256-GCM",      "mac": "SHA-384"},
+    "ECDHE-ECDSA-AES128-GCM-SHA256":  {"key_exchange": "ECDHE", "authentication": "ECDSA", "symmetric": "AES-128-GCM",      "mac": "SHA-256"},
+    "ECDHE-RSA-CHACHA20-POLY1305":    {"key_exchange": "ECDHE", "authentication": "RSA",   "symmetric": "ChaCha20-Poly1305", "mac": "AEAD"},
+    "ECDHE-ECDSA-CHACHA20-POLY1305":  {"key_exchange": "ECDHE", "authentication": "ECDSA", "symmetric": "ChaCha20-Poly1305", "mac": "AEAD"},
+    "ECDHE-RSA-AES256-SHA384":        {"key_exchange": "ECDHE", "authentication": "RSA",   "symmetric": "AES-256-CBC",      "mac": "SHA-384"},
+    "ECDHE-RSA-AES128-SHA256":        {"key_exchange": "ECDHE", "authentication": "RSA",   "symmetric": "AES-128-CBC",      "mac": "SHA-256"},
+    "DHE-RSA-AES256-GCM-SHA384":      {"key_exchange": "DHE",   "authentication": "RSA",   "symmetric": "AES-256-GCM",      "mac": "SHA-384"},
+    "DHE-RSA-AES128-GCM-SHA256":      {"key_exchange": "DHE",   "authentication": "RSA",   "symmetric": "AES-128-GCM",      "mac": "SHA-256"},
+    "AES256-GCM-SHA384":              {"key_exchange": "RSA",   "authentication": "RSA",   "symmetric": "AES-256-GCM",      "mac": "SHA-384"},
+    "AES128-GCM-SHA256":              {"key_exchange": "RSA",   "authentication": "RSA",   "symmetric": "AES-128-GCM",      "mac": "SHA-256"},
+    "DES-CBC3-SHA":                   {"key_exchange": "RSA",   "authentication": "RSA",   "symmetric": "3DES-CBC",         "mac": "SHA-1"},
+    "RC4-SHA":                        {"key_exchange": "RSA",   "authentication": "RSA",   "symmetric": "RC4",              "mac": "SHA-1"},
+}
+
+
+def decompose_cipher_suite(
+    cipher_name: str,
+    key_exchange_hint: str = None,
+    cert_key_type: str = None,
+) -> dict:
+    """
+    Decompose a TLS cipher suite name into its constituent components.
+
+    TLS 1.3: symmetric + MAC from name; KE from supported_groups hint; auth from cert.
+    TLS 1.2: fully decomposable from the cipher suite name.
+
+    Args:
+        cipher_name: Full cipher suite name (e.g., "TLS_AES_256_GCM_SHA384")
+        key_exchange_hint: KE algorithm from TLS negotiation (e.g., "ECDHE", "X25519MLKEM768")
+        cert_key_type: Certificate key type for auth (e.g., "RSA", "ECDSA")
+
+    Returns dict with key_exchange, authentication, symmetric, mac.
+    """
+    # Check TLS 1.3 table
+    if cipher_name in _TLS13_DECOMP:
+        d = _TLS13_DECOMP[cipher_name].copy()
+        d["key_exchange"] = key_exchange_hint or "ECDHE"
+        d["authentication"] = cert_key_type or "RSA"
+        d["tls_version"] = "1.3"
+        return d
+
+    # Check TLS 1.2 exact match
+    if cipher_name in _TLS12_PATTERNS:
+        d = _TLS12_PATTERNS[cipher_name].copy()
+        d["tls_version"] = "1.2"
+        return d
+
+    # Heuristic decomposition for unknown cipher names
+    result = {
+        "key_exchange": "unknown",
+        "authentication": "unknown",
+        "symmetric": "unknown",
+        "mac": "unknown",
+        "tls_version": "unknown",
+    }
+
+    name = cipher_name.upper()
+
+    # TLS 1.3 pattern: starts with TLS_
+    if name.startswith("TLS_"):
+        result["tls_version"] = "1.3"
+        result["key_exchange"] = key_exchange_hint or "ECDHE"
+        result["authentication"] = cert_key_type or "RSA"
+        if "AES_256_GCM" in name:
+            result["symmetric"] = "AES-256-GCM"
+        elif "AES_128_GCM" in name:
+            result["symmetric"] = "AES-128-GCM"
+        elif "CHACHA20" in name:
+            result["symmetric"] = "ChaCha20-Poly1305"
+        if "SHA384" in name:
+            result["mac"] = "SHA-384"
+        elif "SHA256" in name:
+            result["mac"] = "SHA-256"
+        return result
+
+    # TLS 1.2 heuristic
+    result["tls_version"] = "1.2"
+    if "ECDHE" in name:
+        result["key_exchange"] = "ECDHE"
+    elif "DHE" in name:
+        result["key_exchange"] = "DHE"
+    else:
+        result["key_exchange"] = "RSA"
+
+    if "ECDSA" in name:
+        result["authentication"] = "ECDSA"
+    else:
+        result["authentication"] = "RSA"
+
+    if "AES256-GCM" in name or "AES_256_GCM" in name:
+        result["symmetric"] = "AES-256-GCM"
+    elif "AES128-GCM" in name or "AES_128_GCM" in name:
+        result["symmetric"] = "AES-128-GCM"
+    elif "CHACHA20" in name:
+        result["symmetric"] = "ChaCha20-Poly1305"
+    elif "AES256" in name:
+        result["symmetric"] = "AES-256-CBC"
+    elif "AES128" in name:
+        result["symmetric"] = "AES-128-CBC"
+    elif "3DES" in name or "DES-CBC3" in name:
+        result["symmetric"] = "3DES-CBC"
+    elif "RC4" in name:
+        result["symmetric"] = "RC4"
+
+    if "SHA384" in name:
+        result["mac"] = "SHA-384"
+    elif "SHA256" in name:
+        result["mac"] = "SHA-256"
+    elif "SHA" in name:
+        result["mac"] = "SHA-1"
+    if "GCM" in name or "CHACHA20" in name:
+        result["mac"] = "AEAD"
+
+    return result
+
+
 # ─── P3.1: CycloneDX BOM Assembly ───────────────────────────────────────────
 
 
@@ -152,6 +286,13 @@ def build_cbom(asset_id: str, crypto_fingerprint: dict) -> dict:
         else:
             safe_count += 1
 
+        # Decompose cipher suite into constituent algorithms
+        kex_hint = tls_data.get("key_exchange")
+        cert_key = None
+        if certs_data:
+            cert_key = certs_data[0].get("key_type")
+        decomposed = decompose_cipher_suite(cs_name, kex_hint, cert_key)
+
         components_meta.append({
             "name": cs_name,
             "type": "algorithm",
@@ -159,6 +300,7 @@ def build_cbom(asset_id: str, crypto_fingerprint: dict) -> dict:
             "nist_level": nist_level,
             "is_vulnerable": is_vulnerable,
             "bom_ref": str(bom_ref),
+            "decomposition": decomposed,
         })
 
     # ── 2. Key Exchange Algorithm Component ───────────────────────────────

@@ -107,10 +107,14 @@ from app.api.v1.cbom import router as cbom_router
 from app.api.v1.risk import router as risk_router
 from app.api.v1.compliance import router as compliance_router
 from app.api.v1.topology import router as topology_router
+from app.api.v1.geo import router as geo_router
+from app.api.v1.auth import router as auth_router
 
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(scans_router, prefix="/api/v1/scans", tags=["Scans"])
 app.include_router(assets_router, prefix="/api/v1/assets", tags=["Assets"])
 app.include_router(cbom_router, prefix="/api/v1/cbom", tags=["CBOM"])
 app.include_router(risk_router, prefix="/api/v1/risk", tags=["Risk"])
 app.include_router(compliance_router, prefix="/api/v1/compliance", tags=["Compliance"])
 app.include_router(topology_router, prefix="/api/v1/topology", tags=["Topology"])
+app.include_router(geo_router, prefix="/api/v1/geo", tags=["GeoIP"])

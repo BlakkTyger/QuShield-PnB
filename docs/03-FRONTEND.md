@@ -348,3 +348,55 @@ A dedicated panel below the chat — accessed via a `Generate AI Report` button 
 **Persistent notification center:** A bell icon in the top bar accumulates critical alerts — new shadow assets detected, certificates expiring in 30 days, new CVEs against detected library versions. Clicking opens a drawer with the full alert list, each linking to the relevant asset.
 
 **Keyboard shortcuts** throughout: `Cmd+K` opens global search, `Cmd+Shift+S` starts a new scan, `Cmd+E` exports the current view, `Esc` closes any slide-out or overlay.
+
+---
+
+## Addendum: Phase 7B New Pages (2026-04-10)
+
+### Page — Authentication (Login / Register)
+
+**Purpose**: Gate access to scan history, cached results, and user-specific data.
+
+**Login Page**: Centered card with email + password fields, "Log In" button, "Forgot password?" link, and "Sign Up" link. JWT tokens stored in httpOnly cookies.
+
+**Register Page & Verification Popup**: Email + password + confirm password. On submit, shows a modal popup asking for the Email Verification OTP/link that was console-logged. User must input the OTP here. User cannot access scan history until email is verified.
+
+**Auth State**: If not logged in, Quick Scan is available without auth (public). Shallow/Deep scans require login. All scan history requires login.
+
+### Page — Scan History
+
+**Purpose**: Show all scans run by the current user, grouped by domain.
+
+**Layout**: Table with columns: Domain, Scan Type (Quick/Shallow/Deep), Status, Date, Assets Found, Risk Rating. Filterable by scan type, domain, date range. Clicking a row navigates to the scan results dashboard.
+
+**Smart Cache Indicator**: If a cached result exists for a domain, show a "Cached" badge with time remaining. "Re-scan" button to force a fresh scan.
+
+### Page — Interactive GeoIP Map
+
+**Purpose**: Visualize all discovered IPs for a scan on an interactive map of India (or world).
+
+**Map Implementation**: Leaflet.js with OpenStreetMap tiles. Each IP plotted as a circle marker, color-coded by quantum risk status:
+- Red: Quantum Critical / Quantum Vulnerable
+- Amber: Quantum At Risk
+- Green: Quantum Ready / Quantum Aware
+
+**Marker Hover Tooltip**: Hostname, IP address, Asset Type, TLS Version, Risk Score, NIST Quantum Level, Organization/ISP.
+
+**Marker Click**: Opens slide-out panel with full asset detail (certificates, CBOM, compliance checks).
+
+**Cluster View**: For domains with many assets in the same city/datacenter, markers auto-cluster with a count badge. Clicking a cluster zooms in.
+
+**Sidebar**: Summary stats — total IPs, geographic distribution (top 5 cities), % in India vs overseas, ISP breakdown.
+
+### Page — Quick Scan (Updated)
+
+**Updates to existing Quick Scan page**:
+- Scan type selector: Quick (3–8s) | Shallow (30–90s) | Deep (5–10 min) — defaulting to Quick
+- If cached results exist for a higher tier, show "Instant results available from [Shallow/Deep] scan run on [date]" with a "View" button
+- Quick Scan results now include: Quantum Cyber Rating gauge, TLS version, cert expiry, NIST level, key findings, one-click "Upgrade to Deep Scan" CTA
+
+### Page — Vendor Readiness Dashboard
+
+**Purpose**: Show PQC readiness of technology vendors relevant to the scanned bank's infrastructure.
+
+**Layout**: Card grid, one per vendor. Each card shows vendor name, product, PQC status badge (Ready/In Progress/Unknown), supported algorithms, and risk-if-delayed severity. Critical blockers highlighted in red at the top.

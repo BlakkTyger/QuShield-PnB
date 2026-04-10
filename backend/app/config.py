@@ -25,6 +25,11 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "qushield"
+
+    # JWT Config
+    JWT_SECRET_KEY: str = "super_secret_jwt_key_for_dev_only"
+
+    # Worker limits
     POSTGRES_USER: str = "qushield"
     POSTGRES_PASSWORD: str = "changeme_local_dev"
 

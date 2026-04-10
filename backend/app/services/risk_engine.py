@@ -339,6 +339,26 @@ def compute_risk_score(
     return result
 
 
+# ─── Data Sensitivity Multipliers for HNDL ─────────────────────────────────
+
+SENSITIVITY_MULTIPLIERS = {
+    "swift_endpoint": 5.0,
+    "internet_banking": 3.0,
+    "upi_gateway": 3.0,
+    "core_banking_api": 3.5,
+    "api_gateway": 2.5,
+    "api": 2.0,
+    "mail_server": 2.0,
+    "mobile_banking": 2.5,
+    "otp_2fa": 2.0,
+    "web_server": 1.0,
+    "dns_server": 0.5,
+    "dns": 0.5,
+    "cdn_endpoint": 0.5,
+    "unknown": 1.0,
+}
+
+
 # ─── P4.3: HNDL Exposure Window ─────────────────────────────────────────────
 
 
@@ -348,6 +368,7 @@ def compute_hndl_window(
     cipher_vulnerable: bool,
     data_shelf_life_years: float,
     crqc_year: int = None,
+    asset_type: str = None,
 ) -> dict:
     """
     Compute the Harvest-Now-Decrypt-Later exposure window.
@@ -357,8 +378,10 @@ def compute_hndl_window(
         cipher_vulnerable: Whether the current cipher is quantum-vulnerable
         data_shelf_life_years: How long the data must remain confidential
         crqc_year: Estimated CRQC arrival (default: pessimistic scenario)
+        asset_type: Asset type for sensitivity multiplier (e.g., "swift_endpoint")
 
-    Returns dict with harvest_start, harvest_end, decrypt_risk_end, exposure status.
+    Returns dict with harvest_start, harvest_end, decrypt_risk_end, exposure status,
+    and weighted_exposure with sensitivity multiplier applied.
     """
     if crqc_year is None:
         crqc_year = CRQC_SCENARIOS["pessimistic"]
@@ -367,16 +390,25 @@ def compute_hndl_window(
     crqc_date = datetime(crqc_year, 1, 1, tzinfo=timezone.utc)
     shelf_life_delta = timedelta(days=int(data_shelf_life_years * 365.25))
 
+    exposure_years = round(
+        max(0, (crqc_date - first_seen).days / 365.25 + data_shelf_life_years),
+        2,
+    )
+
+    # Apply sensitivity multiplier
+    multiplier = SENSITIVITY_MULTIPLIERS.get(asset_type or "unknown", 1.0)
+    weighted_exposure = round(exposure_years * multiplier, 2)
+
     result = {
         "harvest_start": first_seen.isoformat(),
         "harvest_end": crqc_date.isoformat(),
         "decrypt_risk_start": crqc_date.isoformat(),
         "decrypt_risk_end": (crqc_date + shelf_life_delta).isoformat(),
         "is_currently_exposed": cipher_vulnerable and now < crqc_date,
-        "exposure_years": round(
-            max(0, (crqc_date - first_seen).days / 365.25 + data_shelf_life_years),
-            2,
-        ),
+        "exposure_years": exposure_years,
+        "sensitivity_multiplier": multiplier,
+        "weighted_exposure": weighted_exposure,
+        "asset_type": asset_type,
         "days_until_crqc": max(0, (crqc_date - now).days),
         "cipher_vulnerable": cipher_vulnerable,
     }
@@ -387,12 +419,91 @@ def compute_hndl_window(
         extra={
             "harvest_start": first_seen.isoformat(),
             "crqc_year": crqc_year,
-            "exposure_years": result["exposure_years"],
+            "exposure_years": exposure_years,
+            "sensitivity_multiplier": multiplier,
+            "weighted_exposure": weighted_exposure,
             "is_currently_exposed": result["is_currently_exposed"],
         },
     )
 
     return result
+
+
+# ─── Dynamic Migration Complexity Scoring ──────────────────────────────────
+
+# Base migration times by asset type (years)
+MIGRATION_BASE_TIMES = {
+    "swift_endpoint": 4.0,
+    "core_banking_api": 3.0,
+    "internet_banking": 2.5,
+    "upi_gateway": 2.0,
+    "mobile_banking": 2.5,
+    "otp_2fa": 1.0,
+    "api_gateway": 2.0,
+    "api": 1.5,
+    "mail_server": 1.0,
+    "web_server": 1.0,
+    "dns_server": 0.5,
+    "dns": 0.5,
+    "cdn_endpoint": 0.5,
+    "unknown": 1.5,
+}
+
+
+def compute_migration_complexity(
+    asset_type: str,
+    agility_score: float = 50.0,
+    is_third_party: bool = False,
+    is_pinned: bool = False,
+    has_forward_secrecy: bool = True,
+) -> dict:
+    """
+    Compute dynamic migration complexity (Mosca's X parameter).
+
+    Instead of static defaults, adjusts based on real scan data:
+    - Low crypto-agility → +2 years (migration-blocked)
+    - Third-party dependency → +1 year (vendor coordination)
+    - Certificate pinning → +1 year (mobile app update barrier)
+    - No forward secrecy → +0.5 years (cipher reconfiguration)
+
+    Returns dict with complexity_years, base_time, adjustments, and capped total.
+    """
+    base = MIGRATION_BASE_TIMES.get(asset_type, 1.5)
+    adjustments = []
+
+    complexity = base
+
+    if agility_score < 40:
+        complexity += 2.0
+        adjustments.append({"reason": "low_crypto_agility", "penalty": 2.0,
+                           "detail": f"Agility score {agility_score:.0f}/100 < 40"})
+
+    if is_third_party:
+        complexity += 1.0
+        adjustments.append({"reason": "third_party_dependency", "penalty": 1.0,
+                           "detail": "Vendor coordination required"})
+
+    if is_pinned:
+        complexity += 1.0
+        adjustments.append({"reason": "certificate_pinning", "penalty": 1.0,
+                           "detail": "Mobile app cert pinning requires app update cycle"})
+
+    if not has_forward_secrecy:
+        complexity += 0.5
+        adjustments.append({"reason": "no_forward_secrecy", "penalty": 0.5,
+                           "detail": "Cipher suite reconfiguration needed"})
+
+    # Cap at 8 years
+    capped = min(complexity, 8.0)
+
+    return {
+        "complexity_years": round(capped, 1),
+        "base_time_years": base,
+        "adjustments": adjustments,
+        "total_penalty": round(complexity - base, 1),
+        "was_capped": complexity > 8.0,
+        "asset_type": asset_type,
+    }
 
 
 # ─── P4.4: TNFL Risk Assessment ─────────────────────────────────────────────
@@ -654,9 +765,12 @@ def assess_asset_risk(asset_id: str, scan_id: str, db) -> dict:
     }
 
 
-def assess_all_assets(scan_id: str, db) -> list[dict]:
+def assess_all_assets(scan_id: str, db, skip_asset_ids: set = None) -> list[dict]:
     """
     Run risk assessment for all assets in a scan.
+
+    Args:
+        skip_asset_ids: Optional set of asset ID strings to skip (already cloned).
 
     Returns list of risk assessment results.
     """
@@ -665,16 +779,20 @@ def assess_all_assets(scan_id: str, db) -> list[dict]:
 
     scan_uuid = uuid_mod.UUID(scan_id) if isinstance(scan_id, str) else scan_id
     assets = db.query(Asset).filter(Asset.scan_id == scan_uuid).all()
+    skip = skip_asset_ids or set()
 
     results = []
     for i, asset in enumerate(assets):
-        try:
-            result = assess_asset_risk(str(asset.id), scan_id, db)
-            results.append(result)
-            logger.info(f"[{i+1}/{len(assets)}] Assessed {asset.hostname}")
-        except Exception as e:
-            logger.error(f"[{i+1}/{len(assets)}] Failed {asset.hostname}: {e}")
-            results.append({"asset_id": str(asset.id), "error": str(e)})
+        if str(asset.id) not in skip:
+            try:
+                result = assess_asset_risk(str(asset.id), scan_id, db)
+                results.append(result)
+                logger.info(f"[{i+1}/{len(assets)}] Assessed {asset.hostname}")
+            except Exception as e:
+                logger.error(f"[{i+1}/{len(assets)}] Failed {asset.hostname}: {e}")
+                results.append({"asset_id": str(asset.id), "error": str(e)})
+        else:
+            logger.info(f"[{i+1}/{len(assets)}] Skipped {asset.hostname} (cloned)")
 
     # Summary
     classifications = {}

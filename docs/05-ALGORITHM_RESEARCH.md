@@ -706,3 +706,105 @@ for each asset:
 ---
 
 *This document should be treated as the definitive algorithm and tooling reference for implementation. All code written for QuShield-PnB should use the libraries and approaches specified here unless a technical blocker is discovered during implementation, in which case this document should be updated with the filed ADR.*
+
+---
+
+## Addendum: Phase 7B Algorithm Additions (2026-04-10)
+
+### Quick Scan Algorithm
+
+**Goal**: Root-domain-only PQC analysis in 3–8 seconds.
+
+**Algorithm**:
+1. Single `ssl.create_default_context()` connection → get negotiated protocol, cipher, cert chain (~1–3s)
+2. Parse leaf cert: key_type, key_length, signature_algorithm, SAN list, expiry (~<50ms)
+3. NIST quantum level lookup for cipher + cert key (~<1ms)
+4. Risk score: apply Mosca's theorem with default migration time for asset type (~<1ms)
+5. Compliance snapshot: TLS 1.3 check, forward secrecy, FIPS 203/204/205, RBI/PCI basic checks (~<1ms)
+6. Return structured result synchronously
+
+**Key Decision**: Uses stdlib `ssl` only (no SSLyze) for speed. SSLyze probes 4 TLS versions sequentially, which alone takes 3–8s. Stdlib gives us the negotiated cipher and cert in a single connection.
+
+### Shallow Scan Discovery Strategy
+
+**Goal**: Enumerate subdomains without the Go binary or port scanning.
+
+**Algorithm**:
+1. DNS resolution of root domain → get IPs
+2. Query crt.sh (`GET https://crt.sh/?q=%.{domain}&output=json`) → parse unique subdomains from Certificate Transparency logs
+3. DNS-resolve each subdomain (parallel, 20 workers) → filter to those with valid A/AAAA records
+4. TLS scan top-N subdomains (N=10 by default) using stdlib ssl only (skip SSLyze, pinning, auth, CDN)
+5. Cert parse, NIST levels, basic risk/compliance for each
+
+**Deferred**: Port scanning, OSINT, infrastructure fingerprinting, auth detection, certificate pinning.
+
+### Cipher Suite Decomposition Algorithm
+
+TLS 1.3 cipher suites have a fixed structure — key exchange is negotiated separately via the `supported_groups` extension, authentication is from the certificate. The cipher suite name only encodes symmetric cipher + MAC:
+
+```
+TLS 1.3 format: TLS_{SYMMETRIC}_{MAC}
+  - Key exchange: from supported_groups extension (e.g., X25519, secp256r1, X25519MLKEM768)
+  - Authentication: from certificate type (RSA, ECDSA, Ed25519, ML-DSA)
+  - Symmetric: AES-128-GCM, AES-256-GCM, ChaCha20-Poly1305
+  - MAC: implicit in AEAD (SHA-256, SHA-384)
+
+TLS 1.2 format: {KE}_{AUTH}_WITH_{SYMMETRIC}_{MAC}
+  - Fully decomposable from the cipher suite name
+```
+
+**Implementation**: Regex + lookup table decomposition in `cbom_builder.py`.
+
+### Hybrid PQC Detection Strategy
+
+Current detection only checks certificate OIDs. Hybrid PQC (the recommended first deployment step) appears in the TLS key exchange, not in the certificate.
+
+**Detection layers**:
+1. **Certificate OIDs**: Already implemented — check `signature_algorithm_oid` against PQC OID table
+2. **TLS 1.3 supported_groups**: NEW — parse the `supported_groups` extension from the ServerHello for hybrid named group IDs:
+   - `0x4588` = X25519MLKEM768
+   - `0x4589` = SecP256r1MLKEM768
+   - `0x4590` = SecP384r1MLKEM1024
+3. **Cipher name pattern matching**: NEW — check negotiated cipher name for PQC markers (MLKEM, KYBER, ML-KEM)
+
+**Limitation**: Python's stdlib `ssl` module does not expose `supported_groups`. SSLyze does expose accepted cipher suites per TLS version but not the raw extension bytes. Full hybrid detection requires OpenSSL 3.5+ with `oqs-provider` or raw TLS parsing.
+
+**Pragmatic approach**: Check SSLyze TLS 1.3 accepted cipher names for PQC markers. Add a note when full detection is not possible.
+
+### HNDL Sensitivity Multiplier
+
+Applied to the HNDL `exposure_years` calculation to weight by data criticality:
+
+```python
+SENSITIVITY_MULTIPLIERS = {
+    "swift_endpoint": 5.0,
+    "internet_banking": 3.0,
+    "upi_gateway": 3.0,
+    "api_gateway": 2.5,
+    "mail_server": 2.0,
+    "web_server": 1.0,
+    "dns_server": 0.5,
+    "cdn_endpoint": 0.5,
+}
+weighted_exposure = exposure_years * SENSITIVITY_MULTIPLIERS.get(asset_type, 1.0)
+```
+
+### Dynamic Migration Complexity
+
+Replaces static `migration_time_years` per asset type with a computed value:
+
+```python
+def compute_migration_complexity(asset_type, agility_score, is_third_party, is_pinned, has_forward_secrecy):
+    base = {"swift_endpoint": 4, "internet_banking": 3, "upi_gateway": 3, ...}.get(asset_type, 2)
+    if agility_score < 40: base += 2    # crypto-agility blocked
+    if is_third_party: base += 1         # vendor dependency
+    if is_pinned: base += 1              # mobile app cert pinning barrier
+    if not has_forward_secrecy: base += 0.5  # cipher reconfiguration needed
+    return min(base, 8)  # cap at 8 years
+```
+
+### GeoIP Resolution
+
+**Library**: `geoip2` (MaxMind GeoLite2 — already in `requirements.txt`)
+**Databases**: GeoLite2-City.mmdb (lat/lon/city/state/country) + GeoLite2-ASN.mmdb (org/ISP/ASN)
+**Lookup**: O(1) per IP via memory-mapped MMDB. Negligible latency impact.

@@ -595,3 +595,121 @@
 - **`docs/07-PQC_IMPROVEMENTS.md`** — PQC improvements research document with 18 proposed improvements, prioritized roadmap, and 10 references
 - **`backend/app/data/vendor_readiness.json`** — 12 vendors with PQC status, algorithms, risk levels
 
+### P7 — Cross-Bank E2E Validation
+- **Date**: 2026-04-10 04:40
+- **Status**: ✅ COMPLETE — All 3 banks scanned and validated
+
+| Metric | PNB | SBI | HDFC |
+|---|---|---|---|
+| **Scan ID** | `33ad8a21...` | `91be4a21...` | `03810357...` |
+| **Assets** | 96 | 87 | 95 |
+| **Certificates** | 4 | 7 | 3 |
+| **CBOMs** | 4 | 3 | 1 |
+| **Quantum Vulnerable** | 92 (96%) | 82 (94%) | 92 (97%) |
+| **Quantum At Risk** | 4 | 5 | 3 |
+| **TLS 1.3 Enforced** | 2 | 2 | 1 |
+| **Forward Secrecy** | 0 | 0 | 0 |
+| **RBI Compliant** | 0% | 0% | 0% |
+| **SEBI Compliant** | 2.1% | 3.4% | 1.1% |
+| **PCI DSS Compliant** | 2.1% | 3.4% | 1.1% |
+| **NPCI UPI** | 100% | 100% | 100% |
+| **Avg Agility Score** | 44.0 | 40.6 | 44.7 |
+| **Avg Compliance %** | 7.7% | 8.3% | 7.5% |
+| **Enterprise Rating** | 167 (Critical) | 159 (Critical) | 159 (Critical) |
+| **Shadow Assets** | 1 | 1 | 0 |
+| **Third-Party Assets** | 2 | 1 | 1 |
+| **Migration Phase 0** | 1 critical | 1 critical | 0 |
+| **Migration Phase 1** | 91 hybrid | 82 hybrid | 92 hybrid |
+| **Migration Blocked** | 22 | 32 | 15 |
+
+**Key Findings Across Banks**:
+1. **Zero PQC deployment** across all 3 banks — 100% classical crypto
+2. **All rated Quantum Critical** (< 300/1000) — no bank has begun PQC migration
+3. **0% RBI IT Framework compliance** — none meet forward secrecy requirements
+4. **Shared certificate architecture** creates blast radius risk (PNB: 4 certs for 96 assets)
+5. **SBI has highest migration friction** (32 blocked assets, lowest agility at 40.6)
+6. **HDFC has best agility** (44.7 avg, only 15 blocked) — lowest migration resistance
+7. **Forward secrecy at 0% industry-wide** — systemic weakness for HNDL attacks
+
+---
+
+## Phase 7 — COMPLETE ✅
+
+**Summary**: Full REST API layer with 31 endpoints across 6 routers, comprehensive compliance with India-specific regulatory checks, enterprise quantum rating, auto-generated migration plans, vendor PQC readiness tracking, and validated E2E scans across PNB, SBI, and HDFC banking domains. 26/26 integration tests passing.
+
+---
+
+## Phase 7B — Scan Performance Optimization & Crypto Enhancements
+
+### 7B.0 — Documentation Updates ✅
+- Updated `04-SYSTEM_ARCHITECTURE.md` with scan tier architecture, auth service, GeoIP
+- Updated `05-ALGORITHM_RESEARCH.md` with quick/shallow scan algorithms, cipher decomposition, hybrid PQC detection
+- Updated `03-FRONTEND.md` with new page specs (auth, scan history, GeoIP map, updated quick scan)
+- Created `PLAN/06h-PLAN_P7B.md` with detailed implementation plan
+
+### 7B.1 — Quick Scan Service ✅
+- **New file**: `backend/app/services/quick_scanner.py`
+- Single stdlib SSL connection → cert parse → NIST levels → Mosca risk → compliance snapshot
+- **Latency**: 148–399ms (target was <8000ms) — **20x faster than target**
+- **API**: `POST /api/v1/scans/quick` — synchronous, returns full analysis
+- Tested against PNB (650/1000 quantum_vulnerable), SBI (575 at_risk), HDFC (575 at_risk)
+
+### 7B.2 — Shallow Scan Service ✅
+- **New file**: `backend/app/services/shallow_scanner.py`
+- CT discovery (crt.sh) + DNS brute-force fallback → parallel DNS resolution → top-N TLS scan
+- 57 subdomain candidates, 10 live, 5 successfully TLS-scanned in ~35s
+- **API**: `POST /api/v1/scans/shallow` — synchronous, supports `top_n` parameter
+- Discovered subdomains: upi.pnb.bank.in, digitallending.pnb.bank.in, ns4.pnb.bank.in, etc.
+
+### 7B.3 — Deep Scan Optimization ✅
+- Reduced `detect_certificate_pinning` timeout from 10s → 5s
+- Increased crypto inspection workers from 10 → 20
+- Parallelized CBOM generation with ThreadPoolExecutor (was sequential)
+
+### 7B.4 — ScanJob Model Update ✅
+- Added `ScanType` enum: quick, shallow, deep
+- Added `scan_type` column to `scan_jobs` table (default: deep)
+- DB migration applied
+
+### 7B.5 — Hybrid PQC TLS Group Detection ✅
+- Extended `detect_pqc()` with Layer 3 (shared ciphers scan) + Layer 4 (hybrid group decomposition)
+- Named group map: X25519MLKEM768 (0x4588), SecP256r1MLKEM768 (0x4589), SecP384r1MLKEM1024 (0x4590), X25519Kyber768 (0x6399)
+- Returns `hybrid_groups` with classical/PQC component breakdown and IANA IDs
+
+### 7B.6 — TLS Cipher Suite Decomposition ✅
+- New `decompose_cipher_suite()` function in `cbom_builder.py`
+- TLS 1.3 lookup table (5 suites) + TLS 1.2 lookup table (14 suites) + heuristic fallback
+- Splits: key_exchange, authentication, symmetric, mac, tls_version
+- Integrated into `build_cbom()` — each component includes `decomposition` field
+
+### 7B.7 — HNDL Sensitivity Multipliers ✅
+- `SENSITIVITY_MULTIPLIERS` in risk_engine.py: swift=5.0x, core_banking=3.5x, internet_banking=3.0x, web=1.0x, dns=0.5x
+- `compute_hndl_window()` now accepts `asset_type`, returns `weighted_exposure`
+- HNDL API endpoint returns per-asset sensitivity multiplier, sorted by criticality
+
+### 7B.8 — Dynamic Migration Complexity Scoring ✅
+- `compute_migration_complexity()`: base time + penalties for low agility (+2yr), 3rd-party (+1yr), pinning (+1yr), no FS (+0.5yr), capped at 8yr
+- Migration-plan endpoint computes per-asset dynamic complexity
+- Example: swift_endpoint easy=4.0yr → hard=8.0yr (capped)
+
+**New API Endpoints**:
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/v1/scans/quick` | Quick scan — single domain, <1s |
+| POST | `/api/v1/scans/shallow` | Shallow scan — CT+DNS discovery + top-N TLS |
+
+**Integration Tests**: 30/30 passing (Quick scan, auth_service, incremental, scan_cache tests added)
+
+### 7B.9 — JWT Authentication & Endpoint Isolation ✅ (2026-04-10)
+- `app.models.auth`: Added `User`, `EmailVerification`, and `ScanCache` tables.
+- Linked `ScanJob` to `User` via foreign key `user_id`.
+- `auth_service.py` implemented for secure user registration, token generation, and `bcrypt` password hashing.
+- Fully protected `/api/v1/scans` routes forcing valid JWTs for status checks and scan history, fulfilling isolation (users only see their scans).
+- Mapped all undocumented existing scans to an initial `superadmin@qushield.local`.
+
+### 7B.10 — Scan Caching & Verification Tracking ✅
+- Added intelligent Tier Cache Lookup in `create_scan`, `run_shallow_scan`, and `run_quick_scan`.
+- Fulfills Tier Priority (Deep > Shallow > Quick) by returning instantaneous JSON cache summaries for previously analyzed targets if valid limits haven't expired. 
+- Integrated frontend pop-up workflow notes in `docs/03-FRONTEND.md`.
+
+*Phase 7B backend architecture complete!*

@@ -848,3 +848,51 @@ The architecture follows three strict rules that make it maintainable as it grow
 **Rule 2 — Internal API vs external API.** Every service has an `/internal/` router that is not registered with Kong (only reachable inside the Docker/Kubernetes network). External-facing endpoints go through Kong with JWT auth enforced. This prevents inter-service calls from bypassing auth while still allowing them to communicate efficiently.
 
 **Rule 3 — Kafka for pipeline, REST for queries.** Scan pipeline data flows through Kafka (fire-and-forget, durable, replayable). Frontend-triggered data reads always go through REST (synchronous, paginated, filterable). This keeps the scan pipeline decoupled from the UI and makes it independently scalable.
+
+---
+
+## Addendum: Phase 7B Architecture Additions (2026-04-10)
+
+### Scan Tier Architecture
+
+The system supports three scan tiers with progressively deeper analysis:
+
+| Tier | Latency Target | Scope | Pipeline |
+|---|---|---|---|
+| **Quick Scan** | 3–8 seconds | Root domain only | 1 TLS handshake → cert parse → NIST quantum levels → risk score → compliance snapshot |
+| **Shallow Scan** | 30–90 seconds | Root + subdomains (DNS/CT only) | DNS enumeration + crt.sh → top-N subdomain TLS scans → CBOM → risk → compliance |
+| **Deep Scan** | 5–10 minutes | Full infrastructure | Go Discovery Engine (DNS+CT+ASN+ports) → full crypto inspection on all assets → CBOM → risk → compliance → topology |
+
+**Quick Scan** runs synchronously in the API request handler (no background thread). **Shallow** and **Deep** scans run as background tasks. The `ScanJob` model includes a `scan_type` enum field (`quick`, `shallow`, `deep`) that determines which pipeline to execute.
+
+**Scan Tier Escalation**: If a user requests a Quick Scan for a domain that already has a Shallow or Deep scan cached, the system returns the richer cached result instantly. Tier hierarchy: `deep > shallow > quick`.
+
+### Authentication Service
+
+| Component | Technology |
+|---|---|
+| Password hashing | `bcrypt` via `passlib` |
+| Token format | JWT (HS256), access + refresh tokens |
+| Access token TTL | 30 minutes |
+| Refresh token TTL | 7 days |
+| Email verification | Token-based (UUID4, 24h expiry) |
+| Data isolation | `user_id` FK on `ScanJob`; query filters enforce ownership |
+
+**Models**: `User` (id, email, password_hash, email_verified, created_at) + `EmailVerification` (token, user_id, expires_at).
+
+**Scan Cache**: `ScanCache` (domain, scan_type, scan_id, user_id, cached_at, expires_at). TTLs: quick=1h, shallow=6h, deep=24h.
+
+### GeoIP Location Service
+
+Uses MaxMind GeoLite2 databases (already configured in `.env` as `MAXMIND_DB_PATH`) to resolve IP addresses to geographic coordinates and ISP/organization metadata.
+
+**Model**: `GeoLocation` (asset_id, ip_address, latitude, longitude, city, state, country, organization, isp, asn).
+
+**API Output**: GeoJSON format for map rendering. Each asset's IPs plotted with hostname, risk status, asset type, and quantum vulnerability as hover data.
+
+### Crypto Algorithm Improvements
+
+1. **Hybrid PQC Detection**: Extended `detect_pqc()` and `scan_tls()` to detect TLS 1.3 hybrid named groups (X25519MLKEM768 `0x4588`, SecP256r1MLKEM768 `0x4589`, SecP384r1MLKEM1024 `0x4590`).
+2. **Cipher Suite Decomposition**: CBOM components decomposed from monolithic cipher names into structured `{key_exchange, authentication, symmetric, mac}`.
+3. **HNDL Sensitivity Multiplier**: Per-asset-type weighting (swift_endpoint: 5.0x, internet_banking: 3.0x, upi_gateway: 3.0x, etc.) applied to HNDL exposure calculation.
+4. **Dynamic Migration Complexity**: Mosca's X parameter computed dynamically from scan data (agility score, third-party dependency, pinning, forward secrecy) rather than static defaults.

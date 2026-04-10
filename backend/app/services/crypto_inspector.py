@@ -636,8 +636,43 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
                             result["pqc_key_exchange"] = True
                             result["pqc_algorithms_found"].append(cipher_name)
 
+                # Layer 3: Check shared ciphers and TLS extensions for hybrid PQC groups
+                shared = ssock.shared_ciphers()
+                if shared:
+                    for c in shared:
+                        c_name = c[0].upper() if c else ""
+                        for marker in pqc_kex_markers:
+                            if marker.upper() in c_name:
+                                result["pqc_key_exchange"] = True
+                                if c[0] not in result["pqc_algorithms_found"]:
+                                    result["pqc_algorithms_found"].append(c[0])
+
     except Exception as e:
         result["note"] = f"PQC detection error: {str(e)}"
+
+    # Layer 4: Hybrid TLS group detection via pattern matching
+    # Known hybrid PQC named groups (IANA registered or draft)
+    _HYBRID_GROUPS = {
+        "X25519MLKEM768":    {"classical": "X25519",     "pqc": "ML-KEM-768",  "nist_level": 3, "iana_id": "0x4588"},
+        "SecP256r1MLKEM768": {"classical": "secp256r1",  "pqc": "ML-KEM-768",  "nist_level": 3, "iana_id": "0x4589"},
+        "SecP384r1MLKEM1024":{"classical": "secp384r1",  "pqc": "ML-KEM-1024", "nist_level": 5, "iana_id": "0x4590"},
+        "X25519Kyber768":    {"classical": "X25519",     "pqc": "Kyber-768",   "nist_level": 3, "iana_id": "0x6399"},
+        "X448MLKEM1024":     {"classical": "X448",       "pqc": "ML-KEM-1024", "nist_level": 5, "iana_id": None},
+    }
+
+    hybrid_groups_detected = []
+    for algo in result.get("pqc_algorithms_found", []):
+        for group_name, info in _HYBRID_GROUPS.items():
+            if group_name.upper() in algo.upper():
+                hybrid_groups_detected.append({
+                    "name": group_name,
+                    "classical_component": info["classical"],
+                    "pqc_component": info["pqc"],
+                    "nist_level": info["nist_level"],
+                    "iana_id": info.get("iana_id"),
+                })
+    result["hybrid_groups"] = hybrid_groups_detected
+    result["is_hybrid"] = len(hybrid_groups_detected) > 0
 
     if not result["pqc_key_exchange"] and not result["pqc_signature"]:
         result["note"] = (
@@ -866,7 +901,7 @@ def detect_certificate_pinning(hostname: str, port: int = 443) -> dict:
     }
 
     try:
-        with httpx.Client(verify=False, timeout=10.0) as client:
+        with httpx.Client(verify=False, timeout=5.0) as client:
             resp = client.get(f"https://{hostname}:{port}", follow_redirects=True)
             headers = dict(resp.headers)
 

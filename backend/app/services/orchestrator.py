@@ -130,7 +130,7 @@ class ScanOrchestrator:
 
             successful_crypto = 0
             asset_crypto_map = {}
-            with ThreadPoolExecutor(max_workers=10) as executor:
+            with ThreadPoolExecutor(max_workers=20) as executor:
                 futures = {executor.submit(process_crypto, a_id, a_host): a_id for a_id, a_host in mapped_assets}
                 for future in as_completed(futures):
                     result_id, fp = future.result()
@@ -141,6 +141,33 @@ class ScanOrchestrator:
             summary["crypto_scans"] = successful_crypto
             summary["phases_completed"].append(2)
 
+            # Phase 2.5: Incremental scan — compute fingerprints and detect deltas
+            from app.services.incremental import (
+                compute_asset_fingerprint, find_previous_asset,
+                is_unchanged, clone_scan_data,
+            )
+            cloned_count = 0
+            assets_to_scan = set()  # asset IDs that need full pipeline
+            for asset in db_assets:
+                asset_id_str = str(asset.id)
+                fp = asset_crypto_map.get(asset_id_str)
+                if fp:
+                    fph = compute_asset_fingerprint(asset, fp)
+                    asset.fingerprint_hash = fph
+                    prev = find_previous_asset(asset.hostname, scan_id, db)
+                    if prev and is_unchanged(fph, prev):
+                        # Clone prior results instead of re-processing
+                        clone_scan_data(prev.id, scan_id, asset.id, db)
+                        cloned_count += 1
+                    else:
+                        assets_to_scan.add(asset_id_str)
+                else:
+                    assets_to_scan.add(asset_id_str)
+            db.commit()
+            summary["cloned_assets"] = cloned_count
+            summary["rescanned_assets"] = len(assets_to_scan)
+            logger.info(f"[{scan_id}] Incremental: {cloned_count} cloned, {len(assets_to_scan)} need full pipeline")
+
             # Phase 3: CBOM Generation
             logger.info(f"[{scan_id}] Phase 3: CBOM Generation")
             scan_job.current_phase = 3
@@ -149,19 +176,32 @@ class ScanOrchestrator:
             from app.services.cbom_builder import build_cbom, save_cbom, save_cbom_to_db, build_aggregate_cbom
 
             successful_cboms = 0
-            for asset in db_assets:
-                fp = asset_crypto_map.get(str(asset.id))
-                if fp:
-                    try:
-                        cbom_data = build_cbom(str(asset.id), fp)
-                        if cbom_data:
-                            # save_cbom returns file path
-                            file_path = save_cbom(scan_id, str(asset.id), cbom_data["cbom_json"])
-                            # also save to db
-                            save_cbom_to_db(scan_id, str(asset.id), cbom_data, file_path, db)
-                            successful_cboms += 1
-                    except Exception as e:
-                        logger.error(f"CBOM generation failed for {asset.hostname}: {e}")
+
+            def process_cbom(asset_obj):
+                if str(asset_obj.id) not in assets_to_scan:
+                    return False  # Already cloned
+                fp = asset_crypto_map.get(str(asset_obj.id))
+                if not fp:
+                    return False
+                try:
+                    cbom_data = build_cbom(str(asset_obj.id), fp)
+                    if cbom_data:
+                        file_path = save_cbom(scan_id, str(asset_obj.id), cbom_data["cbom_json"])
+                        local_db = SessionLocal()
+                        try:
+                            save_cbom_to_db(scan_id, str(asset_obj.id), cbom_data, file_path, local_db)
+                        finally:
+                            local_db.close()
+                        return True
+                except Exception as e:
+                    logger.error(f"CBOM generation failed for {asset_obj.hostname}: {e}")
+                return False
+
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                cbom_futures = {executor.submit(process_cbom, a): a for a in db_assets}
+                for f in as_completed(cbom_futures):
+                    if f.result():
+                        successful_cboms += 1
 
             build_aggregate_cbom(scan_id, db)
             summary["cboms_generated"] = successful_cboms
@@ -172,8 +212,11 @@ class ScanOrchestrator:
             scan_job.current_phase = 4
             db.commit()
 
+            # IDs of cloned assets (already have risk/compliance from prior scan)
+            cloned_ids = {str(a.id) for a in db_assets if str(a.id) not in assets_to_scan}
+
             try:
-                results = assess_all_assets(scan_id, db)
+                results = assess_all_assets(scan_id, db, skip_asset_ids=cloned_ids)
                 summary["risk_assessments"] = len(results)
             except Exception as e:
                 logger.error(f"Risk assessment failed for scan {scan_id}: {e}")
@@ -186,6 +229,8 @@ class ScanOrchestrator:
             
             successful_compliance = 0
             for asset in db_assets:
+                if str(asset.id) in cloned_ids:
+                    continue  # Already cloned from prior scan
                 try:
                     # Build crypto_data dict from the asset's crypto fingerprint
                     fp = asset_crypto_map.get(str(asset.id), {})

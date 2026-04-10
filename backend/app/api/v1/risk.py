@@ -157,21 +157,32 @@ def get_hndl_exposure(
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
 
+    from app.services.risk_engine import SENSITIVITY_MULTIPLIERS
+
     exposed = []
     safe = []
     for r in risks:
         asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
+        asset_type = asset.asset_type if asset else "unknown"
+        multiplier = SENSITIVITY_MULTIPLIERS.get(asset_type, 1.0)
+        weighted_x = round((r.mosca_x or 0) * multiplier, 2)
         entry = {
             "asset_id": str(r.asset_id),
             "hostname": asset.hostname if asset else "unknown",
+            "asset_type": asset_type,
             "hndl_exposed": r.hndl_exposed,
             "mosca_x": r.mosca_x,
             "mosca_y": r.mosca_y,
+            "sensitivity_multiplier": multiplier,
+            "weighted_exposure": weighted_x,
         }
         if r.hndl_exposed:
             exposed.append(entry)
         else:
             safe.append(entry)
+
+    # Sort exposed by weighted_exposure descending (most critical first)
+    exposed.sort(key=lambda e: e["weighted_exposure"], reverse=True)
 
     return {
         "scan_id": str(scan_id),
@@ -333,9 +344,16 @@ def get_migration_plan(
     if not assets:
         raise HTTPException(status_code=404, detail="No assets for this scan")
 
+    from app.services.risk_engine import compute_migration_complexity
+
     risks = {str(r.asset_id): r for r in db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()}
     compliances = {str(c.asset_id): c for c in db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()}
     certs = db.query(Certificate).filter(Certificate.scan_id == scan_id).all()
+
+    # Index certs by asset for pinning lookup
+    cert_by_asset = {}
+    for c in certs:
+        cert_by_asset.setdefault(str(c.asset_id), []).append(c)
 
     # Weak certs: RSA <= 1024 or expired
     weak_certs = [c for c in certs if (c.key_length or 0) <= 1024]
@@ -353,6 +371,18 @@ def get_migration_plan(
         classification = risk.risk_classification if risk else "unknown"
         agility = comp.crypto_agility_score if comp else 0
 
+        # Dynamic migration complexity
+        asset_certs = cert_by_asset.get(asset_id, [])
+        is_pinned = any(getattr(c, "is_pinned", False) for c in asset_certs)
+        has_fs = comp.forward_secrecy if comp else True
+        complexity = compute_migration_complexity(
+            asset_type=a.asset_type or "unknown",
+            agility_score=agility,
+            is_third_party=getattr(a, "is_third_party", False),
+            is_pinned=is_pinned,
+            has_forward_secrecy=has_fs,
+        )
+
         entry = {
             "asset_id": asset_id,
             "hostname": a.hostname,
@@ -360,6 +390,7 @@ def get_migration_plan(
             "risk_score": score,
             "classification": classification,
             "agility_score": agility,
+            "migration_complexity": complexity,
         }
 
         # Phase 0: Critical emergencies
