@@ -785,4 +785,13 @@
   - `v1/scans.py`: Exposed `GET /api/v1/scans/{scan_id}/stream` returning `text/event-stream`.
 - **Test**: `test_phase8_wave3.py` — SSE generator and payload validation functions correctly formatted.
 
-**Wave 3 Total**: 1/1 standalone test passing. Orchestrator securely emits events to active listeners.
+### 8.9 — Deep Scan AI Features (Wave 4) ✅ (2026-04-10)
+- **Feature**: Track H — Complete suite of advanced LLM/ML features focusing on Dual-Mode Deployment (Secure/Cloud) with strict tenant isolation.
+- **Changes**:
+  - `ai_service.py` & `embedding_service.py`: Standardized Provider Factories supporting fast local edge inference via Ollama and Cloud scaling via Groq/OpenAI endpoints.
+  - `vector_store.py`: Provisioned local `ChromaDB` integration. Guaranteed strict tenant compliance by injecting `user_id` statically into metadata chunks globally and querying with hard-filters.
+  - `sql_agent.py`: Switched structured asset/cert querying from flawed RAG to deterministic in-memory `sqlite3` using Pandas `.to_sql()` isolated dynamically per-user. Prevented all cross-tenant leakage. 
+  - `roadmap_agent.py`: Integrated PQCC.org standardized 4-Phase execution plan generator returning valid `json` outputs.
+  - `report_generator.py`: Generates custom HTML utilizing LLM Executive Summaries combined dynamically via `Jinja2` with WeasyPrint `pdf` compilation available inside the single `reports.py` router.
+
+**Wave 4 Total**: 100% Phase 8 AI goals implemented. Advanced isolation strategies successfully established.

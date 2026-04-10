@@ -237,16 +237,16 @@ def build_cbom(asset_id: str, crypto_fingerprint: dict) -> dict:
     safe_count = 0
 
     hostname = crypto_fingerprint.get("hostname", "unknown")
-    tls_data = crypto_fingerprint.get("tls", {})
-    certs_data = crypto_fingerprint.get("certificates", [])
-    quantum_summary = crypto_fingerprint.get("quantum_summary", {})
+    tls_data = crypto_fingerprint.get("tls") or {}
+    certs_data = crypto_fingerprint.get("certificates") or []
+    quantum_summary = crypto_fingerprint.get("quantum_summary") or {}
 
     # ── 1. Cipher Suite Algorithm Components ──────────────────────────────
 
     seen_algos = set()
     cipher_suite_refs = []
 
-    for cs in tls_data.get("cipher_suites", []):
+    for cs in tls_data.get("cipher_suites") or []:
         cs_name = cs.get("name", "")
         if cs_name in seen_algos:
             continue

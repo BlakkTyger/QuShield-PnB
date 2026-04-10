@@ -55,15 +55,6 @@ def modify_db():
     except Exception as e:
         print("certificates_sha256_fingerprint_key constraint errored or already dropped:", e)
 
-    try:
-        with engine.begin() as conn:
-            conn.execute(text("ALTER TABLE users ADD COLUMN deployment_mode VARCHAR(20) DEFAULT 'secure';"))
-            conn.execute(text("ALTER TABLE users ADD COLUMN ai_tier VARCHAR(20) DEFAULT 'free';"))
-            conn.execute(text("ALTER TABLE users ADD COLUMN cloud_api_keys JSON;"))
-            print("AI tier columns added successfully.")
-    except Exception as e:
-        print("AI tier columns errored or existed:", e)
-
 if __name__ == "__main__":
     modify_db()
     print("Execution complete.")

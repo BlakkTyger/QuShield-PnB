@@ -1,11 +1,10 @@
 """Authentication models — User, EmailVerification, and ScanCache."""
 import uuid
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
-
 
 class User(Base):
     __tablename__ = "users"
@@ -14,6 +13,12 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     email_verified = Column(Boolean, default=False)
+    
+    # AI Feature Flags & Preferences
+    deployment_mode = Column(String(20), default="secure") # secure | cloud
+    ai_tier = Column(String(20), default="free")           # free | professional | enterprise
+    cloud_api_keys = Column(JSON, nullable=True)           # Encrypted dict of external provider keys
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships

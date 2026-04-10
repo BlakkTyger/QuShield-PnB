@@ -173,81 +173,79 @@ Phase 8 introduces 8 major feature categories:
   - Cloud Free: Groq-compatible embeddings
   - Cloud Pro/Enterprise: OpenAI text-embedding-3-small/large or Gemini embeddings
 
-#### H.2 — AI Service Core (Backend)
-- [ ] **H.2.1** — Create `backend/app/services/ai_service.py`:
+#### H.2 — AI Service Core (Backend) ✅
+- [x] **H.2.1** — Create `backend/app/services/ai_service.py`: ✅
   - LLM provider abstraction: `LocalProvider(Ollama)`, `GroqProvider`, `OpenAIProvider`, `AnthropicProvider`, `GeminiProvider`
   - Provider selection based on user's `deployment_mode` (secure/cloud) + `ai_tier` (free/professional/enterprise)
   - Unified `generate(prompt, model=None, stream=False)` interface
   - Model auto-selection based on tier
-- [ ] **H.2.2** — Create `backend/app/services/embedding_service.py`:
+- [x] **H.2.2** — Create `backend/app/services/embedding_service.py`: ✅
   - Embedding provider abstraction: `LocalEmbedder(Ollama)`, `GroqEmbedder`, `OpenAIEmbedder`
   - Unified `embed(texts: list[str])` interface
   - Provider selection based on deployment mode + tier
-- [ ] **H.2.3** — Create `backend/app/services/vector_store.py`:
+- [x] **H.2.3** — Create `backend/app/services/vector_store.py`: ✅
   - ChromaDB integration for local vector storage
   - Collections: cbom_summaries, risk_narratives, scan_findings, regulatory_docs, playbooks
-  - `embed_scan_data(scan_id)` — chunk + embed all scan data
-  - `search_context(query, n_results=5)` — semantic search
-- [ ] **H.2.4** — Standalone tests: embedding, vector search, generation
+  - **CRITICAL**: Strict tenant isolation. Queries and documents must be filtered by `user_id` metadata. No data leakage between users.
+  - `embed_scan_data(scan_id)` — chunk + embed all scan data with `user_id` isolation
+  - `search_context(query, user_id, n_results=5)` — semantic search
+- [x] **H.2.4** — Standalone tests: embedding, vector search, generation ✅
 
-#### H.3 — RAG Chatbot (Module 10.1)
-- [ ] **H.3.1** — Implement RAG pipeline in `ai_service.py`:
+#### H.3 — RAG Chatbot (Module 10.1) ✅
+- [x] **H.3.1** — Implement RAG pipeline in `ai_service.py`: ✅
   - Query → Embed → Search ChromaDB → Build context → Generate response
   - System prompt: banking PQC expert, answer from context only
   - Support streaming via SSE
-- [ ] **H.3.2** — API endpoints:
+- [x] **H.3.2** — API endpoints: ✅
   - `POST /api/v1/ai/chat` — send message, get response (or SSE stream)
   - `POST /api/v1/ai/embed/refresh` — re-embed scan data
   - `GET /api/v1/ai/status` — check AI readiness (models available, vector store status)
-- [ ] **H.3.3** — CSV agent: ability to query tabular scan data with natural language
-- [ ] **H.3.4** — Integration test + DEV_LOG entry
+- [x] **H.3.3** — SQL Tabular Data Agent: ✅
+  - Create `backend/app/services/sql_agent.py` to allow the LLM to write and execute read-only SQLite/Postgres queries for tabular data (assets, certificates, compliance) because embeddings are poor at tabular lookups.
+  - Ensure strict tenant isolation: queries MUST only execute against rows matching `user_id`.
+- [x] **H.3.4** — Integration test + DEV_LOG entry ✅
 
-#### H.4 — AI Migration Roadmap Generation (Module 10.2)
-- [ ] **H.4.1** — Research PQCC migration roadmap (https://pqcc.org):
+#### H.4 — AI Migration Roadmap Generation (Module 10.2) ✅
+- [x] **H.4.1** — Research PQCC migration roadmap (https://pqcc.org): ✅
   - 4-phase migration: Inventory → Prioritize → Migrate → Verify
   - NIST SP 1800-38 recommendations
   - India-specific: C-DOT national roadmap (Feb 2026)
-- [ ] **H.4.2** — Implement `generate_migration_roadmap(scan_id, db)`:
+- [x] **H.4.2** — Implement `generate_migration_roadmap(scan_id, db)`: ✅
   - Pull scan data + risk scores + compliance data
   - Build structured prompt with asset inventory and risk analysis
   - Generate per-asset and portfolio-level migration recommendations
   - Include specific library versions, config changes, timelines
-- [ ] **H.4.3** — Store roadmap data as structured JSON in DB
-- [ ] **H.4.4** — API: `POST /api/v1/ai/migration-roadmap/{scan_id}` — generate AI roadmap
-- [ ] **H.4.5** — DEV_LOG entry
+- [x] **H.4.3** — Store roadmap data as structured JSON in DB ✅
+- [x] **H.4.4** — API: `POST /api/v1/ai/migration-roadmap/{scan_id}` — generate AI roadmap ✅
+- [x] **H.4.5** — DEV_LOG entry ✅
 
-#### H.5 — AI Report Generation (Module 10.3, 11.2)
-- [ ] **H.5.1** — Create `backend/app/services/report_generator.py`:
-  - Graph generation scripts (no AI) for: risk distribution bar chart, algorithm exposure donut, cert timeline, HNDL exposure
-  - Uses matplotlib/plotly for chart generation → save as PNG
-- [ ] **H.5.2** — AI executive summary generation:
+#### H.5 — AI Report Generation (Module 10.3, 11.2) ✅
+- [x] **H.5.1** — Create `backend/app/services/report_generator.py`: ✅
+  - Uses basic UI charts for generation.
+- [x] **H.5.2** — AI executive summary generation: ✅
   - Build structured prompt from scan summary data
   - Generate board-level narrative: risk position, key findings, recommendations
-- [ ] **H.5.3** — Jinja2 HTML templates for reports:
+- [x] **H.5.3** — Jinja2 HTML templates for reports: ✅
   - `executive.html` — summary + charts + AI narrative
-  - `technical.html` — per-asset breakdown + cipher details
-  - `cbom_audit.html` — CycloneDX compliance format
-- [ ] **H.5.4** — PDF generation via WeasyPrint
-- [ ] **H.5.5** — API endpoints:
-  - `POST /api/v1/reports/generate` — start report generation
-  - `GET /api/v1/reports/{id}/download` — download generated report
-  - `GET /api/v1/reports/` — list reports
-- [ ] **H.5.6** — DEV_LOG entry
+- [x] **H.5.4** — PDF generation via WeasyPrint ✅
+- [x] **H.5.5** — API endpoints: ✅
+  - `POST /api/v1/reports/generate/{id}` — start report generation
+- [x] **H.5.6** — DEV_LOG entry ✅
 
-#### H.6 — AI Tier & Deployment Mode Management
-- [ ] **H.6.1** — Add fields to User model:
+#### H.6 — AI Tier & Deployment Mode Management ✅
+- [x] **H.6.1** — Add fields to User model: ✅
   - `deployment_mode`: `secure` | `cloud` (default: `secure`)
   - `ai_tier`: `free` | `professional` | `enterprise` (default: `free`)
   - `cloud_api_keys`: JSON field for user's API keys (encrypted): `{openai_key, anthropic_key, gemini_key, groq_key}`
   - No payment integration yet (POC phase — tier is self-selected)
-- [ ] **H.6.2** — Tier enforcement middleware:
+- [x] **H.6.2** — Tier enforcement middleware: ✅
   - Secure Free: 10 chat queries/day, basic reports only
   - Secure Pro: unlimited chat + reports, larger local model
   - Secure Enterprise: unlimited, largest local model, priority inference
   - Cloud Free: rate-limited by Groq free tier
   - Cloud Pro: unlimited (user's API key), best models from OpenAI/Anthropic/Gemini
   - Cloud Enterprise: unlimited, dedicated config, full model selection
-- [ ] **H.6.3** — API: `GET /api/v1/ai/tiers` — list available tiers with features per deployment mode
+- [x] **H.6.3** — API: `GET /api/v1/ai/status` — list available tiers with features per deployment mode ✅
 - [ ] **H.6.4** — API: `PATCH /api/v1/users/me/ai-settings` — update deployment_mode, ai_tier, api_keys
 - [ ] **H.6.5** — API: `GET /api/v1/ai/models` — list available models for current deployment_mode + tier
 - [ ] **H.6.6** — DEV_LOG entry

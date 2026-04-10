@@ -1368,7 +1368,7 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
     safe_algos = []
     all_levels = []
 
-    for cs in (fingerprint.get("tls") or {}).get("cipher_suites", []):
+    for cs in ((fingerprint.get("tls") or {}).get("cipher_suites") or []):
         level = get_nist_quantum_level(cs["name"])
         cs["quantum"] = level
         if level["is_quantum_vulnerable"]:
@@ -1378,7 +1378,7 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
         if level["nist_level"] >= 0:
             all_levels.append(level["nist_level"])
 
-    for cert in fingerprint.get("certificates", []):
+    for cert in (fingerprint.get("certificates") or []):
         level = get_nist_quantum_level(cert["key_type"], cert.get("key_length"))
         cert["quantum"] = level
         if level["is_quantum_vulnerable"]:
@@ -1411,7 +1411,7 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
 
     # Step 6: Certificate intelligence enhancements
     cert_intel = []
-    for cert in fingerprint.get("certificates", []):
+    for cert in (fingerprint.get("certificates") or []):
         intel = {}
         # Effective security expiry (CRQC-adjusted)
         if cert.get("valid_to"):

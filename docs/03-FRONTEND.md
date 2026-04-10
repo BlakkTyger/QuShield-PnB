@@ -455,5 +455,26 @@ A dedicated panel below the chat — accessed via a `Generate AI Report` button 
 - **Right Panel (Metrics)**: Live updating counters driven by the SSE stream:
   - Assets Discovered (integer)
   - Crypto Handshakes (progress bar, driven by `crypto_result` pct field)
-  - Estimated Time Remaining (derived from average per-asset processing time).
+  - **Estimated Time Remaining** (derived from average per-asset processing time).
 - **Completion State**: When `scan_complete` arrives, the stream disconnects, a confetti animation plays, and a CTA "View Full Results" appears.
+
+---
+
+## Phase 8 Wave 4 UX Updates (AI Agents)
+
+### Page — AI Security Analyst (RAG Chatbot)
+**Purpose**: An engaging conversational GUI allowing the user to dynamically query the database for custom answers, bypassing standard dashboard views.
+**Layout**:
+- **Deployment & Tier Selection Modal**: 
+  - Allows user to choose between Secure (Local) vs Cloud (OpenAI/Groq).
+  - Select active tier (Free, Pro, Enterprise).
+  - "Insert API Keys" input area when switching to Cloud.
+- **Chat Feed**: Standard conversational UI (ChatGPT style) containing user queries and AI responses (Markdown formatted).
+- **Mode Indicator**: Automatically lights up `SQL Engine` when data analytics queries are detected, or `ChromaDB RAG` when narrative risk evaluation is detected.
+
+### Page — Executive Custom Reporter
+**Purpose**: Compile standard Executive Summaries of deep scan risks on-demand using AI synthesis and download beautifully rendered PDFs.
+**Layout**:
+- **Selection Dropdown**: Target a specifically completed Scan Job ID.
+- **Report Preview**: Auto-generates the `executive.html` Jinja layout with the AI Executive narrative.
+- **Download Actions**: Trigger `POST /api/v1/reports/generate` and download the `.pdf` blob instantly.

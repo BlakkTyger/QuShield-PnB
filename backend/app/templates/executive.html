@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QuShield-PnB Executive Summary</title>
+    <style>
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #0056b3; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #0056b3; margin: 0; }
+        .summary-stats { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 30px; }
+        .stat-box { background: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #0056b3; padding: 15px; width: 30%; margin-bottom: 15px; box-sizing: border-box; }
+        .stat-box.critical { border-left-color: #dc3545; }
+        .stat-box h3 { margin-top: 0; font-size: 14px; text-transform: uppercase; color: #6c757d; }
+        .stat-box p { margin: 0; font-size: 24px; font-weight: bold; }
+        .narrative { background: #e9ecef; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .narrative h2 { margin-top: 0; color: #495057; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
+        th { background: #f8f9fa; }
+        .footer { text-align: center; font-size: 12px; color: #6c757d; border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>QuShield-PnB</h1>
+        <h2>Post-Quantum Risk Executive Summary</h2>
+        <p>Scan ID: {{ scan_id }} | Date: {{ generation_date }}</p>
+    </div>
+
+    <div class="summary-stats">
+        <div class="stat-box">
+            <h3>Total Assets Scanned</h3>
+            <p>{{ total_assets }}</p>
+        </div>
+        <div class="stat-box critical">
+            <h3>Critical / High Quantum Risks</h3>
+            <p>{{ high_risks_count }}</p>
+        </div>
+        <div class="stat-box">
+            <h3>Avg Quantum Readiness</h3>
+            <p>{{ avg_readiness }}/10</p>
+        </div>
+    </div>
+
+    <div class="narrative">
+        <h2>AI Executive Narrative</h2>
+        <div style="white-space: pre-wrap;">{{ ai_narrative }}</div>
+    </div>
+
+    <h2>High-Risk Cryptographic Assets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Hostname / IP</th>
+                <th>Type</th>
+                <th>Risk Score</th>
+                <th>Algorithm Weakness</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in critical_assets %}
+            <tr>
+                <td>{{ asset.hostname }}<br><small>{{ asset.ip_address }}</small></td>
+                <td>{{ asset.asset_type }}</td>
+                <td style="color: #dc3545; font-weight: bold;">{{ asset.risk_score }} ({{ asset.classification }})</td>
+                <td>{{ asset.weakness }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center;">No high or critical risks found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Generated securely by QuShield-PnB | Confidential Internal Report
+    </div>
+</body>
+</html>

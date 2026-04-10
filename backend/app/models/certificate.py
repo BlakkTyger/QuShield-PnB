@@ -23,7 +23,7 @@ class Certificate(Base):
     signature_algorithm_oid = Column(String(100), nullable=True)
     valid_from = Column(DateTime(timezone=True), nullable=True)
     valid_to = Column(DateTime(timezone=True), nullable=True)
-    sha256_fingerprint = Column(String(64), nullable=True, unique=True)
+    sha256_fingerprint = Column(String(64), nullable=True)
     is_ct_logged = Column(Boolean, default=False)
     nist_quantum_level = Column(Integer, default=-1)  # 0-6, -1=unknown
     is_quantum_vulnerable = Column(Boolean, default=True)

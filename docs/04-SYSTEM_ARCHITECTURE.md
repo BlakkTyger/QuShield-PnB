@@ -57,7 +57,7 @@ qushield-pnb/
 │   ├── graph-service/               # Python FastAPI – Neo4j topology, blast radius
 │   ├── migration-service/           # Python FastAPI – roadmap, playbooks, vendors
 │   ├── reporting-service/           # Python FastAPI – PDF, CBOM pkg, scheduling
-│   ├── ai-service/                  # Python FastAPI – Ollama, ChromaDB, RAG chatbot
+│   ├── ai-service/                  # Python FastAPI – Ollama, ChromaDB (Tenant RLS enabled), SQLite Tabular Mem isolation, RAG chatbot
 │   └── notification-service/        # Python FastAPI – alerts, email, webhooks
 │
 ├── packages/                        # Shared internal libraries (installed via pip -e)
