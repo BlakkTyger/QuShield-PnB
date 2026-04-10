@@ -34,14 +34,22 @@ router = APIRouter()
 _running_scans: dict[str, threading.Thread] = {}
 
 def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Optional[ScanCache]:
-    return db.query(ScanCache).filter(
+    caches = db.query(ScanCache).filter(
         ScanCache.domain == domain,
         ScanCache.scan_type.in_(allowed_types),
         ScanCache.expires_at > datetime.now(timezone.utc)
-    ).order_by(ScanCache.cached_at.desc()).first()
+    ).order_by(ScanCache.cached_at.desc()).all()
 
 @router.post("/", response_model=ScanResponse, status_code=201)
 async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    for cache in caches:
+        scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
+        if not scan_job or scan_job.status == "failed" or (scan_job.status == "completed" and getattr(scan_job, "total_assets", 0) == 0):
+            db.delete(cache)
+            db.commit()
+            continue
+        return cache
+    return None
     """Start a new scan. The scan runs in a background thread."""
     
     # Cache check for single-target deep scan

@@ -44,6 +44,8 @@
   /* Component Tokens */
   --input-bg: var(--bg-card);
   --orb-opacity: 0.35;
+  --btn-primary-bg: linear-gradient(135deg, var(--accent-gold) 0%, #e6a800 100%);
+  --btn-primary-text: #000000;
 }
 
 [data-theme="light"] {
@@ -77,6 +79,8 @@
   /* Component Tokens */
   --input-bg: #f3f3f6;
   --orb-opacity: 0.08;
+  --btn-primary-bg: var(--accent-magenta);
+  --btn-primary-text: #ffffff;
 }
 
 /* ─── Base Resets ──────────────────────────────────────────────────── */
@@ -344,8 +348,8 @@ input:-webkit-autofill:active {
   align-items: center;
   gap: 8px;
   padding: 12px 28px;
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #e6a800 100%);
-  color: #000;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 12px;

@@ -478,3 +478,27 @@ A dedicated panel below the chat — accessed via a `Generate AI Report` button 
 - **Selection Dropdown**: Target a specifically completed Scan Job ID.
 - **Report Preview**: Auto-generates the `executive.html` Jinja layout with the AI Executive narrative.
 - **Download Actions**: Trigger `POST /api/v1/reports/generate` and download the `.pdf` blob instantly.
+
+---
+
+## Frontend-Backend Integration Architecture
+
+The QuShield frontend strictly isolates its UI logic from the FastApi backend systems using a structured API proxy pattern and state management hierarchy.
+
+### Next.js API Proxy
+To avoid CORS issues and maintain a unified domain, Next.js `next.config.ts` intercepts all requests to `/api/*` and proxies them to the backend (FastAPI at `http://localhost:8000/api/*`). The frontend exclusively uses relative URLs (e.g., `axios.post('/api/v1/auth/login')`).
+
+### Authentication & Authorization
+- **Token Handling**: JWT access tokens are issued by FastAPI via OAuth2. Tokens are handled client-side and automatically transmitted through global headers.
+- **Route Guards**: Next.js custom `AuthGuard` components structurally intercept unauthenticated rendering attempts, aggressively enforcing redirection to `/login` for protected pages.
+- **Axios Interceptors**: A pre-configured Axios instance globally injects `Authorization: Bearer <token>` into all outbound API requests. On `401 Unauthorized`, it systematically purges the session.
+
+### Data Fetching & Streaming
+- **REST APIs**: The primary mechanism for discrete state actions (User Registration, Login, User Profile retrieval, triggering Report Generation).
+- **Server-Sent Events (SSE)**: Specifically utilized for the `Deep Scan Live Progress`. The UI listens to `/api/v1/scans/{id}/stream` to push continuous telemetry and animated feedback (current phase, metrics, ETAs) into the dashboard without heavy polling.
+
+### State Management
+- **Local Component State**: Leverages modern React `useState` / `useEffect` for UI toggles, login modes, and real-time form validations.
+- **Persistent Theming**: CSS Variables governed by `data-theme` on the document root, synced seamlessly to `localStorage` for cross-session continuity between Auth layers and Dashboard layers.
+
+By adhering strictly to this structured data layer, the Next.js visual interface remains elegantly decoupled from the rigorous cryptographic pipeline executing underneath.

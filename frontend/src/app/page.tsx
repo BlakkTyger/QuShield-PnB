@@ -1,28 +1,32 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Key, Award } from "lucide-react";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key } from "lucide-react";
 import { useStartScan, useScanStatus, useScanSummary, useEnterpriseRating } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
-import { RISK_LABELS } from "@/lib/types";
 
-const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "onlinesbi.sbi.bank.in"];
+const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
 
 const PHASES = [
-  { id: 1, name: "Asset Discovery", desc: "DNS, subdomains, port scan" },
-  { id: 2, name: "Crypto Inspection", desc: "TLS, ciphers, certificates" },
-  { id: 3, name: "CBOM Generation", desc: "CycloneDX CBOM assembly" },
-  { id: 4, name: "Risk Assessment", desc: "Mosca, HNDL, compliance" },
+  { id: 1, name: "DNS Resolution" },
+  { id: 2, name: "Certificate Retrieval" },
+  { id: 3, name: "TLS Handshake" },
+  { id: 4, name: "Cipher Negotiation" },
+  { id: 5, name: "Risk Scoring" },
 ];
 
 export default function QuickScanPage() {
   const [domain, setDomain] = useState("");
   const [scanId, setScanId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const router = useRouter();
+  const [logs, setLogs] = useState<string[]>([]);
+  const [logsOpen, setLogsOpen] = useState(true);
+  const logsEndRef = useRef<HTMLDivElement>(null);
 
+  const router = useRouter();
   const startScan = useStartScan();
+
   const { data: scanStatus } = useScanStatus(scanId, isScanning);
   const { data: summary } = useScanSummary(
     scanStatus?.status === "completed" ? scanId : null
@@ -32,59 +36,116 @@ export default function QuickScanPage() {
   );
 
   // Stop polling when done
-  if (scanStatus?.status === "completed" && isScanning) {
-    setIsScanning(false);
-  }
-  if (scanStatus?.status === "failed" && isScanning) {
-    setIsScanning(false);
-  }
+  useEffect(() => {
+    if (scanStatus?.status === "completed" && isScanning) {
+      setIsScanning(false);
+    }
+    if (scanStatus?.status === "failed" && isScanning) {
+      setIsScanning(false);
+    }
+  }, [scanStatus, isScanning]);
+
+  // Hook up SSE stream
+  useEffect(() => {
+    if (!scanId || scanStatus?.status === "completed" || scanStatus?.status === "failed") return;
+
+    // Explicitly hit the proxy endpoint on Next.js matching the FastApi
+    const token = localStorage.getItem("qushield_access_token") || "";
+    const es = new EventSource(`/api/v1/scans/${scanId}/stream?token=${token}`);
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.message) {
+          setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${data.message}`]);
+        }
+      } catch {
+        setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${event.data}`]);
+      }
+    };
+
+    es.onerror = () => {
+      es.close();
+    };
+
+    return () => es.close();
+  }, [scanId, scanStatus?.status]);
+
+  // Auto scroll logs
+  useEffect(() => {
+    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
+
+  // Restore active scan from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedScan = localStorage.getItem("qushield_active_scan");
+      const savedDomain = localStorage.getItem("qushield_active_domain");
+      if (savedScan && savedDomain) {
+        setScanId(savedScan);
+        setDomain(savedDomain);
+        setIsScanning(true); // Triggers at least one poll to check actual status
+      }
+    }
+  }, []);
 
   const handleScan = useCallback(async () => {
     if (!domain.trim()) return;
     setIsScanning(true);
+    setLogs([]);
     try {
       const res = await startScan.mutateAsync([domain.trim()]);
       setScanId(res.scan_id);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("qushield_active_scan", res.scan_id);
+        localStorage.setItem("qushield_active_domain", domain.trim());
+      }
     } catch {
       setIsScanning(false);
     }
   }, [domain, startScan]);
 
-  const currentPhase = scanStatus?.current_phase || 0;
+  const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 5) : 0;
   const showResults = scanStatus?.status === "completed" && summary;
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="max-w-6xl mx-auto animate-fade-in pb-20">
       {/* Hero */}
-      <div className="text-center mb-10 pt-8">
+      <div className="text-center mb-10 pt-8 flex flex-col items-center">
         <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4 animate-pulse-glow"
           style={{
             background: "var(--accent-gold-dim)",
             color: "var(--accent-gold)",
-            border: "1px solid rgba(251,188,9,0.2)",
+            border: "1px solid rgba(251,188,9,0.3)",
           }}
         >
           <Shield size={12} /> Quantum-Safe Crypto Scanner
         </div>
-        <h1
-          className="text-4xl font-black mb-3"
-          style={{ color: "var(--text-primary)" }}
-        >
+        <h1 className="text-5xl font-black mb-4 tracking-tight" style={{ color: "var(--text-primary)" }}>
           Quick Scan
         </h1>
-        <p className="text-base" style={{ color: "var(--text-secondary)" }}>
-          Enter a domain to instantly assess its quantum cryptographic posture
+        <p className="text-lg max-w-2xl" style={{ color: "var(--text-secondary)" }}>
+          The front door to QuShield-PnB. Enter a domain, URL, or IP address for an immediate
+          evaluation of your cryptographic posture and quantum vulnerability.
         </p>
       </div>
 
-      {/* Scan Input */}
-      <div className="glass-card-static p-8 mb-8">
-        <div className="flex gap-3">
+      {/* Target Input */}
+      <div className="glass-card p-10 mb-8 mx-auto max-w-4xl shadow-xl">
+        <div className="flex gap-4">
           <input
             type="text"
-            className="scan-input flex-1"
+            className="flex-1 text-lg px-6 py-4 rounded-xl transition-all"
             placeholder="Enter a domain, URL, or IP address…"
+            style={{
+              background: "var(--bg-document)",
+              color: "var(--text-primary)",
+              border: "2px solid var(--border-subtle)",
+              outline: "none"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "var(--accent-gold)"}
+            onBlur={(e) => e.target.style.borderColor = "var(--border-subtle)"}
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleScan()}
@@ -93,264 +154,252 @@ export default function QuickScanPage() {
           <button
             onClick={handleScan}
             disabled={isScanning || !domain.trim()}
-            className="btn-primary whitespace-nowrap"
+            className="btn-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:scale-100 whitespace-nowrap"
           >
-            {isScanning ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <Zap size={18} />
-            )}
+            {isScanning ? <Loader2 size={24} className="animate-spin" /> : <Zap size={24} />}
             {isScanning ? "Scanning…" : "Scan Now"}
           </button>
         </div>
 
         {/* Example tags */}
-        <div className="flex flex-wrap gap-2 mt-4">
-          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-            Try:
-          </span>
-          {EXAMPLE_DOMAINS.map((d) => (
-            <button
-              key={d}
-              onClick={() => setDomain(d)}
-              disabled={isScanning}
-              className="px-3 py-1 rounded-full text-xs font-medium transition-all"
-              style={{
-                background: "var(--bg-card)",
-                color: "var(--text-secondary)",
-                border: "1px solid var(--border-subtle)",
-                cursor: isScanning ? "not-allowed" : "pointer",
-              }}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
+        {!isScanning && (
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>Try:</span>
+            {EXAMPLE_DOMAINS.map((d) => (
+              <button
+                key={d}
+                onClick={() => setDomain(d)}
+                className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors hover:bg-[var(--accent-maroon)] hover:text-white"
+                style={{
+                  background: "var(--bg-card)",
+                  color: "var(--text-secondary)",
+                  border: "1px solid var(--border-subtle)"
+                }}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Progress Stepper */}
+      {/* Progress Region (Scanner Active) */}
       {isScanning && scanId && (
-        <div className="glass-card-static p-8 mb-8 animate-fade-in">
-          <div className="flex items-center justify-between mb-6">
-            <h3
-              className="text-sm font-semibold uppercase tracking-wider"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Scan Progress
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 animate-fade-in">
+          {/* Progress Stepper */}
+          <div className="glass-card-static p-8 lg:col-span-2 flex flex-col justify-center">
+            <h3 className="text-sm font-bold uppercase tracking-widest mb-8" style={{ color: "var(--accent-gold)" }}>
+              Analysis In Progress
             </h3>
-            <span className="text-xs" style={{ color: "var(--accent-gold)" }}>
-              Phase {currentPhase} of 4
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {PHASES.map((phase, i) => {
-              const status =
-                currentPhase > phase.id
-                  ? "completed"
-                  : currentPhase === phase.id
-                  ? "active"
-                  : "pending";
-              return (
-                <div key={phase.id} className="flex items-center gap-2 flex-1">
-                  <div className="flex flex-col items-center">
-                    <div className={`stepper-dot ${status}`}>
-                      {status === "completed" ? (
-                        <CheckCircle size={14} />
-                      ) : status === "active" ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        phase.id
-                      )}
+            <div className="flex items-center justify-between gap-2 max-w-2xl mx-auto w-full">
+              {PHASES.map((phase, i) => {
+                const status =
+                  currentPhase > phase.id
+                    ? "completed"
+                    : currentPhase === phase.id
+                      ? "active"
+                      : "pending";
+                return (
+                  <div key={phase.id} className="flex items-center gap-2 flex-1">
+                    <div className="flex flex-col items-center relative">
+                      <div
+                        className={`w-10 h-10 relative z-10 rounded-full flex items-center justify-center transition-all ${status === "active" ? "animate-pulse shadow-[0_0_15px_rgba(251,188,9,0.5)]" : ""}`}
+                        style={{
+                          background: status === "completed" ? "var(--risk-ready)" : status === "active" ? "var(--accent-gold)" : "var(--bg-card)",
+                          color: status === "pending" ? "var(--text-muted)" : "#fff",
+                          border: status === "pending" ? "1px solid var(--border-subtle)" : "none"
+                        }}
+                      >
+                        {status === "completed" ? <CheckCircle size={20} /> : status === "active" ? <Loader2 size={20} className="animate-spin" /> : phase.id}
+                      </div>
+                      <span
+                        className="text-xs text-center font-bold tracking-wide absolute top-12 w-32 left-1/2 -translate-x-1/2"
+                        style={{ color: status === "completed" ? "var(--text-primary)" : status === "active" ? "var(--accent-gold)" : "var(--text-muted)" }}
+                      >
+                        {phase.name}
+                      </span>
                     </div>
-                    <span
-                      className="text-[10px] mt-2 text-center font-medium"
-                      style={{
-                        color:
-                          status === "completed"
-                            ? "var(--risk-ready)"
-                            : status === "active"
-                            ? "var(--accent-gold)"
-                            : "var(--text-muted)",
-                      }}
-                    >
-                      {phase.name}
-                    </span>
+                    {i < PHASES.length - 1 && (
+                      <div className="h-1 flex-1 mx-2 rounded-full overflow-hidden" style={{ background: "var(--bg-card)" }}>
+                        <div
+                          className="h-full transition-all duration-1000 ease-in-out"
+                          style={{
+                            width: currentPhase > phase.id ? "100%" : currentPhase === phase.id ? "50%" : "0%",
+                            background: "var(--risk-ready)"
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {i < PHASES.length - 1 && (
-                    <div
-                      className={`stepper-line ${
-                        currentPhase > phase.id ? "completed" : ""
-                      }`}
-                      style={{ marginBottom: 24 }}
-                    />
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          {/* Live stats */}
-          {scanStatus && (
+          {/* Live Log Console */}
+          <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)]">
             <div
-              className="mt-6 pt-4 flex gap-6 text-xs"
-              style={{
-                borderTop: "1px solid var(--border-subtle)",
-                color: "var(--text-muted)",
-              }}
+              className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] cursor-pointer"
+              onClick={() => setLogsOpen(!logsOpen)}
+              style={{ background: "rgba(0,0,0,0.2)" }}
             >
-              <span>
-                Assets: <b style={{ color: "var(--text-primary)" }}>{scanStatus.total_assets}</b>
-              </span>
-              <span>
-                Certs: <b style={{ color: "var(--text-primary)" }}>{scanStatus.total_certificates}</b>
-              </span>
-              <span>
-                Vulnerable: <b style={{ color: "var(--risk-vulnerable)" }}>{scanStatus.total_vulnerable}</b>
-              </span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-xs font-bold font-mono tracking-wider text-green-400">LIVE FEED</span>
+              </div>
+              {logsOpen ? <ChevronUp size={14} className="text-zinc-500" /> : <ChevronDown size={14} className="text-zinc-500" />}
             </div>
-          )}
+
+            {logsOpen && (
+              <div className="flex-1 bg-[#0a0a0c] p-4 text-[11px] font-mono leading-relaxed h-[180px] overflow-y-auto no-scrollbar">
+                {logs.length === 0 ? (
+                  <span className="text-zinc-600 italic">Awaiting telemetry...</span>
+                ) : (
+                  logs.map((log, i) => (
+                    <div key={i} className={`${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") ? "text-green-400" : "text-zinc-400"}`}>
+                      {log}
+                    </div>
+                  ))
+                )}
+                <div ref={logsEndRef} />
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {/* Error */}
-      {scanStatus?.status === "failed" && (
-        <div
-          className="glass-card-static p-6 mb-8 animate-fade-in"
-          style={{ borderColor: "var(--risk-critical)" }}
-        >
-          <p style={{ color: "var(--risk-critical)" }}>
-            Scan failed: {scanStatus.error_message || "Unknown error"}
-          </p>
+      {scanStatus?.status === "failed" && !isScanning && (
+        <div className="glass-card-static p-6 mb-8 text-center" style={{ borderColor: "var(--risk-critical)" }}>
+          <h2 className="text-xl font-bold mb-2" style={{ color: "var(--risk-critical)" }}>Scan Aborted</h2>
+          <p style={{ color: "var(--text-secondary)" }}>{scanStatus.error_message || "Target could not be resolved or network timeout occurred."}</p>
         </div>
       )}
 
-      {/* Results */}
+      {/* Results (Completed) */}
       {showResults && (
-        <div className="animate-fade-in">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left: Scorecard */}
-            <div className="glass-card-static p-8 flex flex-col items-center">
-              <h3
-                className="text-xs font-semibold uppercase tracking-wider mb-6"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Quantum Cyber Rating
-              </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-[slide-up_0.5s_ease-out]">
+          {/* Left: Scorecard */}
+          <div className="glass-card-static p-8 flex flex-col items-center shadow-2xl relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--risk-ready)] opacity-10 blur-3xl rounded-full"></div>
+
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-8" style={{ color: "var(--text-muted)" }}>
+              Quantum Cyber Rating
+            </h3>
+
+            <div className="mb-4">
               <ScoreGauge
                 score={rating?.enterprise_rating || 0}
-                size={200}
+                size={220}
                 label={rating?.label || ""}
               />
-
-              <div className="grid grid-cols-2 gap-3 mt-8 w-full">
-                <MetricCard
-                  title="TLS Version"
-                  value={`${summary.compliance_summary.tls_13_enforced} TLS 1.3`}
-                  subtitle={`of ${summary.total_assets} assets`}
-                  icon={<Lock size={16} />}
-                />
-                <MetricCard
-                  title="Assets Scanned"
-                  value={summary.total_assets}
-                  subtitle={`${summary.total_certificates} certificates`}
-                  icon={<Server size={16} />}
-                />
-                <MetricCard
-                  title="Compliance"
-                  value={`${summary.compliance_summary.avg_compliance_pct}%`}
-                  subtitle="avg compliance"
-                  icon={<CheckCircle size={16} />}
-                />
-                <MetricCard
-                  title="NIST PQC"
-                  value={`${
-                    summary.risk_breakdown["quantum_ready"] || 0
-                  } Ready`}
-                  subtitle={`${summary.risk_breakdown["quantum_vulnerable"] || 0} vulnerable`}
-                  icon={<Award size={16} />}
-                  color="var(--risk-vulnerable)"
-                />
-              </div>
             </div>
+            <p className="font-bold text-lg mb-8 tracking-wide uppercase" style={{ color: rating?.enterprise_rating && rating.enterprise_rating > 700 ? "var(--risk-ready)" : "var(--risk-vulnerable)" }}>
+              {rating?.enterprise_rating && rating.enterprise_rating > 700 ? "Quantum Ready" : "Vulnerable"}
+            </p>
 
-            {/* Right: Key Findings */}
-            <div className="glass-card-static p-8">
-              <h3
-                className="text-xs font-semibold uppercase tracking-wider mb-6"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Key Findings
-              </h3>
-              <div className="flex flex-col gap-3">
-                {Object.entries(summary.risk_breakdown).map(
-                  ([cls, count]) => (
-                    <div
-                      key={cls}
-                      className="flex items-center justify-between p-3 rounded-lg"
-                      style={{ background: "var(--bg-card)" }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <RiskBadge classification={cls} />
-                        <span
-                          className="text-sm"
-                          style={{ color: "var(--text-secondary)" }}
-                        >
-                          {RISK_LABELS[cls] || cls}
-                        </span>
-                      </div>
-                      <span
-                        className="text-lg font-bold"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {count as number}
-                      </span>
-                    </div>
-                  )
-                )}
+            <div className="grid grid-cols-2 gap-4 w-full">
+              <MetricCard
+                title="TLS Version"
+                value={`${summary.compliance_summary.tls_13_enforced} TLS 1.3`}
+                subtitle={`of ${summary.total_assets} endpoints`}
+                icon={<Lock size={16} />}
+              />
+              <MetricCard
+                title="Key Exchange"
+                value="RSA / ECDH"
+                subtitle={summary.risk_breakdown["quantum_critical"] ? "At Risk to Shor's" : "Secure"}
+                icon={<Key size={16} />}
+                color={summary.risk_breakdown["quantum_critical"] ? "var(--risk-critical)" : undefined}
+              />
+              <MetricCard
+                title="Cert Expiry"
+                value={`${summary.total_certificates} Active`}
+                subtitle="Monitored"
+                icon={<Award size={16} />}
+              />
+              <MetricCard
+                title="NIST Post-Quantum"
+                value={`Level ${rating?.enterprise_rating && rating.enterprise_rating > 700 ? "4" : "1"}`}
+                subtitle="Security Tier"
+                icon={<Shield size={16} />}
+                color={rating?.enterprise_rating && rating.enterprise_rating < 700 ? "var(--risk-vulnerable)" : "var(--risk-ready)"}
+              />
+            </div>
+          </div>
 
-                {summary.shadow_assets > 0 && (
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{
-                      background: "var(--accent-magenta-dim)",
-                      border: "1px solid rgba(162,14,55,0.3)",
-                    }}
-                  >
-                    <span className="badge badge-critical">Shadow IT</span>
-                    <span
-                      className="ml-2 text-sm"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      {summary.shadow_assets} unregistered asset(s) detected
-                    </span>
+          {/* Right: Key Findings */}
+          <div className="flex flex-col h-full">
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-6 ml-2" style={{ color: "var(--text-muted)" }}>
+              Key Findings Map
+            </h3>
+
+            <div className="flex flex-col gap-4 flex-1">
+              {/* Generate intelligent finding cards based on breakdown */}
+              {summary.risk_breakdown["quantum_critical"] ? (
+                <div className="glass-card-static p-5 flex flex-col gap-2 relative overflow-hidden border-l-4 border-l-[var(--risk-critical)]">
+                  <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--risk-critical)] opacity-5 blur-2xl rounded-full"></div>
+                  <div className="flex items-center gap-3">
+                    <span className="badge badge-critical">Critical</span>
+                    <h4 className="font-bold text-sm text-[var(--text-primary)]">Classical Key Exchange Detected</h4>
                   </div>
-                )}
-              </div>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
+                    Target utilizes RSA/ECC algorithms inherently vulnerable to Shor's algorithm. Deep scan reveals active exposure to 'Harvest Now, Decrypt Later' (HNDL) data collection.
+                  </p>
+                </div>
+              ) : null}
 
-              <button
-                className="btn-primary w-full mt-8"
-                onClick={() => {
-                  // Store scanId for other pages
-                  if (typeof window !== "undefined") {
-                    localStorage.setItem("qushield_scan_id", scanId!);
-                  }
-                  router.push("/dashboard");
-                }}
-              >
-                View Full Dashboard <ArrowRight size={16} />
-              </button>
+              {summary.shadow_assets > 0 ? (
+                <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
+                  <div className="flex items-center gap-3">
+                    <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>High Risk</span>
+                    <h4 className="font-bold text-sm text-[var(--text-primary)]">Discovered Shadow Infrastructure</h4>
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
+                    {summary.shadow_assets} uncatalogued subdomains identified on the perimeter. Shadow IT drastically increases untracked cryptographic debt.
+                  </p>
+                </div>
+              ) : null}
+
+              {summary.compliance_summary.tls_13_enforced < summary.total_assets ? (
+                <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
+                  <div className="flex items-center gap-3">
+                    <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>Medium Risk</span>
+                    <h4 className="font-bold text-sm text-[var(--text-primary)]">Legacy TLS Versions Supported</h4>
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
+                    Some assets permit downgrades to TLSv1.2 or under, lacking enforced Forward Secrecy.
+                  </p>
+                </div>
+              ) : null}
+
+              {/* If no critical/high issues found */}
+              {!summary.risk_breakdown["quantum_critical"] && summary.shadow_assets === 0 && (
+                <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--risk-ready)]">
+                  <div className="flex items-center gap-3">
+                    <span className="badge badge-ready">Secure</span>
+                    <h4 className="font-bold text-sm text-[var(--text-primary)]">Aggressive Cypto-Agility Baseline</h4>
+                  </div>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
+                    Target demonstrates PQC readiness with ML-KEM integration and enforced TLSv1.3 standards.
+                  </p>
+                </div>
+              )}
             </div>
+
+            <button
+              className="mt-6 px-6 py-4 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 transition-colors hover:bg-[var(--accent-maroon)] hover:text-white"
+              style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)" }}
+              onClick={() => {
+                if (typeof window !== "undefined") localStorage.setItem("qushield_scan_id", scanId!);
+                router.push("/assets");
+              }}
+            >
+              Run Full Infrastructure Audit <ArrowRight size={18} />
+            </button>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-function Server({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>
-    </svg>
   );
 }

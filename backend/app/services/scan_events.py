@@ -171,6 +171,8 @@ class ScanEventManager:
                 sse_str = f"event: {event_dict['event_type']}\ndata: {json_str}\n\n"
                 logger.debug(f"SSE yield for {scan_id}: {event_dict['event_type']}")
                 yield sse_str
+                # yield f"data: {json_str}\n\n"
+
                 
                 # Close stream if scan is complete or failed
                 if event_dict["event_type"] in ("scan_complete", "scan_failed"):
