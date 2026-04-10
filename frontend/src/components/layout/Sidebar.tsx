@@ -11,6 +11,10 @@ import {
   CheckCircle,
   Network,
   Zap,
+  Globe,
+  History,
+  FileText,
+  Bot,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,6 +25,10 @@ const NAV_ITEMS = [
   { href: "/risk", label: "Risk Intelligence", icon: AlertTriangle },
   { href: "/compliance", label: "Compliance", icon: CheckCircle },
   { href: "/topology", label: "Topology Map", icon: Network },
+  { href: "/geo", label: "GeoIP Map", icon: Globe },
+  { href: "/history", label: "Scan History", icon: History },
+  { href: "/reports", label: "Reports", icon: FileText },
+  { href: "/ai", label: "AI Assistant", icon: Bot },
 ];
 
 export default function Sidebar() {

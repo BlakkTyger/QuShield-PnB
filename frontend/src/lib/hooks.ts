@@ -15,6 +15,10 @@ import type {
   RegulatoryDeadline,
   TopologyGraph,
   ComplianceDetail,
+  GeoMapData,
+  ChatResponse,
+  AIStatus,
+  AIModelsResponse,
 } from "@/lib/types";
 
 /* ─── Scans ──────────────────────────────────────────── */
@@ -55,6 +59,24 @@ export function useStartScan() {
   return useMutation({
     mutationFn: async (targets: string[]) => {
       const { data } = await api.post<ScanResponse>("/scans/", { targets });
+      return data;
+    },
+  });
+}
+
+export function useQuickScan() {
+  return useMutation({
+    mutationFn: async (params: { domain: string; port?: number }) => {
+      const { data } = await api.post("/scans/quick", params);
+      return data;
+    },
+  });
+}
+
+export function useShallowScan() {
+  return useMutation({
+    mutationFn: async (params: { domain: string; top_n?: number; port?: number }) => {
+      const { data } = await api.post("/scans/shallow", params);
       return data;
     },
   });
@@ -247,5 +269,89 @@ export function useTopology(scanId: string | null) {
       return data;
     },
     enabled: !!scanId,
+  });
+}
+
+/* ─── GeoIP ──────────────────────────────────────────── */
+export function useGeoMapData(scanId: string | null) {
+  return useQuery({
+    queryKey: ["geo-map", scanId],
+    queryFn: async () => {
+      // First trigger geolocation (lazy-loads if not present)
+      await api.get(`/geo/scan/${scanId}`);
+      // Then get map-ready data
+      const { data } = await api.get<GeoMapData>(`/geo/scan/${scanId}/map-data`);
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+/* ─── AI Assistant ───────────────────────────────────── */
+export function useAIChat() {
+  return useMutation({
+    mutationFn: async (params: { message: string; mode?: string }) => {
+      const { data } = await api.post<ChatResponse>("/ai/chat", params);
+      return data;
+    },
+  });
+}
+
+export function useAIStatus() {
+  return useQuery({
+    queryKey: ["ai-status"],
+    queryFn: async () => {
+      const { data } = await api.get<AIStatus>("/ai/status");
+      return data;
+    },
+  });
+}
+
+export function useAIModels() {
+  return useQuery({
+    queryKey: ["ai-models"],
+    queryFn: async () => {
+      const { data } = await api.get<AIModelsResponse>("/ai/models");
+      return data;
+    },
+  });
+}
+
+export function useUpdateAISettings() {
+  return useMutation({
+    mutationFn: async (settings: { deployment_mode?: string; ai_tier?: string; cloud_api_keys?: Record<string, string> }) => {
+      const { data } = await api.patch("/ai/settings", settings);
+      return data;
+    },
+  });
+}
+
+export function useRefreshEmbeddings() {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post("/ai/embed/refresh");
+      return data;
+    },
+  });
+}
+
+export function useAIMigrationRoadmap() {
+  return useMutation({
+    mutationFn: async (scanId: string) => {
+      const { data } = await api.post(`/ai/migration-roadmap/${scanId}`);
+      return data;
+    },
+  });
+}
+
+/* ─── Reports ────────────────────────────────────────── */
+export function useGenerateReport() {
+  return useMutation({
+    mutationFn: async (scanId: string) => {
+      const { data } = await api.post(`/reports/generate/${scanId}`, {}, {
+        responseType: "blob",
+      });
+      return data;
+    },
   });
 }

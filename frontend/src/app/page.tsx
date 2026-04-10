@@ -2,9 +2,17 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key } from "lucide-react";
-import { useStartScan, useScanStatus, useScanSummary, useEnterpriseRating } from "@/lib/hooks";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers } from "lucide-react";
+import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
+
+type ScanTier = "quick" | "shallow" | "deep";
+
+const SCAN_TIERS = [
+  { value: "quick" as ScanTier, label: "Quick", time: "3–8s", desc: "Single SSL probe", icon: Zap },
+  { value: "shallow" as ScanTier, label: "Shallow", time: "30–90s", desc: "CT discovery + top-N TLS", icon: Clock },
+  { value: "deep" as ScanTier, label: "Deep", time: "5–10 min", desc: "Full infrastructure audit", icon: Layers },
+];
 
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
 
@@ -22,10 +30,14 @@ export default function QuickScanPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [logsOpen, setLogsOpen] = useState(true);
+  const [scanTier, setScanTier] = useState<ScanTier>("deep");
+  const [quickResult, setQuickResult] = useState<Record<string, unknown> | null>(null);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const startScan = useStartScan();
+  const quickScan = useQuickScan();
+  const shallowScan = useShallowScan();
 
   const { data: scanStatus } = useScanStatus(scanId, isScanning);
   const { data: summary } = useScanSummary(
@@ -93,7 +105,36 @@ export default function QuickScanPage() {
     if (!domain.trim()) return;
     setIsScanning(true);
     setLogs([]);
+    setQuickResult(null);
     try {
+      if (scanTier === "quick") {
+        const res = await quickScan.mutateAsync({ domain: domain.trim() });
+        setQuickResult(res);
+        setIsScanning(false);
+        // If the quick scan returned a cached deep scan, load it
+        if (res.cached && res.scan_id) {
+          setScanId(res.scan_id);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("qushield_active_scan", res.scan_id);
+            localStorage.setItem("qushield_active_domain", domain.trim());
+          }
+        }
+        return;
+      }
+      if (scanTier === "shallow") {
+        const res = await shallowScan.mutateAsync({ domain: domain.trim() });
+        setQuickResult(res);
+        setIsScanning(false);
+        if (res.cached && res.scan_id) {
+          setScanId(res.scan_id);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("qushield_active_scan", res.scan_id);
+            localStorage.setItem("qushield_active_domain", domain.trim());
+          }
+        }
+        return;
+      }
+      // Deep scan
       const res = await startScan.mutateAsync([domain.trim()]);
       setScanId(res.scan_id);
       if (typeof window !== "undefined") {
@@ -103,7 +144,7 @@ export default function QuickScanPage() {
     } catch {
       setIsScanning(false);
     }
-  }, [domain, startScan]);
+  }, [domain, scanTier, startScan, quickScan, shallowScan]);
 
   const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 5) : 0;
   const showResults = scanStatus?.status === "completed" && summary;
@@ -179,6 +220,31 @@ export default function QuickScanPage() {
                 {d}
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Scan Tier Selector */}
+        {!isScanning && (
+          <div className="flex items-center justify-center gap-3 mt-5">
+            {SCAN_TIERS.map((tier) => {
+              const Icon = tier.icon;
+              return (
+                <button
+                  key={tier.value}
+                  onClick={() => setScanTier(tier.value)}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                  style={{
+                    background: scanTier === tier.value ? "var(--accent-gold-dim)" : "var(--bg-document)",
+                    color: scanTier === tier.value ? "var(--accent-gold)" : "var(--text-muted)",
+                    border: `1px solid ${scanTier === tier.value ? "var(--accent-gold)" : "var(--border-subtle)"}`,
+                  }}
+                >
+                  <Icon size={14} />
+                  {tier.label}
+                  <span className="text-[10px] ml-1 opacity-70">{tier.time}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

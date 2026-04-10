@@ -263,6 +263,65 @@ export interface TopologyGraph {
   stats: Record<string, unknown>;
 }
 
+// ─── GeoIP ─────────────────────────────────────────────────────
+export interface GeoMarker {
+  ip: string;
+  hostname: string | null;
+  lat: number;
+  lon: number;
+  city: string | null;
+  country: string | null;
+  country_code: string | null;
+  org: string | null;
+  asset_type: string | null;
+  risk_score: number | null;
+  risk_classification: string | null;
+  hndl_exposed: boolean | null;
+}
+
+export interface GeoMapData {
+  scan_id: string;
+  total_markers: number;
+  markers: GeoMarker[];
+  country_summary: Record<string, { country: string; count: number; vulnerable: number }>;
+}
+
+// ─── AI ────────────────────────────────────────────────────────
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  mode_used?: string;
+  sources?: string[];
+  timestamp?: string;
+}
+
+export interface ChatResponse {
+  response: string;
+  mode_used: string;
+  sources: string[];
+}
+
+export interface AIStatus {
+  deployment_mode: string;
+  active_tier: string;
+  vector_store: string;
+  tabular_agent: string;
+}
+
+export interface AIModelsResponse {
+  mode: string;
+  tier: string;
+  models: string[];
+}
+
+// ─── Reports ───────────────────────────────────────────────────
+export interface ReportRecord {
+  scan_id: string;
+  generated_at: string;
+  type: string;
+  filename: string;
+}
+
 // ─── Helpers ───────────────────────────────────────────────────
 export type RiskClassification =
   | "quantum_critical"
