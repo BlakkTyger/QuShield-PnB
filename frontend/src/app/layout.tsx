@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
 import QueryProvider from "@/lib/QueryProvider";
+import AppShell from "@/components/layout/AppShell";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,17 +25,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="antialiased">
         <QueryProvider>
-          <Sidebar />
-          <Header />
-          <main
-            className="min-h-screen"
-            style={{
-              marginLeft: "var(--sidebar-width)",
-              paddingTop: "var(--header-height)",
-            }}
-          >
-            <div className="p-6">{children}</div>
-          </main>
+          <AppShell>{children}</AppShell>
         </QueryProvider>
       </body>
     </html>

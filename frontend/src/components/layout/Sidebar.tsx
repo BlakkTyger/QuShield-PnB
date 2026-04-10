@@ -31,8 +31,9 @@ export default function Sidebar() {
       className="fixed left-0 top-0 h-screen flex flex-col py-6 px-4 z-40"
       style={{
         width: "var(--sidebar-width)",
-        background: "#A20E37",
+        background: "var(--sidebar-bg)",
         borderRight: "1px solid var(--border-subtle)",
+        boxShadow: "0 0 40px rgba(0,0,0,0.1)",
       }}
     >
       {/* Logo / Brand */}
@@ -40,17 +41,18 @@ export default function Sidebar() {
         <div
           className="w-9 h-9 rounded-lg flex items-center justify-center font-black text-sm"
           style={{
-            background: "linear-gradient(135deg, var(--accent-gold), #e6a800)",
+            background: "linear-gradient(135deg, #fdb913, #e6a800)",
             color: "#000",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
           }}
         >
           QS
         </div>
         <div>
-          <h1 className="text-base font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
+          <h1 className="text-base font-bold leading-tight" style={{ color: "var(--sidebar-brand-text)" }}>
             QuShield
           </h1>
-          <p className="text-[10px] font-medium tracking-wider uppercase" style={{ color: "var(--accent-gold)" }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "#fdb913" }}>
             PnB Banking
           </p>
         </div>
@@ -61,16 +63,16 @@ export default function Sidebar() {
         <Search
           size={14}
           className="absolute left-4 top-1/2 -translate-y-1/2"
-          style={{ color: "var(--text-muted)" }}
+          style={{ color: "var(--sidebar-text-hover)" }}
         />
         <input
           type="text"
           placeholder="Search..."
-          className="w-full py-2 pl-9 pr-3 text-xs rounded-lg"
+          className="w-full py-2.5 pl-9 pr-3 text-sm rounded-lg"
           style={{
-            background: "var(--bg-card)",
-            border: "1px solid var(--border-subtle)",
-            color: "var(--text-primary)",
+            background: "var(--sidebar-hover-bg)",
+            border: "1px solid transparent",
+            color: "var(--sidebar-text-hover)",
             outline: "none",
           }}
         />

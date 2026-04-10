@@ -11,7 +11,7 @@ from app.core.database import get_db
 from app.services import auth_service
 from app.models.auth import User
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 

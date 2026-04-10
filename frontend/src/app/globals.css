@@ -31,6 +31,52 @@
 
   --sidebar-width: 260px;
   --header-height: 64px;
+
+  /* Sidebar Tokens (Dark Mode) */
+  --sidebar-bg: #7d002c;
+  --sidebar-text: rgba(255, 255, 255, 0.65);
+  --sidebar-text-hover: #ffffff;
+  --sidebar-text-active: var(--accent-gold);
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-active-bg: rgba(251, 188, 9, 0.15);
+  --sidebar-brand-text: #ffffff;
+
+  /* Component Tokens */
+  --input-bg: var(--bg-card);
+  --orb-opacity: 0.35;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f9f9fc;
+  --bg-secondary: #f3f3f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9f9fc;
+  --border-subtle: #e2e2e5;
+  --border-active: rgba(162, 14, 55, 0.3);
+
+  --text-primary: #1a1c1e;
+  --text-secondary: #594043;
+  --text-muted: #8c7073;
+
+  /* In light mode, yellow text on white is illegible. Using a deeper amber/gold for better contrast. */
+  --accent-gold: #b45309;
+  --accent-gold-dim: rgba(180, 83, 9, 0.15);
+  --accent-magenta: #a4123f;
+  --accent-magenta-dim: rgba(164, 18, 63, 0.15);
+
+  /* Sidebar Tokens (Light Mode) */
+  --sidebar-bg: #a4123f;
+  --sidebar-text: rgba(255, 255, 255, 0.8);
+  --sidebar-text-hover: #ffffff;
+  /* Sidebar stays dark maroon, so it can handle the bright yellow text safely */
+  --sidebar-text-active: #fabb16;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+  --sidebar-active-bg: rgba(125, 0, 44, 0.5);
+  --sidebar-brand-text: #ffffff;
+
+  /* Component Tokens */
+  --input-bg: #f3f3f6;
+  --orb-opacity: 0.08;
 }
 
 /* ─── Base Resets ──────────────────────────────────────────────────── */
@@ -99,21 +145,25 @@ body {
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
+
 .badge-vulnerable {
   background: rgba(249, 115, 22, 0.15);
   color: #f97316;
   border: 1px solid rgba(249, 115, 22, 0.25);
 }
+
 .badge-at-risk {
   background: rgba(234, 179, 8, 0.15);
   color: #eab308;
   border: 1px solid rgba(234, 179, 8, 0.25);
 }
+
 .badge-aware {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
   border: 1px solid rgba(59, 130, 246, 0.25);
 }
+
 .badge-ready {
   background: rgba(34, 197, 94, 0.15);
   color: #22c55e;
@@ -122,29 +172,65 @@ body {
 
 /* ─── Animations ──────────────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(16px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 188, 9, 0.4); }
-  50%      { box-shadow: 0 0 16px 4px rgba(251, 188, 9, 0.15); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 188, 9, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 16px 4px rgba(251, 188, 9, 0.15);
+  }
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes scanner-line {
-  0%   { transform: translateY(0); opacity: 0.5; }
-  50%  { opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0.5; }
+  0% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
 }
 
 .animate-fade-in {
@@ -160,12 +246,10 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.04) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
   border-radius: 8px;
@@ -222,9 +306,9 @@ body {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* ─── Scan Input ──────────────────────────────────────────────────── */
+/* ─── Scan Input & Forms ──────────────────────────────────────────── */
 .scan-input {
-  background: var(--bg-card);
+  background: var(--input-bg);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
   padding: 16px 20px;
@@ -242,6 +326,16 @@ body {
 
 .scan-input::placeholder {
   color: var(--text-muted);
+}
+
+/* Bulletproof Autofill Overrides */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 9999s ease-in-out 0s, color 9999s ease-in-out 0s !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  background-color: transparent !important;
 }
 
 /* ─── Buttons ─────────────────────────────────────────────────────── */
@@ -351,19 +445,19 @@ body {
   border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--sidebar-text);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
+  background: var(--sidebar-hover-bg);
+  color: var(--sidebar-text-hover);
 }
 
 .sidebar-link.active {
-  background: var(--accent-gold-dim);
-  color: var(--accent-gold);
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-text-active);
   font-weight: 600;
 }
 
@@ -385,13 +479,16 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
