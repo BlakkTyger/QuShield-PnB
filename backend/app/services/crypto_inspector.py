@@ -695,6 +695,142 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
 
 # ─── P2.5: API Auth Fingerprinting ──────────────────────────────────────────
 
+# JWT algorithm → quantum vulnerability mapping
+_JWT_QUANTUM_MAP = {
+    # Symmetric HMAC — quantum-resistant (Grover's halves effective key length)
+    "HS256": {"nist_level": 1, "quantum_vulnerable": False, "family": "HMAC", "key_type": "symmetric"},
+    "HS384": {"nist_level": 3, "quantum_vulnerable": False, "family": "HMAC", "key_type": "symmetric"},
+    "HS512": {"nist_level": 5, "quantum_vulnerable": False, "family": "HMAC", "key_type": "symmetric"},
+    # RSA — quantum-vulnerable (Shor's algorithm)
+    "RS256": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA", "key_type": "asymmetric"},
+    "RS384": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA", "key_type": "asymmetric"},
+    "RS512": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA", "key_type": "asymmetric"},
+    # RSA-PSS — quantum-vulnerable (Shor's algorithm)
+    "PS256": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA-PSS", "key_type": "asymmetric"},
+    "PS384": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA-PSS", "key_type": "asymmetric"},
+    "PS512": {"nist_level": 0, "quantum_vulnerable": True, "family": "RSA-PSS", "key_type": "asymmetric"},
+    # ECDSA — quantum-vulnerable (Shor's algorithm)
+    "ES256": {"nist_level": 0, "quantum_vulnerable": True, "family": "ECDSA", "key_type": "asymmetric"},
+    "ES384": {"nist_level": 0, "quantum_vulnerable": True, "family": "ECDSA", "key_type": "asymmetric"},
+    "ES512": {"nist_level": 0, "quantum_vulnerable": True, "family": "ECDSA", "key_type": "asymmetric"},
+    # EdDSA — quantum-vulnerable (Shor's algorithm on elliptic curves)
+    "EdDSA": {"nist_level": 0, "quantum_vulnerable": True, "family": "EdDSA", "key_type": "asymmetric"},
+    # PQC signatures — quantum-safe
+    "ML-DSA-44": {"nist_level": 2, "quantum_vulnerable": False, "family": "ML-DSA", "key_type": "pqc"},
+    "ML-DSA-65": {"nist_level": 3, "quantum_vulnerable": False, "family": "ML-DSA", "key_type": "pqc"},
+    "ML-DSA-87": {"nist_level": 5, "quantum_vulnerable": False, "family": "ML-DSA", "key_type": "pqc"},
+    "FN-DSA-512": {"nist_level": 1, "quantum_vulnerable": False, "family": "FN-DSA", "key_type": "pqc"},
+    "FN-DSA-1024": {"nist_level": 5, "quantum_vulnerable": False, "family": "FN-DSA", "key_type": "pqc"},
+    # No algorithm — unsigned JWT (insecure)
+    "none": {"nist_level": 0, "quantum_vulnerable": True, "family": "none", "key_type": "none"},
+}
+
+
+def parse_jwt_algorithm(token: str) -> dict:
+    """
+    Deep-parse a JWT token to extract the algorithm from its header.
+
+    Extracts: alg, typ, kid fields from JOSE header.
+    Maps alg to NIST quantum security level.
+
+    Args:
+        token: A JWT string (header.payload.signature) or just the header segment.
+
+    Returns:
+        dict with: alg, typ, kid, nist_level, quantum_vulnerable, family, key_type, raw_header
+    """
+    import base64
+    import json as _json
+
+    result = {
+        "alg": None,
+        "typ": None,
+        "kid": None,
+        "nist_level": -1,
+        "quantum_vulnerable": True,
+        "family": "unknown",
+        "key_type": "unknown",
+        "raw_header": None,
+        "parse_error": None,
+    }
+
+    if not token or not isinstance(token, str):
+        result["parse_error"] = "Empty or non-string token"
+        return result
+
+    try:
+        # Extract header segment (first part before '.')
+        parts = token.strip().split(".")
+        if len(parts) < 2:
+            # Might be just the header segment itself
+            header_b64 = parts[0]
+        else:
+            header_b64 = parts[0]
+
+        # Remove any non-base64 prefix (e.g., "Bearer " or cookie prefix)
+        # Find the start of base64 content (eyJ = '{"' in b64)
+        eyj_idx = header_b64.find("eyJ")
+        if eyj_idx >= 0:
+            header_b64 = header_b64[eyj_idx:]
+        elif not header_b64.startswith("eyJ"):
+            # Not a valid JWT header
+            result["parse_error"] = "Header does not start with eyJ (not a valid JWT)"
+            return result
+
+        # Strip trailing non-base64 characters
+        import re
+        header_b64 = re.sub(r'[^A-Za-z0-9_\-+/=]', '', header_b64)
+
+        # Pad base64url to standard base64
+        padding = (4 - len(header_b64) % 4) % 4
+        header_b64_padded = header_b64 + "=" * padding
+
+        # Decode
+        header_bytes = base64.urlsafe_b64decode(header_b64_padded)
+        header_dict = _json.loads(header_bytes.decode("utf-8"))
+        result["raw_header"] = header_dict
+
+        # Extract standard JOSE header fields
+        alg = header_dict.get("alg")
+        result["alg"] = alg
+        result["typ"] = header_dict.get("typ")
+        result["kid"] = header_dict.get("kid")
+
+        # Map algorithm to quantum vulnerability
+        if alg and alg in _JWT_QUANTUM_MAP:
+            mapping = _JWT_QUANTUM_MAP[alg]
+            result["nist_level"] = mapping["nist_level"]
+            result["quantum_vulnerable"] = mapping["quantum_vulnerable"]
+            result["family"] = mapping["family"]
+            result["key_type"] = mapping["key_type"]
+        elif alg:
+            # Unknown algorithm — check for PQC patterns
+            alg_upper = alg.upper()
+            if any(pqc in alg_upper for pqc in ["ML-DSA", "MLDSA", "DILITHIUM", "FALCON", "FN-DSA", "SLH-DSA"]):
+                result["quantum_vulnerable"] = False
+                result["family"] = "PQC"
+                result["key_type"] = "pqc"
+            else:
+                result["quantum_vulnerable"] = True
+                result["family"] = "unknown"
+                result["key_type"] = "unknown"
+
+    except Exception as e:
+        result["parse_error"] = f"JWT parse error: {str(e)}"
+
+    return result
+
+
+def _extract_jwts_from_text(text: str) -> list[str]:
+    """
+    Extract JWT-like tokens from arbitrary text (cookies, headers, response body).
+    Returns list of potential JWT strings.
+    """
+    import re
+    # JWT pattern: eyJ[base64url].[base64url].[base64url]
+    jwt_pattern = re.compile(r'eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+')
+    return jwt_pattern.findall(text)
+
 
 @timed(service="crypto_inspector")
 def detect_api_auth(url: str) -> dict:
@@ -702,10 +838,12 @@ def detect_api_auth(url: str) -> dict:
     Detect authentication mechanisms from a URL endpoint.
 
     Checks for OIDC, JWT, mTLS, API key patterns.
+    Performs deep JWT algorithm parsing when tokens are found.
     """
     result = {
         "auth_mechanisms": [],
         "jwt_algorithm": None,
+        "jwt_details": None,
         "oidc_endpoint": None,
         "note": None,
     }
@@ -729,6 +867,14 @@ def detect_api_auth(url: str) -> dict:
                             algs = oidc_data.get("id_token_signing_alg_values_supported", [])
                             if algs:
                                 result["jwt_algorithm"] = algs[0]
+                                # Deep-parse the OIDC advertised algorithm
+                                if algs[0] in _JWT_QUANTUM_MAP:
+                                    result["jwt_details"] = {
+                                        "source": "oidc_discovery",
+                                        "alg": algs[0],
+                                        "all_supported_algs": algs,
+                                        **_JWT_QUANTUM_MAP[algs[0]],
+                                    }
                     except Exception:
                         pass
             except Exception:
@@ -744,21 +890,65 @@ def detect_api_auth(url: str) -> dict:
                 if resp.headers.get("x-api-key") or "api-key" in resp.headers.get("www-authenticate", "").lower():
                     result["auth_mechanisms"].append("API-Key")
 
-                # Hunt for JWTs in cookies
+                # Hunt for JWTs in all response text sources
+                jwt_sources = []
+
+                # Source 1: cookies
                 set_cookie = resp.headers.get("set-cookie", "")
-                if "eyJ" in set_cookie:
-                    import base64, json
+                if set_cookie:
+                    jwt_sources.extend([(t, "cookie") for t in _extract_jwts_from_text(set_cookie)])
+
+                # Source 2: response body (check for embedded JWTs if JSON)
+                try:
+                    body_text = resp.text[:5000]  # Limit scan to first 5KB
+                    jwt_sources.extend([(t, "response_body") for t in _extract_jwts_from_text(body_text)])
+                except Exception:
+                    pass
+
+                # Source 3: Authorization header in response (rare but possible in redirects)
+                auth_header = resp.headers.get("authorization", "")
+                if auth_header:
+                    jwt_sources.extend([(t, "auth_header") for t in _extract_jwts_from_text(auth_header)])
+
+                # Deep-parse the first JWT found
+                for jwt_token, source in jwt_sources:
+                    parsed = parse_jwt_algorithm(jwt_token)
+                    if parsed.get("alg"):
+                        if "JWT" not in result["auth_mechanisms"]:
+                            result["auth_mechanisms"].append("JWT")
+                        result["jwt_algorithm"] = parsed["alg"]
+                        result["jwt_details"] = {
+                            "source": source,
+                            "alg": parsed["alg"],
+                            "typ": parsed.get("typ"),
+                            "kid": parsed.get("kid"),
+                            "nist_level": parsed["nist_level"],
+                            "quantum_vulnerable": parsed["quantum_vulnerable"],
+                            "family": parsed["family"],
+                            "key_type": parsed["key_type"],
+                        }
+                        break
+
+                # Fallback: old eyJ hunt in cookies for partial JWTs
+                if not result["jwt_details"] and "eyJ" in set_cookie:
+                    import base64
+                    import json as _json
                     parts = set_cookie.split("eyJ")
                     for p in parts[1:]:
                         try:
-                            # JWT headers start with eyJ (which is '{"' in b64). Reconstruct the first segment.
                             jwt_header_b64 = "eyJ" + p.split(".")[0]
-                            # Pad base64
                             jwt_header_b64 += "=" * ((4 - len(jwt_header_b64) % 4) % 4)
-                            header_json = json.loads(base64.urlsafe_b64decode(jwt_header_b64).decode("utf-8"))
+                            header_json = _json.loads(base64.urlsafe_b64decode(jwt_header_b64).decode("utf-8"))
                             if "alg" in header_json:
                                 result["auth_mechanisms"].append("JWT")
                                 result["jwt_algorithm"] = header_json["alg"]
+                                alg = header_json["alg"]
+                                if alg in _JWT_QUANTUM_MAP:
+                                    result["jwt_details"] = {
+                                        "source": "cookie_fallback",
+                                        "alg": alg,
+                                        **_JWT_QUANTUM_MAP[alg],
+                                    }
                                 break
                         except Exception:
                             continue
@@ -771,7 +961,7 @@ def detect_api_auth(url: str) -> dict:
 
     logger.debug(
         f"Auth detection for {url}",
-        extra={"url": url, "mechanisms": result["auth_mechanisms"]},
+        extra={"url": url, "mechanisms": result["auth_mechanisms"], "jwt_details": result.get("jwt_details")},
     )
 
     return result

@@ -458,3 +458,142 @@ def get_migration_plan(
         "weak_certificates": len(weak_certs),
         "migration_blocked_assets": sum(1 for a in assets if compliances.get(str(a.id), None) and compliances[str(a.id)].crypto_agility_score < 40),
     }
+
+
+# ─── Monte Carlo CRQC Simulation Endpoints ──────────────────────────────────
+
+
+@router.post("/monte-carlo/simulate")
+def simulate_monte_carlo(
+    n_simulations: int = Query(10000, ge=100, le=100000, description="Number of Monte Carlo samples"),
+    mode_year: float = Query(2032, ge=2027, le=2045, description="Most likely CRQC arrival year"),
+    sigma: float = Query(3.5, ge=0.5, le=10, description="Distribution spread (years)"),
+    seed: Optional[int] = Query(None, description="Random seed for reproducibility"),
+):
+    """
+    Monte Carlo simulation of CRQC arrival year.
+
+    Returns probability distribution, cumulative distribution, and percentile estimates.
+    Uses log-normal distribution to model asymmetric uncertainty.
+    """
+    from app.services.monte_carlo import simulate_crqc_arrival
+
+    result = simulate_crqc_arrival(
+        n_simulations=n_simulations,
+        mode_year=mode_year,
+        sigma=sigma,
+        seed=seed,
+    )
+    return result
+
+
+@router.post("/monte-carlo/asset-exposure")
+def simulate_asset_exposure_endpoint(
+    migration_time_years: float = Query(..., ge=0, le=20, description="X: migration time (years)"),
+    data_shelf_life_years: float = Query(..., ge=0, le=50, description="Y: data shelf life (years)"),
+    n_simulations: int = Query(10000, ge=100, le=100000),
+    mode_year: float = Query(2032, ge=2027, le=2045),
+    sigma: float = Query(3.5, ge=0.5, le=10),
+    seed: Optional[int] = Query(None),
+):
+    """
+    Monte Carlo exposure simulation for a single asset.
+
+    For each CRQC arrival sample, checks Mosca's inequality (X + Y > Z).
+    Returns probability of quantum exposure.
+    """
+    from app.services.monte_carlo import simulate_asset_exposure
+
+    result = simulate_asset_exposure(
+        migration_time_years=migration_time_years,
+        data_shelf_life_years=data_shelf_life_years,
+        n_simulations=n_simulations,
+        mode_year=mode_year,
+        sigma=sigma,
+        seed=seed,
+    )
+    return result
+
+
+@router.get("/scan/{scan_id}/monte-carlo")
+def simulate_portfolio_monte_carlo(
+    scan_id: UUID,
+    n_simulations: int = Query(10000, ge=100, le=100000),
+    mode_year: float = Query(2032, ge=2027, le=2045),
+    sigma: float = Query(3.5, ge=0.5, le=10),
+    seed: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """
+    Full portfolio Monte Carlo simulation from scan data.
+
+    Uses same CRQC arrival samples for all assets (correlated risk).
+    Returns per-asset exposure probability, portfolio summary, and risk distribution.
+    """
+    from app.services.monte_carlo import simulate_portfolio
+    from app.services.risk_engine import (
+        MIGRATION_TIME_DEFAULTS, SHELF_LIFE_DEFAULTS,
+        _infer_asset_type, compute_migration_complexity,
+    )
+
+    assets_db = db.query(Asset).filter(Asset.scan_id == scan_id).all()
+    if not assets_db:
+        raise HTTPException(status_code=404, detail="No assets found for this scan")
+
+    # Build asset list with Mosca parameters
+    asset_list = []
+    for a in assets_db:
+        asset_type = _infer_asset_type(a.hostname)
+        comp = db.query(ComplianceResult).filter(
+            ComplianceResult.asset_id == a.id,
+            ComplianceResult.scan_id == scan_id,
+        ).first()
+
+        agility = comp.crypto_agility_score if comp else 50.0
+        migration = compute_migration_complexity(asset_type, agility)
+        shelf_life = SHELF_LIFE_DEFAULTS.get(asset_type, {}).get("shelf_life_years", 5.0)
+
+        asset_list.append({
+            "hostname": a.hostname,
+            "asset_type": asset_type,
+            "migration_time_years": migration["complexity_years"],
+            "data_shelf_life_years": shelf_life,
+        })
+
+    result = simulate_portfolio(
+        assets=asset_list,
+        n_simulations=n_simulations,
+        mode_year=mode_year,
+        sigma=sigma,
+        seed=seed,
+    )
+    result["scan_id"] = str(scan_id)
+    return result
+
+
+# ─── Certificate Expiry vs CRQC Race Endpoint ───────────────────────────────
+
+
+@router.get("/scan/{scan_id}/cert-race")
+def get_cert_crqc_race(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """
+    Certificate expiry vs CRQC arrival race analysis.
+
+    Classifies each certificate as:
+    - natural_rotation: cert expires before CRQC (good - natural reissue opportunity)
+    - at_risk: cert will still be active during CRQC (bad - needs proactive reissue)
+    - safe: cert already uses PQC algorithms
+
+    Also estimates migration completion date from complexity scores.
+    """
+    from app.services.risk_engine import compute_cert_crqc_race
+
+    result = compute_cert_crqc_race(str(scan_id), db)
+
+    if result["total_certificates"] == 0:
+        raise HTTPException(status_code=404, detail="No certificates found for this scan")
+
+    return result

@@ -400,3 +400,60 @@ A dedicated panel below the chat — accessed via a `Generate AI Report` button 
 **Purpose**: Show PQC readiness of technology vendors relevant to the scanned bank's infrastructure.
 
 **Layout**: Card grid, one per vendor. Each card shows vendor name, product, PQC status badge (Ready/In Progress/Unknown), supported algorithms, and risk-if-delayed severity. Critical blockers highlighted in red at the top.
+
+---
+
+## Phase 8 UX Updates (Monte Carlo & Risk Engine)
+
+### Page — Post-Quantum Risk Dashboard (Updated)
+
+**Monte Carlo CRQC Arrival Chart**:
+- Replaces static "pessimistic/median/optimistic" text with an interactive probability density curve chart (rendered via Recharts or Chart.js).
+- **Y-axis**: Probability % | **X-axis**: Year (2027–2045).
+- **Curve Shape**: Log-normal distribution showing a heavy right tail (reflecting asymmetric quantum uncertainty).
+- **Interactive Elements**:
+  - Hovering over a year shows the exact probability of CRQC arrival.
+  - A slider below the chart allows analysts to adjust `mode_year` and `sigma` spread assumptions, instantly animating the curve update and recalculating portfolio risk metrics below.
+  - Vertical annotation lines for: P5 (Aggressive), P50 (Median), P95 (Conservative).
+
+**Certificate Expiry vs CRQC Race Overview**:
+- A dedicated card next to the CRQC arrival chart.
+- **Visual**: A horizontal stacked bar chart showing the breakdown of certificates by race status:
+  - Green (Safe): PQC verified.
+  - Amber (Natural Rotation): Expires before CRQC arrival, safe to swap next cycle.
+  - Red (At Risk): Valid during CRQC arrival — **requires out-of-band proactive replacement**.
+- **Interaction**: Clicking the "At Risk" segment filters the asset list below to immediately show those vulnerable certificates.
+
+### Page — Asset Risk Detail (Updated)
+
+**Per-Asset Quantum Exposure**:
+- New component showing the individual asset's Mosca's Inequality (X + Y > Z) as a gauge.
+- **Visual Component**: "Probability of Quantum Exposure" dial (0-100%).
+### Page — Deep Scan Live Progress Tracker
+
+**Purpose**: Provide an engaging, real-time loading screen during long-running Deep Scans. Keeps the user focused and reduces perceived wait time.
+
+**Technical Spec (SSE)**:
+- Connects to `GET /api/v1/scans/{scan_id}/stream`.
+- Listens for `text/event-stream` messages parsing `data` JSON payloads.
+- Handles reconnection automatically. Stops listening when `event_type` is `scan_complete` or `scan_failed`.
+
+**Layout**:
+- **Top Header**: "Deep Scan in Progress" with a large, glowing circle pulse animation.
+- **Left Panel (Phase Map)**: A vertical stepper showing 6 phases.
+  1. Asset Discovery  
+  2. Cryptographic Inspection  
+  3. Bill of Materials (CBOM) Generation  
+  4. Quantum Risk Assessment  
+  5. Regulatory Compliance  
+  6. Topology Mapping  
+  The current phase is highlighted in blue and slowly pulses. Completed phases show a green checkmark.
+- **Center Panel (Live Feed)**: A terminal-like "hacker style" auto-scrolling log.
+  - Receives `asset_discovered` and `crypto_result` events.
+  - Example: `[10:45:01] Discovered: api.bank.in (192.168.1.5)`
+  - Example: `[10:45:05] Scanned api.bank.in: TLSv1.3 | AES-256-GCM | Quant-Safe: FALSE`
+- **Right Panel (Metrics)**: Live updating counters driven by the SSE stream:
+  - Assets Discovered (integer)
+  - Crypto Handshakes (progress bar, driven by `crypto_result` pct field)
+  - Estimated Time Remaining (derived from average per-asset processing time).
+- **Completion State**: When `scan_complete` arrives, the stream disconnects, a confetti animation plays, and a CTA "View Full Results" appears.

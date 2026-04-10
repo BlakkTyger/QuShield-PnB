@@ -28,5 +28,14 @@
   "ML-DSA-87": {"nist_level": 5, "quantum_vulnerable": false, "status": "pqc"},
   "SLH-DSA-128s": {"nist_level": 1, "quantum_vulnerable": false, "status": "pqc"},
   "SLH-DSA-256f": {"nist_level": 5, "quantum_vulnerable": false, "status": "pqc"},
-  "X25519MLKEM768": {"nist_level": 3, "quantum_vulnerable": false, "status": "hybrid"}
+  "X25519MLKEM768": {"nist_level": 3, "quantum_vulnerable": false, "status": "hybrid"},
+  "SecP256r1MLKEM768": {"nist_level": 3, "quantum_vulnerable": false, "status": "hybrid"},
+  "SecP384r1MLKEM1024": {"nist_level": 5, "quantum_vulnerable": false, "status": "hybrid"},
+  "X25519Kyber768": {"nist_level": 3, "quantum_vulnerable": false, "status": "hybrid"},
+  "X448MLKEM1024": {"nist_level": 5, "quantum_vulnerable": false, "status": "hybrid"},
+  "HQC-128": {"nist_level": 1, "quantum_vulnerable": false, "status": "pqc_draft"},
+  "HQC-192": {"nist_level": 3, "quantum_vulnerable": false, "status": "pqc_draft"},
+  "HQC-256": {"nist_level": 5, "quantum_vulnerable": false, "status": "pqc_draft"},
+  "FN-DSA-512": {"nist_level": 1, "quantum_vulnerable": false, "status": "pqc_draft"},
+  "FN-DSA-1024": {"nist_level": 5, "quantum_vulnerable": false, "status": "pqc_draft"}
 }

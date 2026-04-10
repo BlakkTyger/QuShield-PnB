@@ -1,6 +1,6 @@
 # OUTPUT Diffs — Expected vs Implemented
 
-## Last Updated: 2026-04-09 21:30
+## Last Updated: 2026-04-10 12:45
 
 This document compares every output specified in `02-OUTPUTS.md` against the current codebase implementation (through Phase 7). Items marked ❌ are missing; ✅ are implemented; ⚠️ are partially implemented; 🔮 are deferred by design (require internal access, AI, or agent-based deployment).
 
@@ -158,11 +158,11 @@ Requires threat intelligence feed integration. Out of scope for POC.
 
 ---
 
-## Module 6 — Migration Intelligence Engine — 🔮 Phase 9
+## Module 6 — Migration Intelligence Engine — ⚠️ Partial
 
-- 6.1 Prioritized Migration Roadmap — 🔮 (requires AI)
+- 6.1 Prioritized Migration Roadmap — ✅ Implemented (rule-based, `GET /api/v1/risk/scan/{id}/migration-plan`)
 - 6.2 Developer Migration Playbooks — 🔮 (requires local LLM)
-- 6.3 Vendor Readiness Tracker — ⚠️ Partial (CA PQC readiness tracked; static vendor data in `regulatory_deadlines.json`)
+- 6.3 Vendor Readiness Tracker — ✅ Implemented (`GET /api/v1/compliance/vendor-readiness` with 12 vendors)
 
 ---
 
@@ -190,13 +190,15 @@ Requires threat intelligence feed integration. Out of scope for POC.
 
 ---
 
-## Module 9 — Enterprise Cyber Quantum Rating — ⚠️ Partial
+## Module 9 — Enterprise Cyber Quantum Rating — ✅ Fully Implemented
 
 - **✅** Per-asset quantum risk score (0–1000) with 5-factor weighted model
 - **✅** Risk classification labels (Critical/Vulnerable/At-Risk/Aware/Ready)
-- **❌** Missing: Aggregate organizational rating using 6-dimension weighted model:
+- **✅** Aggregate organizational rating using 6-dimension weighted model:
   PQC Deployment (30%), HNDL Reduction (25%), Crypto-Agility (15%), Certificate Hygiene (10%), Regulatory Compliance (10%), Migration Velocity (10%)
-- **❌** Missing: Organization-level labels (Quantum Critical/Vulnerable/Progressing/Ready/Elite)
+- **✅** Organization-level labels (Quantum Critical/Vulnerable/Progressing/Ready/Elite)
+- API: `GET /api/v1/risk/scan/{id}/enterprise-rating`
+- PNB result: 167/1000 — Quantum Critical
 
 ---
 
@@ -228,14 +230,29 @@ Requires threat intelligence feed integration. Out of scope for POC.
 | 3. Quantum Risk Scoring | ✅ | 100% |
 | 4. PQC Compliance Dashboard | ✅ | 100% |
 | 5. Threat Intelligence | ✅ | 85% (threat actor attribution deferred) |
-| 6. Migration Intelligence | 🔮 | 10% (Phase 9) |
+| 6. Migration Intelligence | ⚠️ | 50% (rule-based roadmap + vendor tracker done; playbooks Phase 9) |
 | 7. Certificate Intelligence | ✅ | 90% (CT anomaly deferred) |
 | 8. Topology Graph | ✅ | 90% (HSM graph deferred) |
-| 9. Enterprise Quantum Rating | ⚠️ | 70% (org-level rating missing) |
-| 10. AI Capabilities | 🔮 | 0% (Phase 9) |
+| 9. Enterprise Quantum Rating | ✅ | 100% |
+| 10. AI Capabilities | 🔮 | 0% (Phase 8+) |
 | 11. Reporting Artifacts | ⚠️ | 40% (CBOM export done; reports Phase 9) |
 
+### Additional Phase 7B Completions
+- **✅** Scan Tier System: Quick (<1s), Shallow (30-90s), Deep (5-10min)
+- **✅** JWT Authentication with user isolation
+- **✅** Smart Scan Cache with tier hierarchy
+- **✅** Incremental (delta) scanning
+- **✅** GeoIP service with map endpoints
+- **✅** Hybrid PQC TLS group detection
+- **✅** TLS cipher suite decomposition
+- **✅** HNDL data sensitivity multipliers
+- **✅** Dynamic migration complexity scoring
+
 ### Remaining Actionable Items (Pre-Phase 8)
-1. **Enterprise Quantum Rating endpoint** — aggregate 6-dimension org-level score
-2. **JWT algorithm parsing enhancement** — extract `alg` from JWT header more reliably
-3. **Compliance data fix validation** — confirm re-scan shows proper compliance data with real TLS/cert info
+1. **Deep Scan streaming** — SSE/WebSocket progress streaming during long scans
+2. **JWT algorithm deep parsing** — extract `alg` from JWT header more reliably
+3. **HQC detection** — pre-populate NIST level mapping for HQC-128/192/256
+4. **FN-DSA detection** — add FALCON/FN-DSA OIDs when FIPS 206 is published
+5. **Monte Carlo CRQC simulation** — probability-weighted distribution endpoint
+6. **Certificate expiry vs CRQC race** — new comparison endpoint
+7. **AI features** — RAG chatbot, migration roadmap generation, report generation

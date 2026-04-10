@@ -57,7 +57,7 @@ class ScanOrchestrator:
         finally:
             db.close()
 
-    def run_scan(self, scan_id: str) -> dict:
+    def run_scan(self, scan_id: str, loop=None) -> dict:
         summary = {
             "scan_id": scan_id,
             "status": "failed",
@@ -71,11 +71,27 @@ class ScanOrchestrator:
         
         start_time = time.time()
         db: Session = SessionLocal()
+        
+        def _emit(event_type: str, phase: int = 0, pct: int = 0, msg: str = "", data: dict = None):
+            """Helper to emit events to the async SSE manager safely from this sync thread."""
+            from app.services.scan_events import scan_events
+            import asyncio
+            if loop and loop.is_running():
+                try:
+                    asyncio.run_coroutine_threadsafe(
+                        scan_events.broadcast(scan_id, event_type, phase, pct, msg, data),
+                        loop
+                    )
+                except Exception as e:
+                    logger.debug(f"Failed to emit SSE event: {e}")
+
         try:
             scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
             if not scan_job:
                 logger.error(f"Scan job not found: {scan_id}")
                 return summary
+
+            _emit("scan_started", phase=1, pct=0, msg="Starting Deep Scan")
 
             targets = scan_job.targets
             all_assets = []
@@ -85,6 +101,8 @@ class ScanOrchestrator:
             scan_job.current_phase = 1
             scan_job.status = "running"
             db.commit()
+            
+            _emit("phase_start", phase=1, pct=0, msg="Starting asset discovery")
             
             for target in targets:
                 try:
@@ -98,6 +116,8 @@ class ScanOrchestrator:
             db_assets = save_discovered_assets(scan_id, all_assets, db)
             summary["assets_discovered"] = len(db_assets)
             summary["phases_completed"].append(1)
+            
+            _emit("phase_complete", phase=1, pct=100, msg=f"Discovered {len(db_assets)} assets", data={"count": len(db_assets)})
 
             if len(db_assets) == 0:
                 logger.warning(f"[{scan_id}] Phase 1 found no assets. Terminating scan.")
@@ -109,8 +129,11 @@ class ScanOrchestrator:
 
             # Phase 2: Crypto Inspection
             logger.info(f"[{scan_id}] Phase 2: Crypto Inspection on {len(db_assets)} assets")
+            _emit("phase_start", phase=2, pct=0, msg=f"Starting crypto inspection on {len(db_assets)} assets")
+            
             raw_asset_map = {a.get("hostname"): a for a in all_assets}
             mapped_assets = [(str(a.id), a.hostname) for a in db_assets]
+            total_mapped = len(mapped_assets)
 
             def process_crypto(asset_id_str, asset_hostname):
                 try:
@@ -130,13 +153,20 @@ class ScanOrchestrator:
 
             successful_crypto = 0
             asset_crypto_map = {}
+            processed_crypto = 0
             with ThreadPoolExecutor(max_workers=20) as executor:
                 futures = {executor.submit(process_crypto, a_id, a_host): a_id for a_id, a_host in mapped_assets}
                 for future in as_completed(futures):
                     result_id, fp = future.result()
+                    processed_crypto += 1
+                    pct = int((processed_crypto / total_mapped) * 100) if total_mapped > 0 else 100
+                    
                     if fp is not None:
                         successful_crypto += 1
                         asset_crypto_map[result_id] = fp
+                        _emit("crypto_result", phase=2, pct=pct, msg=f"Scanned {processed_crypto}/{total_mapped}", data={"asset_id": result_id, "success": True})
+                    else:
+                        _emit("crypto_result", phase=2, pct=pct, msg=f"Scanned {processed_crypto}/{total_mapped}", data={"asset_id": result_id, "success": False})
             
             summary["crypto_scans"] = successful_crypto
             summary["phases_completed"].append(2)
@@ -167,9 +197,12 @@ class ScanOrchestrator:
             summary["cloned_assets"] = cloned_count
             summary["rescanned_assets"] = len(assets_to_scan)
             logger.info(f"[{scan_id}] Incremental: {cloned_count} cloned, {len(assets_to_scan)} need full pipeline")
+            
+            _emit("phase_complete", phase=2, pct=100, msg="Crypto inspection complete")
 
             # Phase 3: CBOM Generation
             logger.info(f"[{scan_id}] Phase 3: CBOM Generation")
+            _emit("phase_start", phase=3, pct=0, msg="Building Cryptographic Bills of Material")
             scan_job.current_phase = 3
             db.commit()
 
@@ -202,13 +235,20 @@ class ScanOrchestrator:
                 for f in as_completed(cbom_futures):
                     if f.result():
                         successful_cboms += 1
+                    logger.info(f"[{scan_id}] Building aggregate CBOM...")
+            _emit("phase_progress", phase=3, pct=90, msg="Building aggregate CBOM for enterprise")
+            agg_data = build_aggregate_cbom(scan_id, db)
+            if agg_data:
+                save_cbom(scan_id, "aggregate", agg_data["cbom_json"])
 
-            build_aggregate_cbom(scan_id, db)
             summary["cboms_generated"] = successful_cboms
             summary["phases_completed"].append(3)
+            
+            _emit("phase_complete", phase=3, pct=100, msg=f"Generated {successful_cboms} CBOMs")
 
-            # Phase 4: Risk Engine
-            logger.info(f"[{scan_id}] Phase 4: Risk Assessment")
+            # Phase 4: Risk Engine (Quantum Risk Score & Mosca's Inequality)
+            logger.info(f"[{scan_id}] Phase 4: Risk Risk Assessment")
+            _emit("phase_start", phase=4, pct=0, msg="Quantifying quantum risk for all assets")
             scan_job.current_phase = 4
             db.commit()
 
@@ -316,16 +356,25 @@ class ScanOrchestrator:
             summary["status"] = "completed"
             summary["duration_seconds"] = round(time.time() - start_time, 2)
             logger.info(f"[{scan_id}] Full scan pipeline completed in {summary['duration_seconds']}s")
-
+            
+            _emit("scan_complete", phase=6, pct=100, msg="Deep scan successfully completed!")
             return summary
 
         except Exception as e:
-            logger.error(f"[{scan_id}] Orchestrator critical failure: {e}", exc_info=True)
-            if 'scan_job' in locals() and scan_job:
-                scan_job.status = "failed"
-                db.commit()
+            logger.error(f"[{scan_id}] Orchestrator error: {e}", exc_info=True)
+            try:
+                db_err = SessionLocal()
+                sj = db_err.query(ScanJob).filter(ScanJob.id == scan_id).first()
+                if sj:
+                    sj.status = "failed"
+                    sj.error_message = str(e)
+                    db_err.commit()
+                db_err.close()
+            except Exception as dbe:
+                logger.error(f"Failed to update scan job error status: {dbe}")
+                
+            _emit("scan_failed", phase=0, pct=0, msg=f"Scan failed: {str(e)}")
             return summary
-
         finally:
             db.close()
 

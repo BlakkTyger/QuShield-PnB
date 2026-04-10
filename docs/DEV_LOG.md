@@ -713,3 +713,76 @@
 - Integrated frontend pop-up workflow notes in `docs/03-FRONTEND.md`.
 
 *Phase 7B backend architecture complete!*
+
+---
+
+## Phase 8 — Feature Expansion (Deep Scan UX, AI, PQC Detection, Risk Models)
+
+### 8.1 — HQC Detection (Backup KEM) ✅ (2026-04-10)
+- **Feature**: Track B — Pre-populate HQC-128/192/256 in NIST quantum level mapping and PQC OIDs
+- **Changes**:
+  - `nist_quantum_levels.json`: Added HQC-128 (L1), HQC-192 (L3), HQC-256 (L5) with status `pqc_draft`
+  - `pqc_oids.json`: Added HQC-128/192/256 draft OIDs (1.3.9999.5.x) with `draft: true` flag
+  - `crypto_inspector.py`: Added `HQC` to PQC key exchange marker patterns
+- **Notes**: HQC selected by NIST as backup KEM (NIST IR 8545, Mar 2025). Uses code-based crypto (non-lattice diversity). Final OIDs expected ~2027 when FIPS standard is published.
+- **Test**: `test_phase8_wave1.py` — 4/4 HQC tests pass
+
+### 8.2 — FN-DSA (FALCON) Detection ✅ (2026-04-10)
+- **Feature**: Track C — Pre-populate FN-DSA-512/1024 in NIST quantum level mapping and PQC OIDs
+- **Changes**:
+  - `nist_quantum_levels.json`: Added FN-DSA-512 (L1), FN-DSA-1024 (L5) with status `pqc_draft`
+  - `pqc_oids.json`: Added FN-DSA-512/1024 draft OIDs (1.3.9999.3.x) with `draft: true` and FIPS 206 reference
+  - `crypto_inspector.py`: Added `FALCON`, `FN_DSA`, `FNDSA` to PQC marker patterns
+- **Notes**: FN-DSA = FIPS 206 (pending, expected H2 2026). Uses NTRU-lattice FFT signatures — compact signatures ideal for cert chains. Draft OIDs from IETF.
+- **Test**: `test_phase8_wave1.py` — 3/3 FN-DSA tests pass
+
+### 8.3 — JWT Algorithm Deep Parsing ✅ (2026-04-10)
+- **Feature**: Track G — Enhanced JWT `alg` extraction with quantum vulnerability mapping
+- **Changes**:
+  - `crypto_inspector.py`: Added `_JWT_QUANTUM_MAP` (30 JWT algorithms → NIST level + vulnerability), `parse_jwt_algorithm()` function, `_extract_jwts_from_text()` regex extractor
+  - `detect_api_auth()`: Enhanced to search cookies + response body + auth headers for JWTs, deep-parse all found tokens, return `jwt_details` with quantum vulnerability assessment
+  - Supports: HS*/RS*/PS*/ES*/EdDSA (classical) + ML-DSA/FN-DSA (PQC) + `none` (insecure)
+  - Edge cases handled: Bearer prefix, truncated tokens, non-standard encoding, missing alg field
+- **Test**: `test_phase8_wave1.py` — 13/13 JWT tests pass (all alg families + edge cases)
+
+### 8.4 — Vendor PQC Readiness Expansion ✅ (2026-04-10)
+- **Feature**: Track F — Expanded vendor readiness from 12 to 19 vendors
+- **Changes**:
+  - `vendor_readiness.json`: Added 7 new vendors: Apache (HTTP Server), HAProxy, Let's Encrypt, Microsoft (Windows CNG/SChannel), Google (Chrome/BoringSSL), Cloudflare (CDN/Edge), SWIFT (Alliance Gateway)
+  - Added `last_updated` field to all vendor entries for freshness tracking
+  - Now spans 13 vendor categories (TLS Library, Crypto Library, Web Server, HSM, CBS, CA/PKI, Payment Rail, OS Crypto Provider, Browser, CDN/WAF, Financial Messaging, Load Balancer)
+- **Test**: `test_phase8_wave1.py` — 4/4 vendor tests pass
+
+### 8.5 — Hybrid PQC NIST Level Expansion ✅ (2026-04-10)
+- **Feature**: Added missing hybrid PQC entries to NIST quantum levels
+- **Changes**:
+  - `nist_quantum_levels.json`: Added SecP256r1MLKEM768 (L3), SecP384r1MLKEM1024 (L5), X25519Kyber768 (L3), X448MLKEM1024 (L5)
+- **Test**: `test_phase8_wave1.py` — 1/1 hybrid test passes (4 entries verified)
+
+**Wave 1 Total**: 25/25 standalone tests passing. All features independently verified.
+
+### 8.6 — Monte Carlo CRQC Simulation ✅ (2026-04-10)
+- **Feature**: Track D — Replaced discrete 3-scenario CRQC model with continuous probability distribution
+- **Changes**:
+  - `monte_carlo.py`: Created service with log-normal distribution focused on asymmetric quantum uncertainty (heavy right tail, thin left tail).
+  - Implemented `simulate_crqc_arrival`, `simulate_asset_exposure`, and `simulate_portfolio` methods for correlated risk simulation.
+  - `v1/risk.py`: Added 3 new endpoints (`/monte-carlo/simulate`, `/monte-carlo/asset-exposure`, `/scan/{scan_id}/monte-carlo`).
+- **Test**: `test_phase8_wave2.py` — 14/14 Monte Carlo tests pass (distribution shape, determinism, cumulative, portfolio ordering, etc.)
+
+### 8.7 — Certificate Expiry vs CRQC Race Engine ✅ (2026-04-10)
+- **Feature**: Track E — Analyze overlap between certificate expiry windows and projected CRQC arrival
+- **Changes**:
+  - `risk_engine.py`: Added `compute_cert_crqc_race()` categorizing certificates as `natural_rotation`, `at_risk`, or `safe`.
+  - Added `compute_migration_complexity()` to dynamically estimate migration timelines based on target asset properties (e.g., crypto-agility, pinning overhead).
+  - `v1/risk.py`: Added endpoint `/scan/{scan_id}/cert-race`.
+- **Test**: `test_phase8_wave2.py` — 4/4 cert-race helper tests pass
+
+### 8.8 — Deep Scan Real-Time Status Streaming ✅ (2026-04-10)
+- **Feature**: Track A — SSE infrastructure to stream progress from long-running scans to the frontend
+- **Changes**:
+  - `scan_events.py`: Implemented `ScanEventManager` using async Python queues and `fastapi.responses.StreamingResponse` generator.
+  - `orchestrator.py`: Integrated SSE. Added safe `_emit` wrapper that takes the FastAPI request's asyncio event loop from `scans.py` into the synchronous background threading environment (via `asyncio.run_coroutine_threadsafe`). Sprinkled phase boundary and progress percentage emit calls.
+  - `v1/scans.py`: Exposed `GET /api/v1/scans/{scan_id}/stream` returning `text/event-stream`.
+- **Test**: `test_phase8_wave3.py` — SSE generator and payload validation functions correctly formatted.
+
+**Wave 3 Total**: 1/1 standalone test passing. Orchestrator securely emits events to active listeners.

@@ -833,3 +833,165 @@ def _infer_asset_type(hostname: str) -> str:
         return "internet_banking"
 
     return "web_server"
+
+
+# ─── Certificate Expiry vs CRQC Race Analysis ──────────────────────────────
+
+
+@timed(service="risk_engine")
+def compute_cert_crqc_race(scan_id: str, db) -> dict:
+    """
+    Analyze the race between certificate expiry dates and estimated CRQC arrival.
+
+    Classifies each certificate as:
+    - 'natural_rotation': cert expires BEFORE CRQC → good (natural reissue opportunity)
+    - 'at_risk': cert will NOT expire before CRQC arrival → bad (classical cert active during CRQC)
+    - 'safe': cert uses PQC algorithms or is already hybrid
+
+    Also estimates migration completion date from per-asset complexity scores.
+
+    Returns dict with per-certificate analysis, summary counts, and recommendations.
+    """
+    from app.models.asset import Asset
+    from app.models.certificate import Certificate
+    from app.models.compliance import ComplianceResult
+
+    scan_uuid = uuid_mod.UUID(scan_id) if isinstance(scan_id, str) else scan_id
+
+    # Fetch all certificates for this scan
+    certificates = db.query(Certificate).filter(Certificate.scan_id == scan_uuid).all()
+    assets = db.query(Asset).filter(Asset.scan_id == scan_uuid).all()
+    asset_map = {str(a.id): a for a in assets}
+
+    # CRQC arrival estimates
+    crqc_pessimistic = datetime(CRQC_SCENARIOS["pessimistic"], 1, 1, tzinfo=timezone.utc)
+    crqc_median = datetime(CRQC_SCENARIOS["median"], 1, 1, tzinfo=timezone.utc)
+    crqc_optimistic = datetime(CRQC_SCENARIOS["optimistic"], 1, 1, tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+
+    # PQC-safe key types and algorithms
+    pqc_safe_markers = {"ML-KEM", "ML-DSA", "SLH-DSA", "FN-DSA", "HQC", "FALCON"}
+
+    cert_results = []
+    summary = {"natural_rotation": 0, "at_risk": 0, "safe": 0, "expired": 0}
+
+    for cert in certificates:
+        asset = asset_map.get(str(cert.asset_id))
+        hostname = asset.hostname if asset else "unknown"
+        asset_type = _infer_asset_type(hostname) if asset else "unknown"
+
+        # Check if cert is already PQC-safe
+        is_pqc = False
+        if cert.key_type:
+            for marker in pqc_safe_markers:
+                if marker.upper() in cert.key_type.upper():
+                    is_pqc = True
+                    break
+        if cert.signature_algorithm:
+            for marker in pqc_safe_markers:
+                if marker.upper() in cert.signature_algorithm.upper():
+                    is_pqc = True
+                    break
+
+        # Determine cert expiry
+        cert_expiry = cert.not_after if hasattr(cert, "not_after") and cert.not_after else None
+        if cert_expiry and cert_expiry.tzinfo is None:
+            cert_expiry = cert_expiry.replace(tzinfo=timezone.utc)
+
+        # Compute migration estimate for this asset
+        agility_score = 50.0
+        if asset:
+            comp = db.query(ComplianceResult).filter(
+                ComplianceResult.asset_id == asset.id,
+                ComplianceResult.scan_id == scan_uuid,
+            ).first()
+            if comp and comp.crypto_agility_score is not None:
+                agility_score = comp.crypto_agility_score
+
+        migration = compute_migration_complexity(asset_type, agility_score)
+        migration_completion = now + timedelta(days=int(migration["complexity_years"] * 365.25))
+
+        # Classification
+        if is_pqc:
+            race_status = "safe"
+            recommendation = "Already PQC-secured. No action needed."
+        elif cert_expiry is None:
+            race_status = "at_risk"
+            recommendation = "No expiry data. Assume at risk — schedule PQC cert reissue."
+        elif cert_expiry < now:
+            race_status = "expired"
+            recommendation = "Certificate expired. Reissue with PQC algorithm."
+        elif cert_expiry < crqc_pessimistic:
+            race_status = "natural_rotation"
+            recommendation = (
+                f"Cert expires {cert_expiry.strftime('%Y-%m-%d')} before CRQC "
+                f"({CRQC_SCENARIOS['pessimistic']}). Reissue with PQC at next renewal."
+            )
+        elif cert_expiry < crqc_median:
+            race_status = "at_risk"
+            recommendation = (
+                f"Cert expires {cert_expiry.strftime('%Y-%m-%d')} — between pessimistic "
+                f"({CRQC_SCENARIOS['pessimistic']}) and median ({CRQC_SCENARIOS['median']}) "
+                f"CRQC estimates. Proactively reissue with PQC before {CRQC_SCENARIOS['pessimistic']}."
+            )
+        else:
+            race_status = "at_risk"
+            recommendation = (
+                f"Cert valid until {cert_expiry.strftime('%Y-%m-%d')} — will be active during "
+                f"likely CRQC arrival. Critical: reissue with PQC algorithm ASAP."
+            )
+
+        summary[race_status] = summary.get(race_status, 0) + 1
+
+        cert_results.append({
+            "hostname": hostname,
+            "subject_cn": cert.subject_cn,
+            "issuer_cn": cert.issuer_cn,
+            "key_type": cert.key_type,
+            "key_length": cert.key_length,
+            "signature_algorithm": cert.signature_algorithm,
+            "not_after": cert_expiry.isoformat() if cert_expiry else None,
+            "days_until_expiry": (cert_expiry - now).days if cert_expiry and cert_expiry > now else 0,
+            "is_pqc": is_pqc,
+            "race_status": race_status,
+            "crqc_pessimistic": crqc_pessimistic.isoformat(),
+            "crqc_median": crqc_median.isoformat(),
+            "migration_completion_est": migration_completion.isoformat(),
+            "migration_years": migration["complexity_years"],
+            "recommendation": recommendation,
+        })
+
+    # Sort: at_risk first, then natural_rotation, then safe
+    status_order = {"at_risk": 0, "expired": 1, "natural_rotation": 2, "safe": 3}
+    cert_results.sort(key=lambda x: status_order.get(x["race_status"], 99))
+
+    result = {
+        "scan_id": scan_id,
+        "total_certificates": len(certificates),
+        "summary": summary,
+        "analysis_date": now.isoformat(),
+        "crqc_scenarios": CRQC_SCENARIOS,
+        "certificates": cert_results,
+        "headline": _generate_race_headline(summary, len(certificates)),
+    }
+
+    logger.info(
+        f"Cert-CRQC race analysis: {len(certificates)} certs — {summary}",
+        extra={"scan_id": scan_id, "summary": summary},
+    )
+
+    return result
+
+
+def _generate_race_headline(summary: dict, total: int) -> str:
+    """Generate a human-readable headline for the cert-CRQC race analysis."""
+    at_risk = summary.get("at_risk", 0)
+    natural = summary.get("natural_rotation", 0)
+    safe = summary.get("safe", 0)
+
+    if at_risk == 0:
+        return f"✅ All {total} certificates are either PQC-safe or will expire before CRQC arrival."
+    elif at_risk >= total * 0.7:
+        return f"⚠️ CRITICAL: {at_risk}/{total} certificates will still be active during CRQC arrival. Immediate PQC reissue needed."
+    else:
+        return f"⚠️ {at_risk}/{total} certificates at risk of being active during CRQC. {natural} have natural rotation opportunities."

@@ -1,6 +1,6 @@
 # QuShield-PnB — PQC Improvements & Research Recommendations
 
-## Last Updated: 2026-04-09
+## Last Updated: 2026-04-10
 
 This document analyzes the current QuShield-PnB backend outputs, compares them against the latest PQC standards and industry developments (as of Q2 2026), and proposes concrete improvements categorized by priority and effort.
 
@@ -74,14 +74,12 @@ This document analyzes the current QuShield-PnB backend outputs, compares them a
 
 ### A. Algorithm & Detection Improvements
 
-#### A1. Detect Hybrid PQC Key Exchanges in TLS 1.3 ⭐ HIGH PRIORITY
+#### A1. Detect Hybrid PQC Key Exchanges in TLS 1.3 ⭐ HIGH PRIORITY — ✅ DONE (Phase 7B.5)
 **Problem**: Current scanner detects ML-KEM/ML-DSA OIDs but doesn't identify hybrid TLS groups (X25519MLKEM768, SecP256r1MLKEM768) which are the most likely first deployment step for banks.
-**Solution**: Extend `scan_tls()` and `detect_pqc()` to parse TLS 1.3 supported_groups extension and detect hybrid named groups:
-- `X25519MLKEM768` (0x4588)
-- `SecP256r1MLKEM768` (0x4589)
-- `SecP384r1MLKEM1024` (0x4590)
-**Effort**: Low (cipher suite name parsing + OID table update)
-**Impact**: Critical — hybrid deployment is the recommended Phase 1 for banks
+**Solution**: Extended `detect_pqc()` with Layer 3 (shared ciphers scan) + Layer 4 (hybrid group decomposition).
+- Named group map: X25519MLKEM768 (0x4588), SecP256r1MLKEM768 (0x4589), SecP384r1MLKEM1024 (0x4590), X25519Kyber768 (0x6399)
+- Returns `hybrid_groups` with classical/PQC component breakdown and IANA IDs
+**Status**: ✅ Implemented in `crypto_inspector.py` — Layer 3 + Layer 4 detection active
 
 #### A2. HQC Detection (Backup KEM) ⭐ MEDIUM PRIORITY
 **Problem**: NIST selected HQC (Mar 2025) as backup KEM. Current scanner has no HQC awareness.
@@ -95,19 +93,13 @@ This document analyzes the current QuShield-PnB backend outputs, compares them a
 **Effort**: Low (OID table + NIST level mapping)
 **Impact**: Medium — early detection capability
 
-#### A4. TLS 1.3 Cipher Suite Decomposition ⭐ HIGH PRIORITY
-**Problem**: Current CBOM lists cipher suites as monolithic strings (e.g., "TLS_AES_256_GCM_SHA384"). The spec requires decomposed components: KE algorithm + auth algorithm + symmetric cipher + MAC separately.
-**Solution**: Implement cipher suite decomposition in `cbom_builder.py`:
-```
-TLS_AES_256_GCM_SHA384 → {
-  key_exchange: "ECDHE" (from negotiation),
-  authentication: "RSA" (from certificate),
-  symmetric: "AES-256-GCM",
-  mac: "SHA-384"
-}
-```
-**Effort**: Medium (parsing logic + CBOM component restructuring)
-**Impact**: High — more accurate CBOM, better risk attribution per component
+#### A4. TLS 1.3 Cipher Suite Decomposition ⭐ HIGH PRIORITY — ✅ DONE (Phase 7B.6)
+**Problem**: Current CBOM lists cipher suites as monolithic strings (e.g., "TLS_AES_256_GCM_SHA384"). The spec requires decomposed components.
+**Solution**: Implemented `decompose_cipher_suite()` in `cbom_builder.py`:
+- TLS 1.3 lookup table (5 suites) + TLS 1.2 lookup table (14 suites) + heuristic fallback
+- Splits: key_exchange, authentication, symmetric, mac, tls_version
+- Integrated into `build_cbom()` — each component includes `decomposition` field
+**Status**: ✅ Fully implemented and integrated
 
 #### A5. Certificate Transparency Log Monitoring ⭐ MEDIUM PRIORITY
 **Problem**: `02-OUTPUTS.md` Module 7 specifies CT Log Anomaly Detection. Currently deferred.
@@ -126,23 +118,12 @@ TLS_AES_256_GCM_SHA384 → {
 
 ### B. Scoring & Risk Model Improvements
 
-#### B1. Data Sensitivity Multiplier for HNDL ⭐ HIGH PRIORITY
-**Problem**: HNDL exposure window currently treats all assets equally. A SWIFT endpoint transacting ₹10,000 Cr/day has vastly higher HNDL impact than a marketing website.
-**Solution**: Implement per-asset-type data sensitivity weights:
-
-| Asset Type | Sensitivity Multiplier | Rationale |
-|---|---|---|
-| swift_endpoint | 5.0x | International financial messaging, decades of confidentiality |
-| internet_banking | 3.0x | Account credentials, PAN, Aadhaar |
-| upi_gateway | 3.0x | Real-time payment data, transaction volumes |
-| api_gateway | 2.5x | Aggregates multiple data flows |
-| mail_server | 2.0x | Internal communications, potentially sensitive |
-| web_server | 1.0x | Baseline |
-| dns_server | 0.5x | Metadata only |
-| cdn_endpoint | 0.5x | Static content, low confidentiality |
-
-**Effort**: Low (add multiplier to risk score computation)
-**Impact**: High — much more meaningful HNDL risk differentiation
+#### B1. Data Sensitivity Multiplier for HNDL ⭐ HIGH PRIORITY — ✅ DONE (Phase 7B.7)
+**Problem**: HNDL exposure window currently treats all assets equally.
+**Solution**: Implemented `SENSITIVITY_MULTIPLIERS` in risk_engine.py: swift=5.0x, core_banking=3.5x, internet_banking=3.0x, web=1.0x, dns=0.5x.
+`compute_hndl_window()` now accepts `asset_type`, returns `weighted_exposure`.
+HNDL API endpoint returns per-asset sensitivity multiplier, sorted by criticality.
+**Status**: ✅ Fully implemented + tested
 
 #### B2. Monte Carlo CRQC Arrival Simulation ⭐ MEDIUM PRIORITY
 **Problem**: Current Mosca implementation uses 3 discrete CRQC scenarios. The spec mentions "probability-weighted distribution" and "Monte Carlo simulation."
@@ -154,36 +135,23 @@ TLS_AES_256_GCM_SHA384 → {
 **Effort**: Medium (NumPy already available; need simulation logic + new API endpoint)
 **Impact**: Medium — more sophisticated risk quantification for board-level reporting
 
-#### B3. Migration Complexity Scoring ⭐ HIGH PRIORITY
-**Problem**: Migration time (X in Mosca's theorem) is currently a static default per asset type. Real migration complexity depends on:
-- Number of dependent services
-- HSM vendor support status
-- Whether cipher is hardcoded
-- Whether cert management is automated
-**Solution**: Compute migration complexity dynamically from scan data:
-```python
-complexity = base_time
-if agility_score < 40: complexity += 2  # migration-blocked
-if is_third_party: complexity += 1      # vendor dependency
-if is_pinned: complexity += 1           # mobile app pinning barrier
-if not forward_secrecy: complexity += 0.5  # needs cipher reconfig
-```
-**Effort**: Low (use existing scan data)
-**Impact**: High — more accurate Mosca X parameter
+#### B3. Migration Complexity Scoring ⭐ HIGH PRIORITY — ✅ DONE (Phase 7B.8)
+**Problem**: Migration time (X in Mosca's theorem) is currently a static default per asset type.
+**Solution**: Implemented `compute_migration_complexity()`: base time + penalties for low agility (+2yr), 3rd-party (+1yr), pinning (+1yr), no FS (+0.5yr), capped at 8yr. Migration-plan endpoint computes per-asset dynamic complexity.
+**Status**: ✅ Fully implemented + tested
 
 ---
 
 ### C. New Features / Tabs
 
-#### C1. Migration Readiness Dashboard ⭐ HIGH PRIORITY
-**Problem**: Module 6 (Migration Intelligence) is deferred to Phase 9 (AI), but a rule-based version can be implemented now.
-**Solution**: New API endpoint `GET /api/v1/risk/scan/{id}/migration-plan` that auto-generates a prioritized migration roadmap:
-- **Phase 0** (0–90 days): List assets with TLS < 1.2, RC4/3DES, RSA ≤ 1024
-- **Phase 1** (90d–18mo): List assets needing hybrid ML-KEM deployment, sorted by risk score
-- **Phase 2** (18mo–36mo): Assets needing full PQC, with vendor dependency flags
-- **Phase 3** (36mo+): Verification targets
-**Effort**: Medium (query existing DB data, apply rules)
-**Impact**: Very High — actionable output without AI dependency
+#### C1. Migration Readiness Dashboard ⭐ HIGH PRIORITY — ✅ DONE (Phase 7.9)
+**Problem**: Module 6 (Migration Intelligence) was deferred to Phase 9 (AI), but a rule-based version was needed.
+**Solution**: Implemented `GET /api/v1/risk/scan/{id}/migration-plan` — auto-generates a prioritized 4-phase migration roadmap from scan data.
+- Phase 0 (0–90 days): Critical assets with weak crypto
+- Phase 1 (90d–18mo): Hybrid ML-KEM deployment
+- Phase 2 (18mo–36mo): Full PQC migration
+- Phase 3 (36mo+): Verification
+**Status**: ✅ Fully implemented + tested — PNB: 1 critical, 91 hybrid deploy, 22 blocked
 
 #### C2. Certificate Expiry vs CRQC Race Visualization ⭐ MEDIUM PRIORITY
 **Problem**: Spec mentions "how many certificates will expire before we can realistically complete PQC migration." This is not computed.
@@ -203,34 +171,24 @@ if not forward_secrecy: complexity += 0.5  # needs cipher reconfig
 **Effort**: Low (static data + simple API endpoint)
 **Impact**: Medium — valuable context for migration planning
 
-#### C4. Regulatory Countdown Timer ⭐ LOW PRIORITY
+#### C4. Regulatory Countdown Timer ⭐ LOW PRIORITY — ✅ DONE (Phase 7.9)
 **Problem**: Spec Problem 7 calls for countdown to specific regulatory deadlines.
-**Solution**: Enhance `/api/v1/compliance/deadlines` to include:
-- `days_remaining` computed from current date
-- `urgency_level` (critical/warning/info based on days remaining)
-- Color-coded for frontend visualization
-**Effort**: Very Low (add datetime computation to existing endpoint)
-**Impact**: Low (UX improvement, no new data)
+**Solution**: Enhanced `/api/v1/compliance/deadlines` includes `days_remaining`, `urgency_level` (critical/warning/info/overdue/ongoing), color-coded for frontend.
+**Status**: ✅ Fully implemented
 
 ---
 
 ### D. Efficiency Improvements
 
-#### D1. Parallel CBOM Generation ⭐ MEDIUM PRIORITY
-**Problem**: CBOM generation is sequential per asset. For 96 assets, this is a bottleneck.
-**Solution**: Use ThreadPoolExecutor (like crypto inspection already does) for CBOM generation. Most CBOM work is CPU-bound (serialization) so 4–8 workers would help.
-**Effort**: Low (pattern already exists in orchestrator for crypto phase)
-**Impact**: Medium — ~3-4x speedup for Phase 3
+#### D1. Parallel CBOM Generation ⭐ MEDIUM PRIORITY — ✅ DONE (Phase 7B.3)
+**Problem**: CBOM generation was sequential per asset.
+**Solution**: Parallelized CBOM generation with ThreadPoolExecutor (10 workers) in orchestrator.
+**Status**: ✅ Implemented in `orchestrator.py`
 
-#### D2. Incremental Scanning ⭐ HIGH PRIORITY
-**Problem**: Every scan starts from scratch. For weekly compliance snapshots, re-scanning 96 unchanged assets is wasteful.
-**Solution**: Implement delta scanning:
-1. Store previous scan results keyed by hostname
-2. On new scan, check if asset's IP + TLS fingerprint changed
-3. If unchanged, reuse previous crypto/CBOM/risk data
-4. Only re-scan changed or new assets
-**Effort**: High (requires scan comparison logic + caching layer)
-**Impact**: Very High — 10x scan speedup for periodic monitoring, enables scheduled snapshots (Module 11.3)
+#### D2. Incremental Scanning ⭐ HIGH PRIORITY — ✅ DONE (Phase 7B)
+**Problem**: Every scan starts from scratch.
+**Solution**: Implemented `incremental.py` with fingerprint_hash (sha256 of IP + TLS + cipher + cert). On new scan, compares with previous; clones unchanged data.
+**Status**: ✅ Fully implemented + integrated in orchestrator
 
 #### D3. Async Scan Orchestration ⭐ MEDIUM PRIORITY
 **Problem**: Scan runs in a background thread. If the server restarts, the scan is lost.
@@ -248,11 +206,8 @@ if not forward_secrecy: complexity += 0.5  # needs cipher reconfig
 
 ### E. Accuracy & Quality Improvements
 
-#### E1. TLS 1.3 Enforcement Detection Fix ⭐ HIGH PRIORITY (DONE)
-**Problem**: Compliance showed 0% TLS 1.3 despite assets negotiating TLS 1.3.
-**Root Cause**: Orchestrator was not passing `fp["tls"]["negotiated_protocol"]` correctly to compliance service — was looking at flat `fp["tls_version"]` which doesn't exist.
-**Fix**: Updated orchestrator to correctly extract nested TLS data. Re-scan will validate.
-**Status**: ✅ Fixed in this session
+#### E1. TLS 1.3 Enforcement Detection Fix ⭐ HIGH PRIORITY — ✅ DONE
+**Status**: ✅ Fixed in Phase 7.8
 
 #### E2. JWT Algorithm Deep Parsing ⭐ MEDIUM PRIORITY
 **Problem**: `detect_api_auth()` detects JWT presence but doesn't always extract the `alg` header reliably.
@@ -280,29 +235,29 @@ if not forward_secrecy: complexity += 0.5  # needs cipher reconfig
 
 ### Immediate (This Sprint — Pre-Phase 8)
 1. ✅ E1: TLS 1.3 enforcement detection fix (DONE)
-2. B1: Data sensitivity multiplier for HNDL
-3. B3: Migration complexity scoring
-4. C4: Regulatory countdown timer enhancement
+2. ✅ B1: Data sensitivity multiplier for HNDL (DONE)
+3. ✅ B3: Migration complexity scoring (DONE)
+4. ✅ C4: Regulatory countdown timer enhancement (DONE)
 
-### Short-Term (Phase 8–9)
-5. A1: Hybrid PQC key exchange detection
-6. A4: TLS cipher suite decomposition
-7. C1: Migration readiness dashboard (rule-based)
-8. E2: JWT algorithm deep parsing
-9. D1: Parallel CBOM generation
+### Short-Term (Phase 7B — COMPLETED)
+5. ✅ A1: Hybrid PQC key exchange detection (DONE)
+6. ✅ A4: TLS cipher suite decomposition (DONE)
+7. ✅ C1: Migration readiness dashboard (DONE — rule-based)
+8. E2: JWT algorithm deep parsing — **TODO**
+9. ✅ D1: Parallel CBOM generation (DONE)
 
-### Medium-Term (Post-MVP)
+### Medium-Term (Phase 8 — NEXT)
 10. A5: CT Log monitoring (crt.sh integration)
-11. B2: Monte Carlo CRQC simulation
-12. C2: Certificate expiry vs CRQC race
-13. C3: Dynamic vendor readiness tracker
-14. D2: Incremental scanning
+11. B2: Monte Carlo CRQC simulation — **TODO**
+12. C2: Certificate expiry vs CRQC race — **TODO**
+13. ✅ C3: Dynamic vendor readiness tracker (DONE)
+14. ✅ D2: Incremental scanning (DONE)
 15. E3: Per-component quantum level accuracy
 
 ### Long-Term (Production)
-16. A2: HQC detection (when standard is drafted)
-17. A3: FN-DSA detection (when draft is published)
-18. D3: Async scan orchestration with checkpointing
+16. A2: HQC detection — **TODO** (pre-populate now)
+17. A3: FN-DSA detection — **TODO** (pre-populate now)
+18. D3: Async scan orchestration with checkpointing — **TODO (streaming)**
 
 ---
 

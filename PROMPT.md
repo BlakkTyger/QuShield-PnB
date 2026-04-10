@@ -69,42 +69,42 @@
 - [x] **A.4** — `ScanJob` model update: Add `scan_type` field (quick/shallow/deep) ✅
   - [x] A.4.1 — DB migration + model update ✅
   - [x] A.4.2 — Scan type passed via dedicated endpoints (quick/shallow/deep) ✅
-- [ ] **A.5** — Incremental scanning (delta scan)
-  - [ ] A.5.1 — Add `fingerprint_hash` column to Asset (sha256 of IP + TLS negotiated cipher + cert fingerprint)
-  - [ ] A.5.2 — On new scan, compare fingerprint_hash with last scan for same hostname
-  - [ ] A.5.3 — If unchanged, clone previous crypto/CBOM/risk/compliance data to new scan
-  - [ ] A.5.4 — Only re-scan changed or new assets
-  - [ ] A.5.5 — Standalone test + integration test + DEV_LOG entry
+- [x] **A.5** — Incremental scanning (delta scan) ✅
+  - [x] A.5.1 — Add `fingerprint_hash` column to Asset (sha256 of IP + TLS negotiated cipher + cert fingerprint) ✅
+  - [x] A.5.2 — On new scan, compare fingerprint_hash with last scan for same hostname ✅
+  - [x] A.5.3 — If unchanged, clone previous crypto/CBOM/risk/compliance data to new scan ✅
+  - [x] A.5.4 — Only re-scan changed or new assets ✅
+  - [x] A.5.5 — Standalone test + integration test + DEV_LOG entry ✅
 
 ### Track B — Authentication & Scan Cache (Feature 2)
 
-- [ ] **B.1** — User model + DB schema
-  - [ ] B.1.1 — Create `User` SQLAlchemy model: id, email, password_hash, email_verified, created_at
-  - [ ] B.1.2 — Create `EmailVerification` model: token, user_id, expires_at
-  - [ ] B.1.3 — Add `user_id` FK to `ScanJob` model
-  - [ ] B.1.4 — DB tables auto-created via Base.metadata
-- [ ] **B.2** — Auth service
-  - [ ] B.2.1 — Implement `auth_service.py`: register, login, verify_email, hash_password, verify_password
-  - [ ] B.2.2 — JWT token generation + validation (access + refresh tokens)
-  - [ ] B.2.3 — FastAPI dependency `get_current_user` for protected endpoints
-  - [ ] B.2.4 — Standalone test script
-- [ ] **B.3** — Auth API endpoints
-  - [ ] B.3.1 — `POST /api/v1/auth/register` — signup with email
-  - [ ] B.3.2 — `POST /api/v1/auth/login` — returns JWT tokens
-  - [ ] B.3.3 — `POST /api/v1/auth/verify-email/{token}` — email verification
-  - [ ] B.3.4 — `POST /api/v1/auth/refresh` — refresh token
-  - [ ] B.3.5 — `GET /api/v1/auth/me` — current user info
-  - [ ] B.3.6 — Integration tests + DEV_LOG entry
-- [ ] **B.4** — Scan result caching (smart tier upgrade)
-  - [ ] B.4.1 — Create `ScanCache` model: domain, scan_type, scan_id, cached_at, expires_at
-  - [ ] B.4.2 — On scan request, check ScanCache: if same/higher tier exists and fresh → return cached
-  - [ ] B.4.3 — Tier hierarchy: deep > shallow > quick (request for quick returns shallow if available)
-  - [ ] B.4.4 — Cache TTL: quick=1h, shallow=6h, deep=24h (configurable)
-  - [ ] B.4.5 — Integration test + DEV_LOG entry
-- [ ] **B.5** — Protect scan endpoints: require auth, associate scans with user_id
-  - [ ] B.5.1 — Add auth dependency to scan/create endpoints
-  - [ ] B.5.2 — `GET /api/v1/scans/my` — list current user's scans
-  - [ ] B.5.3 — Ensure users can only access their own scan results (data isolation)
+- [x] **B.1** — User model + DB schema ✅
+  - [x] B.1.1 — Create `User` SQLAlchemy model: id, email, password_hash, email_verified, created_at ✅
+  - [x] B.1.2 — Create `EmailVerification` model: token, user_id, expires_at ✅
+  - [x] B.1.3 — Add `user_id` FK to `ScanJob` model ✅
+  - [x] B.1.4 — DB tables auto-created via Base.metadata ✅
+- [x] **B.2** — Auth service ✅
+  - [x] B.2.1 — Implement `auth_service.py`: register, login, verify_email, hash_password, verify_password ✅
+  - [x] B.2.2 — JWT token generation + validation (access + refresh tokens) ✅
+  - [x] B.2.3 — FastAPI dependency `get_current_user` for protected endpoints ✅
+  - [x] B.2.4 — Standalone test script ✅
+- [x] **B.3** — Auth API endpoints ✅
+  - [x] B.3.1 — `POST /api/v1/auth/register` — signup with email ✅
+  - [x] B.3.2 — `POST /api/v1/auth/login` — returns JWT tokens ✅
+  - [x] B.3.3 — `POST /api/v1/auth/verify-email/{token}` — email verification ✅
+  - [x] B.3.4 — `POST /api/v1/auth/refresh` — refresh token ✅
+  - [x] B.3.5 — `GET /api/v1/auth/me` — current user info ✅
+  - [x] B.3.6 — Integration tests + DEV_LOG entry ✅
+- [x] **B.4** — Scan result caching (smart tier upgrade) ✅
+  - [x] B.4.1 — Create `ScanCache` model: domain, scan_type, scan_id, cached_at, expires_at ✅
+  - [x] B.4.2 — On scan request, check ScanCache: if same/higher tier exists and fresh → return cached ✅
+  - [x] B.4.3 — Tier hierarchy: deep > shallow > quick (request for quick returns shallow if available) ✅
+  - [x] B.4.4 — Cache TTL: quick=1h, shallow=6h, deep=24h (configurable) ✅
+  - [x] B.4.5 — Integration test + DEV_LOG entry ✅
+- [x] **B.5** — Protect scan endpoints: require auth, associate scans with user_id ✅
+  - [x] B.5.1 — Add auth dependency to scan/create endpoints ✅
+  - [x] B.5.2 — `GET /api/v1/scans/my` — list current user's scans ✅
+  - [x] B.5.3 — Ensure users can only access their own scan results (data isolation) ✅
 
 ### Track C — GeoIP Location & Map Data (Feature 3)
 
@@ -160,8 +160,8 @@
 - [x] **F.2** — Update `05-ALGORITHM_RESEARCH.md`: quick scan algorithm, shallow scan strategy, cipher decomposition, hybrid PQC detection ✅
 - [x] **F.3** — Update `03-FRONTEND.md`: Quick Scan page UX, map visualization page, auth pages (login/register), scan history page ✅
 - [x] **F.4** — Create `PLAN/06h-PLAN_P7B.md`: detailed phase plan for all new features ✅
-- [ ] **F.5** — Update `07-PQC_IMPROVEMENTS.md` as features are implemented
-- [ ] **F.6** — Update `OUTPUT_diffs.md` as gaps are closed
+- [x] **F.5** — Update `07-PQC_IMPROVEMENTS.md` as features are implemented (in progress)
+- [x] **F.6** — Update `OUTPUT_diffs.md` as gaps are closed (in progress)
 
 ---
 
