@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:15-alpine
@@ -16,24 +18,52 @@ services:
       timeout: 5s
       retries: 5
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: qushield_ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    # Note: GPU support can be enabled here if the host has NVIDIA drivers/container toolkit
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  ollama-init:
+    image: curlimages/curl:latest
+    container_name: qushield_ollama_init
+    depends_on:
+      - ollama
+    volumes:
+      - ./backend/scripts/init_ollama.sh:/init_ollama.sh
+    entrypoint: ["/bin/sh", "/init_ollama.sh"]
+    environment:
+      - OLLAMA_HOST=ollama
+
   backend:
-    image: qushield-pnb/backend:latest
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: qushield_backend
     depends_on:
       db:
         condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - POSTGRES_USER=qushield
       - POSTGRES_PASSWORD=changeme_local_dev
       - POSTGRES_DB=qushield
+      - OLLAMA_BASE_URL=http://ollama:11434
       - GROQ_API_KEY=${GROQ_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - JINA_API_KEY=${JINA_API_KEY}
       - APP_ENV=production
       - LOG_LEVEL=DEBUG
     ports:
@@ -42,12 +72,9 @@ services:
       - qushield_data:/app/data
 
   frontend:
-    image: qushield-pnb/frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - BACKEND_URL=http://backend:8000
     container_name: qushield_frontend
     depends_on:
       - backend
@@ -59,3 +86,4 @@ services:
 volumes:
   postgres_data:
   qushield_data:
+  ollama_data:

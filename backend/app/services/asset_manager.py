@@ -131,11 +131,12 @@ def save_discovered_assets(
 
 
 @timed
-def create_scan_job(targets: list[str], db: Session) -> ScanJob:
+def create_scan_job(targets: list[str], db: Session, user_id: Optional[uuid.UUID] = None) -> ScanJob:
     """Create a new scan job record."""
     scan = ScanJob(
         targets=targets,
         status=ScanStatus.QUEUED,
+        user_id=user_id
     )
     db.add(scan)
     db.commit()

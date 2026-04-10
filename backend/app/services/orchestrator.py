@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
-from app.models.scan import ScanJob
+from app.models.scan import ScanJob, ScanStatus
 from app.models.asset import Asset
 from app.services.asset_manager import create_scan_job, save_discovered_assets
 from app.services.discovery_runner import run_discovery
@@ -19,6 +19,7 @@ from app.services.compliance import evaluate_compliance, compute_agility_score, 
 from app.services.graph_builder import build_topology_graph
 
 from app.core.logging import get_logger
+from app.core.utils import clean_domain, is_valid_domain
 logger = get_logger("orchestrator")
 
 DOMAIN_REGEX = re.compile(
@@ -30,28 +31,30 @@ DOMAIN_REGEX = re.compile(
 def validate_targets(targets: list[str]) -> list[str]:
     valid_targets = []
     for tgt in targets:
-        if not DOMAIN_REGEX.match(tgt):
-            logger.warning(f"Invalid target (format): {tgt}")
+        clean_tgt = clean_domain(tgt)
+
+        if not is_valid_domain(clean_tgt):
+            logger.warning(f"Invalid target (format): {tgt} (cleaned: {clean_tgt})")
             continue
         try:
-            socket.gethostbyname(tgt)
-            valid_targets.append(tgt)
+            socket.gethostbyname(clean_tgt)
+            valid_targets.append(clean_tgt)
         except socket.gaierror:
-            logger.warning(f"Invalid target (DNS resolution failed): {tgt}")
+            logger.warning(f"Invalid target (DNS resolution failed for {clean_tgt}): {tgt}")
     return valid_targets
 
 class ScanOrchestrator:
     def __init__(self):
         pass
 
-    def start_scan(self, targets: list[str], config: dict = None) -> str:
+    def start_scan(self, targets: list[str], config: dict = None, user_id=None) -> str:
         valid_targets = validate_targets(targets)
         if not valid_targets:
             raise ValueError("No valid targets provided that pass DNS resolution.")
 
         db: Session = SessionLocal()
         try:
-            scan_job = create_scan_job(valid_targets, db)
+            scan_job = create_scan_job(valid_targets, db, user_id=user_id)
             scan_id = str(scan_job.id)
             logger.info(f"Started scan job: {scan_id}")
             return scan_id
@@ -92,10 +95,24 @@ class ScanOrchestrator:
                 logger.debug(f"{TAG} SSE skipped (no event loop): {event_type}")
 
         try:
+            import uuid
             logger.info(f"{TAG} ═══ DEEP SCAN STARTING ═══ elapsed={_elapsed()}")
-            scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+            scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
             if not scan_job:
                 logger.error(f"{TAG} Scan job not found in DB!")
+                return summary
+
+            def _check_cancelled():
+                """Check if the scan was cancelled in the DB and return True if so."""
+                import uuid
+                job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
+                if job and job.status == ScanStatus.CANCELLED:
+                    logger.info(f"{TAG} Scan {scan_id} detected as [CANCELLED]. Aborting thread.")
+                    _emit("scan_cancelled", phase=job.current_phase, pct=0, msg="Scan cancelled by user")
+                    return True
+                return False
+
+            if _check_cancelled():
                 return summary
 
             _emit("scan_started", phase=1, pct=0, msg="Starting Deep Scan")
@@ -108,6 +125,7 @@ class ScanOrchestrator:
             # PHASE 1: Discovery
             # ═══════════════════════════════════════════════════════════════
             logger.info(f"{TAG} ── PHASE 1: Discovery Engine ── elapsed={_elapsed()}")
+            if _check_cancelled(): return summary
             scan_job.current_phase = 1
             scan_job.status = "running"
             db.commit()
@@ -158,6 +176,7 @@ class ScanOrchestrator:
             # PHASE 2: Crypto Inspection (threaded)
             # ═══════════════════════════════════════════════════════════════
             logger.info(f"{TAG} ── PHASE 2: Crypto Inspection on {len(db_assets)} assets ── elapsed={_elapsed()}")
+            if _check_cancelled(): return summary
             scan_job.current_phase = 2
             db.commit()
             _emit("phase_start", phase=2, pct=0, msg=f"Starting crypto inspection on {len(db_assets)} assets")
@@ -265,6 +284,7 @@ class ScanOrchestrator:
             # PHASE 3: CBOM Generation (threaded)
             # ═══════════════════════════════════════════════════════════════
             logger.info(f"{TAG} ── PHASE 3: CBOM Generation ── elapsed={_elapsed()}")
+            if _check_cancelled(): return summary
             _emit("phase_start", phase=3, pct=0, msg="Building Cryptographic Bills of Material")
             scan_job.current_phase = 3
             db.commit()
@@ -357,6 +377,7 @@ class ScanOrchestrator:
             # PHASE 4: Risk Engine
             # ═══════════════════════════════════════════════════════════════
             logger.info(f"{TAG} ── PHASE 4: Risk Assessment ── elapsed={_elapsed()}")
+            if _check_cancelled(): return summary
             _emit("phase_start", phase=4, pct=0, msg="Quantifying quantum risk for all assets")
             scan_job.current_phase = 4
             db.commit()
@@ -509,7 +530,8 @@ class ScanOrchestrator:
     def get_scan_status(self, scan_id: str) -> dict:
         db: Session = SessionLocal()
         try:
-            scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+            import uuid
+            scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
             if not scan_job:
                 return {"error": "not found"}
             

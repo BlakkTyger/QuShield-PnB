@@ -25,3 +25,4 @@ passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.9
 chromadb>=0.5.0
 pandas>=2.0.0
+requests>=2.32.0

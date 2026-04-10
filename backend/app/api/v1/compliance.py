@@ -205,7 +205,7 @@ def get_asset_compliance_detail(
 @router.get("/deadlines")
 def get_regulatory_deadlines():
     """Regulatory deadline reference data with countdown timers."""
-    data_file = PROJECT_ROOT / "backend" / "app" / "data" / "regulatory_deadlines.json"
+    data_file = PROJECT_ROOT / "app" / "data" / "regulatory_deadlines.json"
     try:
         with open(data_file) as f:
             deadlines = json.load(f)
@@ -244,7 +244,7 @@ def get_regulatory_deadlines():
 @router.get("/vendor-readiness")
 def get_vendor_readiness():
     """PQC readiness status of key technology vendors (HSMs, CAs, CBS, libraries)."""
-    data_file = PROJECT_ROOT / "backend" / "app" / "data" / "vendor_readiness.json"
+    data_file = PROJECT_ROOT / "app" / "data" / "vendor_readiness.json"
     try:
         with open(data_file) as f:
             vendors = json.load(f)

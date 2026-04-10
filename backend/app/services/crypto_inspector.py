@@ -24,7 +24,7 @@ from app.core.timing import timed
 logger = get_logger("crypto_inspector")
 
 # Load static data files
-_DATA_DIR = PROJECT_ROOT / "backend" / "app" / "data"
+_DATA_DIR = PROJECT_ROOT / "app" / "data"
 
 def _load_json(name: str) -> dict:
     with open(_DATA_DIR / name) as f:

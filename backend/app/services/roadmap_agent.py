@@ -83,10 +83,17 @@ DO NOT wrap the response in markdown blocks. Output pure JSON only.
     try:
         response_text = ai.generate(prompt=prompt, system=system_prompt, temperature=0.2)
         
-        # Clean potential markdown wrappers if LLM disobeyed
-        response_text = response_text.replace("```json", "").replace("```", "").strip()
+        # Robust extraction of JSON from markdown block
+        json_text = response_text
+        if "```" in json_text:
+            import re
+            json_match = re.search(r"```(json)?(.*?)```", json_text, re.DOTALL | re.IGNORECASE)
+            if json_match:
+                json_text = json_match.group(2).strip()
         
-        roadmap_data = json.loads(response_text)
+        json_text = json_text.strip()
+        
+        roadmap_data = json.loads(json_text)
         
         # We could save this to the DB. For now, returning it to be handled by the router
         logger.info(f"Generated AI Roadmap for scan {scan_id}")
@@ -97,4 +104,4 @@ DO NOT wrap the response in markdown blocks. Output pure JSON only.
         raise ValueError("Failed to generate a valid roadmap.")
     except Exception as e:
         logger.error(f"Roadmap generation failed: {e}")
-        raise ValueError(f"AI Generation error: {e}")
+        raise ValueError(f"AI Generation error: {str(e)}")

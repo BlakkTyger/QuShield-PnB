@@ -20,7 +20,7 @@ from app.core.timing import timed
 logger = get_logger("risk_engine")
 
 # Load static data files
-_DATA_DIR = PROJECT_ROOT / "backend" / "app" / "data"
+_DATA_DIR = PROJECT_ROOT / "app" / "data"
 
 with open(_DATA_DIR / "data_shelf_life_defaults.json") as f:
     SHELF_LIFE_DEFAULTS = json.load(f)

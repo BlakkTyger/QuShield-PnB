@@ -97,12 +97,24 @@ You have the following tables:
 4. risk_scores (asset_id, base_score, risk_classification, quantum_readiness_level)
 
 Output ONLY a valid syntactically correct SQLite query. Do NOT add markdown formatting, do NOT write ```sql. Only the query string.
+If the question is unrelated to the data, return 'SELECT NULL;'.
 """
         user_prompt = f"Write a query to answer the user's question:\n{question}"
         
         try:
-            sql_query = self.ai.generate(user_prompt, system=schema_prompt, temperature=0.1)
-            sql_query = sql_query.replace("```sqlite", "").replace("```sql", "").replace("```", "").strip()
+            sql_query_raw = self.ai.generate(user_prompt, system=schema_prompt, temperature=0.1)
+            
+            # Robust extraction of SQL from markdown block if LLM ignored instructions
+            sql_query = sql_query_raw
+            if "```" in sql_query:
+                import re
+                sql_match = re.search(r"```(sql|sqlite)?(.*?)```", sql_query, re.DOTALL | re.IGNORECASE)
+                if sql_match:
+                    sql_query = sql_match.group(2).strip()
+            
+            sql_query = sql_query.strip().strip(";").rstrip(";") + ";" # Ensure single semicolon
+            
+            logger.info(f"SQL Agent executing: {sql_query}")
             
             # Execute Query
             cursor.execute(sql_query)
@@ -122,7 +134,7 @@ Output ONLY a valid syntactically correct SQLite query. Do NOT add markdown form
             conn.close()
 
         # Step 2: Insights Generation
-        insights_system = "You are a quantum security analyst. Summarize these database query results clearly and concisely for the user. Answer their original question exactly."
+        insights_system = "You are a quantum security analyst. Summarize these database query results clearly and concisely for the user. Answer their original question exactly based on the data provided."
         insights_prompt = f"User Question: '{question}'\n\nThe DB returned:\n{raw_data_string}\n\nProvide the final answer to the user in a short summary paragraph."
         
         try:

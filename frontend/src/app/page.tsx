@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers } from "lucide-react";
-import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating } from "@/lib/hooks";
+import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 
 type ScanTier = "quick" | "shallow" | "deep";
@@ -38,14 +38,28 @@ export default function QuickScanPage() {
   const startScan = useStartScan();
   const quickScan = useQuickScan();
   const shallowScan = useShallowScan();
+  const cancelScan = useCancelScan();
 
-  const { data: scanStatus } = useScanStatus(scanId, isScanning);
+  const { data: scanStatus, isError, error } = useScanStatus(scanId, isScanning);
   const { data: summary } = useScanSummary(
     scanStatus?.status === "completed" ? scanId : null
   );
   const { data: rating } = useEnterpriseRating(
     scanStatus?.status === "completed" ? scanId : null
   );
+
+  // Automatic cleanup of stale scans (e.g. 404 on poll)
+  useEffect(() => {
+    if (isError && (error as any)?.response?.status === 404) {
+      console.warn("Scan session expired or invalid. Resetting UI.");
+      setIsScanning(false);
+      setScanId(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("qushield_active_scan");
+        localStorage.removeItem("qushield_active_domain");
+      }
+    }
+  }, [isError, error]);
 
   // Stop polling when done
   useEffect(() => {
@@ -145,6 +159,22 @@ export default function QuickScanPage() {
       setIsScanning(false);
     }
   }, [domain, scanTier, startScan, quickScan, shallowScan]);
+
+  const handleCancel = useCallback(async () => {
+    if (!scanId || !isScanning) return;
+    try {
+      await cancelScan.mutateAsync(scanId);
+      setIsScanning(false);
+      setScanId(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("qushield_active_scan");
+        localStorage.removeItem("qushield_active_domain");
+      }
+      setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] SCAN CANCELLED BY USER`]);
+    } catch (err) {
+      console.error("Cancel failed", err);
+    }
+  }, [scanId, isScanning, cancelScan]);
 
   const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 5) : 0;
   const showResults = scanStatus?.status === "completed" && summary;
@@ -254,9 +284,18 @@ export default function QuickScanPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 animate-fade-in">
           {/* Progress Stepper */}
           <div className="glass-card-static p-8 lg:col-span-2 flex flex-col justify-center">
-            <h3 className="text-sm font-bold uppercase tracking-widest mb-8" style={{ color: "var(--accent-gold)" }}>
-              Analysis In Progress
-            </h3>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: "var(--accent-gold)" }}>
+                Analysis In Progress
+              </h3>
+              <button
+                onClick={handleCancel}
+                className="text-[10px] font-bold uppercase tracking-tighter px-3 py-1.5 rounded-lg border border-[var(--risk-critical)] text-[var(--risk-critical)] hover:bg-[var(--risk-critical)] hover:text-white transition-all flex items-center gap-1.5"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-[var(--risk-critical)]" />
+                Cancel Scan
+              </button>
+            </div>
             <div className="flex items-center justify-between gap-2 max-w-2xl mx-auto w-full">
               {PHASES.map((phase, i) => {
                 const status =

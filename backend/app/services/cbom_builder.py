@@ -643,6 +643,7 @@ def build_aggregate_cbom(scan_id: str, db) -> dict:
     total_components = len(deduplicated)
     vulnerable_components = sum(1 for c in deduplicated if c["is_vulnerable"])
     safe_components = total_components - vulnerable_components
+    aggregate_pct = round(safe_components / max(total_components, 1) * 100, 1)
 
     # NIST level distribution
     level_dist = {}
@@ -657,10 +658,13 @@ def build_aggregate_cbom(scan_id: str, db) -> dict:
         "total_components_deduplicated": total_components,
         "vulnerable_components": vulnerable_components,
         "safe_components": safe_components,
-        "quantum_ready_pct": round(safe_components / max(total_components, 1) * 100, 1),
+        "quantum_ready_pct": aggregate_pct,
         "nist_level_distribution": level_dist,
         "components": deduplicated,
     }
+
+    # Add serialized JSON for orchestrator saving
+    aggregate["cbom_json"] = json.dumps(aggregate, indent=2)
 
     logger.info(
         f"Aggregate CBOM for scan {scan_id}: {total_assets} assets, "
@@ -670,7 +674,7 @@ def build_aggregate_cbom(scan_id: str, db) -> dict:
             "total_assets": total_assets,
             "total_components": total_components,
             "vulnerable": vulnerable_components,
-            "quantum_ready_pct": aggregate["quantum_ready_pct"],
+            "quantum_ready_pct": aggregate_pct,
         },
     )
 

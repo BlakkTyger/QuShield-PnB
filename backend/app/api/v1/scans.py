@@ -22,6 +22,7 @@ from app.schemas.scan import ScanRequest, ScanResponse, ScanStatus, QuickScanReq
 from app.services.orchestrator import ScanOrchestrator
 from app.services.quick_scanner import quick_scan
 from app.services.shallow_scanner import shallow_scan
+from app.core.utils import clean_domain
 
 from datetime import datetime, timedelta, timezone
 from app.api.v1.auth import get_current_user, get_optional_user
@@ -39,9 +40,7 @@ def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Opti
         ScanCache.scan_type.in_(allowed_types),
         ScanCache.expires_at > datetime.now(timezone.utc)
     ).order_by(ScanCache.cached_at.desc()).all()
-
-@router.post("", response_model=ScanResponse, status_code=201)
-async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    
     for cache in caches:
         scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
         if not scan_job or scan_job.status == "failed" or (scan_job.status == "completed" and getattr(scan_job, "total_assets", 0) == 0):
@@ -50,6 +49,9 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
             continue
         return cache
     return None
+
+@router.post("", response_model=ScanResponse, status_code=201)
+async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Start a new scan. The scan runs in a background thread."""
     
     # Cache check for single-target deep scan
@@ -67,27 +69,26 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
 
     orch = ScanOrchestrator()
     try:
-        scan_id = orch.start_scan(request.targets, request.config)
+        scan_id = orch.start_scan(request.targets, request.config, user_id=current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+    import uuid
+    scan_uuid = uuid.UUID(scan_id)
+    scan_job = db.query(ScanJob).filter(ScanJob.id == scan_uuid).first()
         
-    # Associate scan with user
-    scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
-    if scan_job:
-        scan_job.user_id = current_user.id
+    # Associate cache entry for single target
+    if len(request.targets) == 1:
+        import uuid
+        cache = ScanCache(
+            domain=request.targets[0],
+            scan_type="deep",
+            scan_id=uuid.UUID(scan_id),
+            user_id=current_user.id,
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
+        )
+        db.add(cache)
         db.commit()
-
-        # Create cache entry for single target
-        if len(request.targets) == 1:
-            cache = ScanCache(
-                domain=request.targets[0],
-                scan_type="deep",
-                scan_id=scan_id,
-                user_id=current_user.id,
-                expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
-            )
-            db.add(cache)
-            db.commit()
 
     # Capture the current asyncio event loop (which is running the FastAPI request)
     # so the background thread can use it to safely broadcast SSE events.
@@ -130,13 +131,15 @@ def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get
                 "summary": "Returned from cache (Check /summary endpoint for details)"
             }
             
+    clean_tgt = clean_domain(request.domain)
     try:
-        result = quick_scan(request.domain, request.port)
+        result = quick_scan(clean_tgt, request.port)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Quick scan failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Quick scan connection failed for {clean_tgt}: {e}")
 
     if result.get("error"):
-        raise HTTPException(status_code=502, detail=result["error"])
+        # Use 400 instead of 502 for user-facing connection errors
+        raise HTTPException(status_code=400, detail=result["error"])
 
     return result
 
@@ -157,8 +160,9 @@ def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(g
                 "summary": "Returned from cache (Check /summary endpoint for details)"
             }
 
+    clean_tgt = clean_domain(request.domain)
     try:
-        result = shallow_scan(request.domain, top_n=request.top_n, port=request.port)
+        result = shallow_scan(clean_tgt, top_n=request.top_n, port=request.port)
         if result and not result.get("error"):
             # Create a shallow ScanJob to satisfy future cache requests
             scan_job = ScanJob(
@@ -193,7 +197,9 @@ def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(g
 @router.get("/{scan_id}", response_model=ScanStatus)
 def get_scan_status(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get scan status and phase progress."""
-    scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    import uuid
+    # Use explicit UUID casting for cross-DB reliability (SQLite/Postgres)
+    scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(str(scan_id))).first()
     if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
         raise HTTPException(status_code=404, detail="Scan not found")
     return ScanStatus(
@@ -210,6 +216,22 @@ def get_scan_status(scan_id: UUID, current_user: User = Depends(get_current_user
         error_message=scan_job.error_message,
     )
 
+@router.post("/{scan_id}/cancel")
+def cancel_scan(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Mark a scan as cancelled so the orchestrator thread stops."""
+    import uuid
+    scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(str(scan_id))).first()
+    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+        raise HTTPException(status_code=404, detail="Scan not found")
+    
+    if scan_job.status in (ScanStatus.COMPLETED, ScanStatus.FAILED, ScanStatus.CANCELLED):
+        return {"message": "Scan already finished"}
+    
+    scan_job.status = ScanStatus.CANCELLED
+    db.commit()
+    logger.info(f"Scan {scan_id} cancelled by user {current_user.email}")
+    return {"message": "Scan cancellation requested"}
+
 
 @router.get("/{scan_id}/stream")
 async def stream_scan_events(
@@ -223,8 +245,9 @@ async def stream_scan_events(
     """
     from app.services.scan_events import scan_events
     
+    import uuid
     # Optional auth check (validate token if present, skip complete verification for now to permit simple CLI testing)
-    scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(str(scan_id))).first()
     if not scan_job:
         raise HTTPException(status_code=404, detail="Scan not found")
         

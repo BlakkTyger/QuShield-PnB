@@ -27,7 +27,7 @@ def list_assets(
     q: Optional[str] = Query(None, description="Search hostname, IP, or type"),
     sort_by: Optional[str] = Query("hostname", description="Sort field"),
     sort_dir: Optional[str] = Query("asc", description="Sort direction: asc/desc"),
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
 ):

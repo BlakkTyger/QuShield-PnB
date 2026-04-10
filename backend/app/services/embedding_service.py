@@ -8,6 +8,7 @@ import logging
 import requests
 from typing import List, Optional
 
+from app.config import settings
 from app.models.auth import User
 
 logger = logging.getLogger(__name__)
@@ -21,10 +22,10 @@ class EmbeddingProvider(abc.ABC):
 
 
 class OllamaEmbedder(EmbeddingProvider):
-    """Local, secure embeddings via Ollama running on localhost."""
+    """Local, secure embeddings via Ollama."""
     def __init__(self, model_override: str = None):
         self.model = model_override or "nomic-embed-text"
-        self.base_url = "http://localhost:11434/api/embed"
+        self.base_url = f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/embed"
 
     def embed(self, texts: List[str]) -> List[List[float]]:
         # Ollama /api/embed accepts an array of strings in the 'input' field.
@@ -33,13 +34,13 @@ class OllamaEmbedder(EmbeddingProvider):
             "input": texts
         }
         try:
+            logger.info(f"Ollama Embedding: {self.base_url} [Model: {self.model}]")
             response = requests.post(self.base_url, json=payload, timeout=60)
             response.raise_for_status()
             data = response.json()
             return data.get("embeddings", [])
         except Exception as e:
             logger.error(f"Ollama embedding failed: {e}")
-            # Return empty lists or raise? Better to raise or return empty to fall back.
             return [[] for _ in texts]
 
 
@@ -51,6 +52,9 @@ class OpenAIEmbedder(EmbeddingProvider):
         self.base_url = "https://api.openai.com/v1/embeddings"
 
     def embed(self, texts: List[str]) -> List[List[float]]:
+        if not self.api_key:
+            return [[] for _ in texts]
+
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -60,6 +64,7 @@ class OpenAIEmbedder(EmbeddingProvider):
             "input": texts
         }
         try:
+            logger.info(f"OpenAI Embedding [Model: {self.model}]")
             response = requests.post(self.base_url, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             data = response.json()
@@ -71,31 +76,73 @@ class OpenAIEmbedder(EmbeddingProvider):
             return [[] for _ in texts]
 
 
+class JinaEmbedder(EmbeddingProvider):
+    """Cloud embeddings via Jina AI (BGE-M3 / Jina v3)."""
+    def __init__(self, api_key: str, model_override: str = None):
+        self.api_key = api_key
+        self.model = model_override or "jina-embeddings-v3"
+        self.base_url = "https://api.jina.ai/v1/embeddings"
+
+    def embed(self, texts: List[str]) -> List[List[float]]:
+        if not self.api_key:
+            return [[] for _ in texts]
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": self.model,
+            "input": texts,
+            "task": "retrieval_document" # Default task for Jina v3
+        }
+        try:
+            logger.info(f"Jina Cloud Embedding [Model: {self.model}]")
+            response = requests.post(self.base_url, headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
+            data = response.json()
+            # Jina returns a list of objects {"embedding": [...]}
+            embeddings = [item["embedding"] for item in data.get("data", [])]
+            return embeddings
+        except Exception as e:
+            logger.error(f"Jina embedding failed: {e}")
+            return [[] for _ in texts]
+
+
 def get_embedding_provider(user: Optional[User] = None) -> EmbeddingProvider:
     """
     Factory to return the appropriate LLM Embedder based on user tier and mode.
+    Prioritizes Cloud providers (OpenAI, Jina) in Phase 10.
     """
-    if not user:
+    mode = "cloud"
+    tier = "free"
+    keys = {}
+
+    if user:
+        mode = getattr(user, "deployment_mode", "cloud")
+        tier = getattr(user, "ai_tier", "free")
+        keys = getattr(user, "cloud_api_keys", {}) or {}
+
+    oai_key = keys.get("openai_key") or settings.OPENAI_API_KEY
+    jina_key = keys.get("jina_key") or settings.JINA_API_KEY
+
+    # 1. Cloud Mode Routing
+    if mode == "cloud":
+        # Professional/Enterprise users get OpenAI if key is present
+        if tier in ("professional", "enterprise") and oai_key:
+            model = "text-embedding-3-large" if tier == "enterprise" else "text-embedding-3-small"
+            return OpenAIEmbedder(api_key=oai_key, model_override=model)
+        
+        # Fallback to Jina for Free tier or if OpenAI is missing
+        if jina_key:
+            return JinaEmbedder(api_key=jina_key)
+            
+        # Last resort: Try local Ollama if configured
         return OllamaEmbedder()
 
-    mode = getattr(user, "deployment_mode", "secure")
-    tier = getattr(user, "ai_tier", "free")
-    keys = getattr(user, "cloud_api_keys", {}) or {}
-
+    # 2. Secure (Local) Mode Routing
     if mode == "secure":
         return OllamaEmbedder()
 
-    if mode == "cloud":
-        # Cloud users with Pro/Enterprise get OpenAI embeddings
-        if tier in ("professional", "enterprise"):
-            oai_key = keys.get("openai_key") or os.environ.get("OPENAI_API_KEY")
-            if oai_key:
-                model = "text-embedding-3-large" if tier == "enterprise" else "text-embedding-3-small"
-                return OpenAIEmbedder(api_key=oai_key, model_override=model)
-        
-        # Free tier Cloud users, or fallback if Openai key is missing, uses Local fallback 
-        # (Alternatively could use HuggingFace/Jina/Groq API if Groq supported native emb endpoint directly here). 
-        # For simplicity and latency, nomic-embed-text locally is sufficient.
-        return OllamaEmbedder()
-
+    # 3. Global Default
     return OllamaEmbedder()

@@ -132,7 +132,7 @@ def ai_status(current_user: User = Depends(get_current_user)):
     return {
         "deployment_mode": mode,
         "active_tier": tier,
-        "vector_store": "ChromaDB (Local)",
+        "vector_store": "ChromaDB + Jina Cloud",
         "tabular_agent": "SQLite Memory DB (Isolated)"
     }
 
@@ -176,7 +176,7 @@ def list_ai_models(current_user: User = Depends(get_current_user)):
         return {"mode": "secure", "tier": tier, "models": models}
         
     else:
-        models = ["llama-3.1-8b-instant (Groq)"]
+        models = ["llama-3.1-8b-instant (Groq)", "jina-embeddings-v3"]
         if tier in ("professional", "enterprise"):
             models.extend(["gpt-4o-mini", "text-embedding-3-small"])
         if tier == "enterprise":

@@ -8,8 +8,9 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-# Project root is two levels up from this file (backend/app/config.py -> project root)
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+# Application base directory (contains the 'app' package)
+APP_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = APP_DIR.parent
 
 
 class Settings(BaseSettings):
@@ -74,12 +75,13 @@ class Settings(BaseSettings):
     NVD_API_KEY: str = ""
 
     # --- MaxMind GeoIP ---
-    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "data" / "geolite" / "GeoLite2-City.mmdb")
+    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "app" / "data" / "geolite" / "GeoLite2-City.mmdb")
 
     # --- AI LLM Providers ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     GROQ_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
+    JINA_API_KEY: str = ""
 
     @property
     def database_url(self) -> str:

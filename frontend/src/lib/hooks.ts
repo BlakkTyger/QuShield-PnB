@@ -36,11 +36,27 @@ export function useScanStatus(scanId: string | null, poll = false) {
   return useQuery({
     queryKey: ["scan", scanId],
     queryFn: async () => {
-      const { data } = await api.get<ScanStatus>(`/scans/${scanId}`);
-      return data;
+      try {
+        const { data } = await api.get<ScanStatus>(`/scans/${scanId}`);
+        return data;
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          console.warn("Scan not found, clearing state...");
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("qushield_active_scan");
+            localStorage.removeItem("qushield_active_domain");
+          }
+        }
+        throw err;
+      }
     },
     enabled: !!scanId,
-    refetchInterval: poll ? 2000 : false,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!poll || !data) return false;
+      if (data.status === "completed" || data.status === "failed" || data.status === "cancelled") return false;
+      return 2000;
+    },
   });
 }
 
@@ -52,6 +68,15 @@ export function useScanSummary(scanId: string | null) {
       return data;
     },
     enabled: !!scanId,
+  });
+}
+
+export function useCancelScan() {
+  return useMutation({
+    mutationFn: async (scanId: string) => {
+      const { data } = await api.post(`/scans/${scanId}/cancel`);
+      return data;
+    },
   });
 }
 
