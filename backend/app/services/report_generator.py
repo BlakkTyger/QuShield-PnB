@@ -67,21 +67,19 @@ Significant High Risk Assets:
         
         sum_readiness = 0
         for r in risks:
-            if r.quantum_readiness_level:
-                try:
-                    sum_readiness += float(r.quantum_readiness_level.split("/")[0])
-                except:
-                    pass
-            if r.risk_classification in ("critical", "high"):
+            # Compute a 0-10 readiness from 0-1000 risk score (inverted: lower risk = higher readiness)
+            readiness = max(0, 10 - (r.quantum_risk_score or 0) / 100)
+            sum_readiness += readiness
+            if r.risk_classification in ("quantum_critical", "quantum_vulnerable"):
                 asset = asset_map.get(str(r.asset_id))
                 if asset:
                     high_risks.append({
                         "hostname": asset.hostname,
-                        "ip_address": asset.ip_address,
+                        "ip_address": asset.ip_v4 or "N/A",
                         "asset_type": asset.asset_type,
-                        "risk_score": r.base_score,
-                        "classification": r.risk_classification.upper(),
-                        "weakness": r.mitigation_recommendation or "Legacy parameters"
+                        "risk_score": r.quantum_risk_score,
+                        "classification": (r.risk_classification or "unknown").upper(),
+                        "weakness": f"Quantum risk score {r.quantum_risk_score}/1000 — classical crypto vulnerable to CRQC"
                     })
 
         avg_readiness = round(sum_readiness / len(risks), 1) if risks else 0.0

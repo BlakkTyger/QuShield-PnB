@@ -246,15 +246,15 @@ Phase 8 introduces 8 major feature categories:
   - Cloud Pro: unlimited (user's API key), best models from OpenAI/Anthropic/Gemini
   - Cloud Enterprise: unlimited, dedicated config, full model selection
 - [x] **H.6.3** — API: `GET /api/v1/ai/status` — list available tiers with features per deployment mode ✅
-- [ ] **H.6.4** — API: `PATCH /api/v1/users/me/ai-settings` — update deployment_mode, ai_tier, api_keys
-- [ ] **H.6.5** — API: `GET /api/v1/ai/models` — list available models for current deployment_mode + tier
-- [ ] **H.6.6** — DEV_LOG entry
+- [x] **H.6.4** — API: `PATCH /api/v1/ai/settings` — update deployment_mode, ai_tier, api_keys ✅ *(implemented in ai.py:145)*
+- [x] **H.6.5** — API: `GET /api/v1/ai/models` — list available models for current deployment_mode + tier ✅ *(implemented in ai.py:164)*
+- [x] **H.6.6** — DEV_LOG entry ✅
 
 #### H.7 — Documentation Updates
-- [ ] **H.7.1** — Update `03-FRONTEND.md`: AI chat page, report builder page, tier selection UI
-- [ ] **H.7.2** — Update `04-SYSTEM_ARCHITECTURE.md`: AI service architecture, provider abstraction, vector store design
-- [ ] **H.7.3** — Update `06-DEVELOPMENT_PLAN.md`: Phase 8 AI milestones
-- [ ] **H.7.4** — Update `06g-PLAN_P9.md`: revise with concrete AI plan (replaces old Phase 9)
+- [x] **H.7.1** — Update `03-FRONTEND.md`: AI chat page, report builder page, tier selection UI ✅
+- [x] **H.7.2** — Update `04-SYSTEM_ARCHITECTURE.md`: AI service architecture, provider abstraction, vector store design ✅
+- [x] **H.7.3** — Update `06-DEVELOPMENT_PLAN.md`: Phase 8 AI milestones ✅
+- [x] **H.7.4** — Update `06g-PLAN_P9.md`: revised with Phase 9 verification plan ✅
 
 ---
 

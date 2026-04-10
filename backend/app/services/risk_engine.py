@@ -894,7 +894,7 @@ def compute_cert_crqc_race(scan_id: str, db) -> dict:
                     break
 
         # Determine cert expiry
-        cert_expiry = cert.not_after if hasattr(cert, "not_after") and cert.not_after else None
+        cert_expiry = cert.valid_to if hasattr(cert, "valid_to") and cert.valid_to else None
         if cert_expiry and cert_expiry.tzinfo is None:
             cert_expiry = cert_expiry.replace(tzinfo=timezone.utc)
 
@@ -945,8 +945,8 @@ def compute_cert_crqc_race(scan_id: str, db) -> dict:
 
         cert_results.append({
             "hostname": hostname,
-            "subject_cn": cert.subject_cn,
-            "issuer_cn": cert.issuer_cn,
+            "subject_cn": cert.common_name,
+            "issuer_cn": cert.issuer,
             "key_type": cert.key_type,
             "key_length": cert.key_length,
             "signature_algorithm": cert.signature_algorithm,

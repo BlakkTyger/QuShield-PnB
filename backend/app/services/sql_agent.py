@@ -54,7 +54,7 @@ class TabularAgent:
         if assets:
             df_assets = pd.DataFrame([{
                 "id": str(a.id), "scan_id": str(a.scan_id), "hostname": a.hostname,
-                "ip_address": a.ip_address, "asset_type": a.asset_type,
+                "ip_address": a.ip_v4, "asset_type": a.asset_type,
                 "is_shadow": a.is_shadow, "is_third_party": a.is_third_party
             } for a in assets])
             df_assets.to_sql("assets", conn, index=False)
@@ -64,9 +64,9 @@ class TabularAgent:
         if certs:
             df_certs = pd.DataFrame([{
                 "id": str(c.id), "asset_id": str(c.asset_id), "scan_id": str(c.scan_id),
-                "issuer_cn": c.issuer_cn, "subject_cn": c.subject_cn, 
+                "issuer": c.issuer, "common_name": c.common_name, 
                 "signature_algorithm": c.signature_algorithm,
-                "is_pqc_safe": c.is_pqc_safe, "valid_from": c.valid_from, "valid_to": c.valid_to
+                "is_quantum_vulnerable": c.is_quantum_vulnerable, "valid_from": c.valid_from, "valid_to": c.valid_to
             } for c in certs])
             df_certs.to_sql("certificates", conn, index=False)
 
@@ -74,9 +74,9 @@ class TabularAgent:
         risks = self.db.query(RiskScore).filter(RiskScore.scan_id.in_(scan_ids)).all()
         if risks:
             df_risks = pd.DataFrame([{
-                "asset_id": str(r.asset_id), "base_score": float(r.base_score),
+                "asset_id": str(r.asset_id), "base_score": float(r.quantum_risk_score or 0),
                 "risk_classification": r.risk_classification, 
-                "quantum_readiness_level": r.quantum_readiness_level
+                "quantum_readiness_level": r.risk_classification
             } for r in risks])
             df_risks.to_sql("risk_scores", conn, index=False)
             
@@ -93,7 +93,7 @@ You are an expert Data Analyst AI for QuShield-PnB.
 You have the following tables:
 1. scans (id, targets, status, created_at, completed_at)
 2. assets (id, scan_id, hostname, ip_address, asset_type, is_shadow, is_third_party)
-3. certificates (id, asset_id, scan_id, issuer_cn, subject_cn, signature_algorithm, is_pqc_safe, valid_from, valid_to)
+3. certificates (id, asset_id, scan_id, issuer, common_name, signature_algorithm, is_quantum_vulnerable, valid_from, valid_to)
 4. risk_scores (asset_id, base_score, risk_classification, quantum_readiness_level)
 
 Output ONLY a valid syntactically correct SQLite query. Do NOT add markdown formatting, do NOT write ```sql. Only the query string.

@@ -795,3 +795,22 @@
   - `report_generator.py`: Generates custom HTML utilizing LLM Executive Summaries combined dynamically via `Jinja2` with WeasyPrint `pdf` compilation available inside the single `reports.py` router.
 
 **Wave 4 Total**: 100% Phase 8 AI goals implemented. Advanced isolation strategies successfully established.
+
+---
+
+## Phase 9 — Comprehensive Backend Testing & Verification Loop
+
+### 9.0 — Phase 8 Finalization ✅ (2026-04-10)
+- **Feature**: Close remaining unchecked items H.6.4–H.6.6, H.7.1–H.7.4
+- **Changes**:
+  - Confirmed `PATCH /api/v1/ai/settings` (H.6.4) already implemented in `ai.py:145`
+  - Confirmed `GET /api/v1/ai/models` (H.6.5) already implemented in `ai.py:164`
+  - Fixed `report_generator.py` bug: replaced non-existent model attributes (`quantum_readiness_level`, `base_score`, `ip_address`, `mitigation_recommendation`) with correct ones (`quantum_risk_score`, `risk_classification`, `ip_v4`)
+  - Fixed risk classification filter: `("critical","high")` → `("quantum_critical","quantum_vulnerable")`
+  - Updated `PROMPT2.md`: all H.6.x and H.7.x items marked complete
+  - Created comprehensive `PROMPT3.md` with 11 tracks, 100+ granular test items
+- **Status**: Phase 8 fully complete, Phase 9 verification loop initiated
+
+### 9.1 — E2E Test Suite Execution (2026-04-10)
+- **Feature**: Comprehensive automated verification against `pnb.bank.in`
+- **Status**: 🔧 IN PROGRESS

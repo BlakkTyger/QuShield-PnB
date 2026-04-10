@@ -35,7 +35,7 @@ def get_geo_locations(scan_id: UUID, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="No assets for this scan")
 
         asset_dicts = [
-            {"hostname": a.hostname, "ip": a.ip_address, "asset_id": str(a.id)}
+            {"hostname": a.hostname, "ip": a.ip_v4, "asset_id": str(a.id)}
             for a in assets
         ]
         geo_results = geolocate_batch(asset_dicts, max_workers=5)
