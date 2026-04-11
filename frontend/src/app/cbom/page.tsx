@@ -7,7 +7,8 @@ import {
 } from "recharts";
 import { Download, Search, ChevronRight, Shield } from "lucide-react";
 import { useScans, useAssets, useCBOMForAsset, useCBOMAggregate, useCBOMAlgorithms } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 
 const NIST_COLORS: Record<number, string> = {
   [-1]: "#6b7280",
@@ -30,19 +31,19 @@ const NIST_LABELS: Record<number, string> = {
 };
 
 export default function CBOMPage() {
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [assetSearch, setAssetSearch] = useState("");
 
   const { data: scans } = useScans();
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    if (activeScanId) return;
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   const { data: assetsData } = useAssets(scanId, { limit: 500 });
   const { data: cbom } = useCBOMForAsset(selectedAssetId);
@@ -55,9 +56,9 @@ export default function CBOMPage() {
   );
 
   const algoData = algorithms?.algorithms
-    ? Object.entries(algorithms.algorithms)
-        .map(([name, count]) => ({ name, value: count as number }))
-        .sort((a, b) => b.value - a.value)
+    ? algorithms.algorithms
+        .map((algo: { name: string; count: number }) => ({ name: algo.name, value: algo.count }))
+        .sort((a: any, b: any) => b.value - a.value)
     : [];
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
@@ -84,13 +85,18 @@ export default function CBOMPage() {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
-        CBOM Explorer
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-        Cryptographic Bill of Materials — {aggregate?.total_components || 0} components across{" "}
-        {aggregate?.total_assets || 0} assets
-      </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
+            CBOM Explorer
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Cryptographic Bill of Materials — {aggregate?.total_components || 0} components across{" "}
+            {aggregate?.total_assets || 0} assets
+          </p>
+        </div>
+        <ScanSelector />
+      </div>
 
       {/* Top: Aggregate Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

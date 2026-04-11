@@ -18,6 +18,7 @@ export interface ScanResponse {
 export interface ScanStatus {
   scan_id: string;
   status: string;
+  scan_type?: string;
   current_phase: number;
   targets: string[];
   created_at: string;
@@ -133,10 +134,14 @@ export interface CBOMAggregate {
   total_assets: number;
   total_components: number;
   unique_algorithms: number;
+  vulnerable_components: number;
   quantum_ready_pct: number;
   by_type: Record<string, number>;
   by_nist_level: Record<string, number>;
   by_algorithm: Record<string, number>;
+  algorithm_distribution?: Record<string, number>;
+  component_type_distribution?: Record<string, number>;
+  nist_level_distribution?: Record<string, number>;
 }
 
 // ─── Risk ──────────────────────────────────────────────────────
@@ -225,10 +230,34 @@ export interface ComplianceDetail {
 
 export interface FIPSMatrix {
   scan_id: string;
+  summary: {
+    total_assets: number;
+    fips_203_deployed: number;
+    fips_204_deployed: number;
+    fips_205_deployed: number;
+    hybrid_active: number;
+    tls_13_enforced: number;
+  };
+  matrix: Record<string, any>[];
+}
+
+export interface ComplianceAgility {
+  scan_id: string;
   total_assets: number;
-  columns: string[];
-  column_pass_rates: Record<string, number>;
-  assets: Record<string, unknown>[];
+  average_agility: number;
+  min_agility: number;
+  max_agility: number;
+  distribution: Record<string, number>;
+}
+
+export interface ComplianceRegulatory {
+  scan_id: string;
+  total_assets: number;
+  regulations: Record<string, {
+    compliant: number;
+    non_compliant: number;
+    pct: number;
+  }>;
 }
 
 export interface RegulatoryDeadline {

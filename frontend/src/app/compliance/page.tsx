@@ -7,21 +7,22 @@ import {
   useScans, useFIPSMatrix, useRegulatoryDeadlines,
   useComplianceAgility, useComplianceRegulatory, useScanSummary,
 } from "@/lib/hooks";
-import { MetricCard, ProgressBar, EmptyState, Skeleton } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { MetricCard, ProgressBar, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 
 export default function CompliancePage() {
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
   const [activeTab, setActiveTab] = useState<"fips" | "regulatory" | "agility">("fips");
 
   const { data: scans } = useScans();
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    if (activeScanId) return;
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   const { data: summary } = useScanSummary(scanId);
   const { data: fipsMatrix } = useFIPSMatrix(scanId);
@@ -35,7 +36,7 @@ export default function CompliancePage() {
 
   // Agility histogram data
   const agilityData = agility?.distribution
-    ? Object.entries(agility.distribution as Record<string, number>).map(([range, count]) => ({
+    ? Object.entries(agility.distribution).map(([range, count]) => ({
         name: range,
         value: count,
       }))
@@ -49,12 +50,17 @@ export default function CompliancePage() {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
-        PQC Compliance
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-        Regulatory alignment and FIPS compliance tracking
-      </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
+            PQC Compliance
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Regulatory alignment and FIPS compliance tracking
+          </p>
+        </div>
+        <ScanSelector />
+      </div>
 
       {/* Headline Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -172,43 +178,62 @@ export default function CompliancePage() {
           </h3>
           {fipsMatrix ? (
             <div className="overflow-x-auto">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Asset</th>
-                    {fipsMatrix.columns?.map((col) => (
-                      <th key={col} className="text-center">
-                        <div>{col}</div>
-                        {fipsMatrix.column_pass_rates?.[col] != null && (
-                          <div className="text-[9px] font-normal mt-0.5" style={{ color: "var(--text-muted)" }}>
-                            {(fipsMatrix.column_pass_rates[col] * 100).toFixed(0)}%
-                          </div>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {fipsMatrix.assets?.slice(0, 30).map((asset: Record<string, unknown>, i: number) => (
-                    <tr key={i}>
-                      <td>
-                        <span className="font-medium text-xs" style={{ color: "var(--text-primary)" }}>
-                          {asset.hostname as string}
-                        </span>
-                      </td>
-                      {fipsMatrix.columns?.map((col) => (
-                        <td key={col} className="text-center">
-                          {asset[col] ? (
-                            <CheckCircle size={14} style={{ color: "var(--risk-ready)", display: "inline" }} />
-                          ) : (
-                            <XCircle size={14} style={{ color: "var(--risk-critical)", display: "inline" }} />
-                          )}
-                        </td>
+              {/* Derive columns from the matrix data */}
+              {(() => {
+                const fipsColumns = ["fips_203_ml_kem", "fips_204_ml_dsa", "fips_205_slh_dsa", "hybrid_mode", "tls_13", "forward_secrecy"];
+                const fipsLabels: Record<string, string> = {
+                  fips_203_ml_kem: "FIPS 203 (ML-KEM)",
+                  fips_204_ml_dsa: "FIPS 204 (ML-DSA)",
+                  fips_205_slh_dsa: "FIPS 205 (SLH-DSA)",
+                  hybrid_mode: "Hybrid Mode",
+                  tls_13: "TLS 1.3",
+                  forward_secrecy: "Forward Secrecy",
+                };
+                const matrixData = fipsMatrix.matrix || [];
+                const summaryData = fipsMatrix.summary || {};
+                return (
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Asset</th>
+                        {fipsColumns.map((col) => (
+                          <th key={col} className="text-center">
+                            <div>{fipsLabels[col] || col}</div>
+                            {summaryData[col === "fips_203_ml_kem" ? "fips_203_deployed" : col === "fips_204_ml_dsa" ? "fips_204_deployed" : col === "fips_205_slh_dsa" ? "fips_205_deployed" : col === "hybrid_mode" ? "hybrid_active" : col === "tls_13" ? "tls_13_enforced" : col] != null && (
+                              <div className="text-[9px] font-normal mt-0.5" style={{ color: "var(--text-muted)" }}>
+                                {summaryData.total_assets ? Math.round(
+                                  (summaryData[col === "fips_203_ml_kem" ? "fips_203_deployed" : col === "fips_204_ml_dsa" ? "fips_204_deployed" : col === "fips_205_slh_dsa" ? "fips_205_deployed" : col === "hybrid_mode" ? "hybrid_active" : col === "tls_13" ? "tls_13_enforced" : col] as any || 0)
+                                  / summaryData.total_assets * 100
+                                ) : 0}%
+                              </div>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {matrixData.slice(0, 30).map((asset, i) => (
+                        <tr key={i}>
+                          <td>
+                            <span className="font-medium text-xs" style={{ color: "var(--text-primary)" }}>
+                              {asset.hostname}
+                            </span>
+                          </td>
+                          {fipsColumns.map((col) => (
+                            <td key={col} className="text-center">
+                              {asset[col] ? (
+                                <CheckCircle size={14} style={{ color: "var(--risk-ready)", display: "inline" }} />
+                              ) : (
+                                <XCircle size={14} style={{ color: "var(--risk-critical)", display: "inline" }} />
+                              )}
+                            </td>
+                          ))}
+                        </tr>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+                );
+              })()}
             </div>
           ) : (
             <Skeleton height={300} />
@@ -223,33 +248,32 @@ export default function CompliancePage() {
           </h3>
           {regulatory ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(regulatory as Record<string, { compliant: number; total: number; pct: number }>).map(
-                ([key, val]) => {
-                  if (key === "scan_id") return null;
-                  const data = val as { compliant: number; total: number; pct: number };
-                  if (!data.total) return null;
+              {Object.entries(regulatory.regulations).map(
+                ([key, data]) => {
+                  const total = data.compliant + data.non_compliant;
                   return (
                     <div key={key} className="p-4 rounded-lg" style={{ background: "var(--bg-card)" }}>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                          {key.replace(/_/g, " ").toUpperCase()}
+                        <span className="text-xs font-bold uppercase tracking-tight" style={{ color: "var(--text-primary)" }}>
+                          {key.replace(/_/g, " ")}
                         </span>
                         <span
-                          className="text-sm font-bold"
+                          className="text-sm font-black"
                           style={{
-                            color: (data.pct || 0) < 50 ? "var(--risk-critical)" : "var(--risk-ready)",
+                            color: data.pct < 50 ? "var(--risk-critical)" : "var(--risk-ready)",
                           }}
                         >
-                          {data.pct?.toFixed(1) || 0}%
+                          {data.pct.toFixed(1)}%
                         </span>
                       </div>
                       <ProgressBar
-                        value={data.compliant || 0}
-                        max={data.total || 1}
-                        color={(data.pct || 0) < 50 ? "var(--risk-critical)" : "var(--risk-ready)"}
+                        value={data.compliant}
+                        max={total || 1}
+                        height={6}
+                        color={data.pct < 50 ? "var(--risk-critical)" : "var(--risk-ready)"}
                       />
-                      <div className="text-[10px] mt-1" style={{ color: "var(--text-muted)" }}>
-                        {data.compliant || 0} of {data.total || 0} assets compliant
+                      <div className="text-[9px] mt-1.5 opacity-60" style={{ color: "var(--text-muted)" }}>
+                        {data.compliant} of {total} nodes fully compliant
                       </div>
                     </div>
                   );
@@ -272,21 +296,21 @@ export default function CompliancePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 <MetricCard
                   title="Average Agility"
-                  value={(agility as Record<string, number>).average_score?.toFixed(1) || "—"}
+                  value={(agility as any).average_agility?.toFixed(1) || "—"}
                 />
                 <MetricCard
                   title="Migration-Blocked"
-                  value={(agility as Record<string, number>).migration_blocked || 0}
+                  value={(agility as any).distribution?.["0-20"] || 0}
                   color="var(--risk-critical)"
                 />
                 <MetricCard
                   title="Low Agility"
-                  value={(agility as Record<string, number>).low_agility || 0}
+                  value={(agility as any).distribution?.["21-40"] || 0}
                   color="var(--risk-vulnerable)"
                 />
                 <MetricCard
                   title="High Agility"
-                  value={(agility as Record<string, number>).high_agility || 0}
+                  value={((agility as any).distribution?.["81-100"] || 0) + ((agility as any).distribution?.["61-80"] || 0)}
                   color="var(--risk-ready)"
                 />
               </div>

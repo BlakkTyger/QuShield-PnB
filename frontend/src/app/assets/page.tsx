@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Download, X, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { useScans, useAssets, useAssetDetail } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import type { Asset } from "@/lib/types";
 
 const RISK_FILTERS = [
@@ -16,7 +17,8 @@ const RISK_FILTERS = [
 ];
 
 export default function AssetsPage() {
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("");
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
@@ -25,13 +27,12 @@ export default function AssetsPage() {
 
   const { data: scans } = useScans();
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    if (activeScanId) return;
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   const { data: assetsData, isLoading } = useAssets(scanId, {
     risk_class: riskFilter || undefined,
@@ -108,9 +109,12 @@ export default function AssetsPage() {
             {assetsData?.total || 0} assets discovered
           </p>
         </div>
-        <button className="btn-outline" onClick={handleExportCSV}>
-          <Download size={14} /> Export CSV
-        </button>
+        <div className="flex items-center gap-4">
+          <ScanSelector />
+          <button className="btn-outline" onClick={handleExportCSV}>
+            <Download size={14} /> Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

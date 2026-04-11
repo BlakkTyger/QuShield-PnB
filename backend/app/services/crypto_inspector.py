@@ -17,14 +17,14 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ec, ed25519, ed448
 import httpx
 
-from app.config import settings, PROJECT_ROOT
+from app.config import settings, PROJECT_ROOT, STATIC_DATA_DIR
 from app.core.logging import get_logger
 from app.core.timing import timed
 
 logger = get_logger("crypto_inspector")
 
 # Load static data files
-_DATA_DIR = PROJECT_ROOT / "app" / "data"
+_DATA_DIR = STATIC_DATA_DIR
 
 def _load_json(name: str) -> dict:
     with open(_DATA_DIR / name) as f:

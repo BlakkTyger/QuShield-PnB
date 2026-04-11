@@ -53,8 +53,12 @@ def get_optional_user(token: Optional[str] = Depends(OAuth2PasswordBearer(tokenU
     if not token:
         return None
     try:
-        return get_current_user(token, db)
-    except HTTPException:
+        payload = auth_service.decode_token(token)
+        if not payload: return None
+        email = payload.get("email")
+        if not email: return None
+        return auth_service.get_user_by_email(db, email=email)
+    except Exception:
         return None
 
 @router.post("/register", response_model=UserResponse)

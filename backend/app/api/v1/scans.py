@@ -34,12 +34,43 @@ router = APIRouter()
 # Track running scans
 _running_scans: dict[str, threading.Thread] = {}
 
-def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Optional[ScanCache]:
-    caches = db.query(ScanCache).filter(
+def get_superadmin_id(db: Session) -> UUID:
+    """Helper to get or create the superadmin user ID."""
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    if not sa:
+        import uuid
+        import bcrypt
+        sa = User(
+            email=sa_email,
+            password_hash=bcrypt.hashpw(b"superadmin123", bcrypt.gensalt()).decode('utf-8'),
+            email_verified=True
+        )
+        db.add(sa)
+        db.commit()
+        db.refresh(sa)
+    return sa.id
+
+def check_scan_cache(db: Session, domain: str, allowed_types: list[str], user_id: Optional[UUID] = None) -> Optional[ScanCache]:
+    """Check for a valid, non-expired scan cache entry for a domain and user."""
+    query = db.query(ScanCache).filter(
         ScanCache.domain == domain,
         ScanCache.scan_type.in_(allowed_types),
         ScanCache.expires_at > datetime.now(timezone.utc)
-    ).order_by(ScanCache.cached_at.desc()).all()
+    )
+    
+    # Strictly filter by user_id to prevent data leakage
+    # We allow public scans (user_id=None) to be seen by anyone if requested,
+    # but for private scans, user_id must match.
+    if user_id:
+        # If user is logged in, show their private scans OR public scans
+        from sqlalchemy import or_
+        query = query.filter(or_(ScanCache.user_id == user_id, ScanCache.user_id == None))
+    else:
+        # If anonymous, only show public scans
+        query = query.filter(ScanCache.user_id == None)
+
+    caches = query.order_by(ScanCache.cached_at.desc()).all()
     
     for cache in caches:
         scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
@@ -51,12 +82,13 @@ def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Opti
     return None
 
 @router.post("", response_model=ScanResponse, status_code=201)
-async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Start a new scan. The scan runs in a background thread."""
+async def create_scan(request: ScanRequest, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
+    """Start a new deep scan. The scan runs in a background thread."""
+    effective_user_id = user.id if user else get_superadmin_id(db)
     
     # Cache check for single-target deep scan
     if len(request.targets) == 1:
-        cached = check_scan_cache(db, request.targets[0], ["deep"])
+        cached = check_scan_cache(db, request.targets[0], ["deep"], user_id=effective_user_id)
         if cached:
             scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
             if scan_job:
@@ -69,7 +101,7 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
 
     orch = ScanOrchestrator()
     try:
-        scan_id = orch.start_scan(request.targets, request.config, user_id=current_user.id)
+        scan_id = orch.start_scan(request.targets, request.config, user_id=effective_user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
@@ -84,7 +116,7 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
             domain=request.targets[0],
             scan_type="deep",
             scan_id=uuid.UUID(scan_id),
-            user_id=current_user.id,
+            user_id=effective_user_id,
             expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
         )
         db.add(cache)
@@ -116,10 +148,12 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
     )
 
 @router.post("/quick")
-def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
+async def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Run a quick scan on a single domain. Returns results synchronously in <8s."""
+    effective_user_id = user.id if user else get_superadmin_id(db)
+    
     # Check cache for existing deep or shallow scan
-    cached = check_scan_cache(db, request.domain, ["quick", "shallow", "deep"])
+    cached = check_scan_cache(db, request.domain, ["quick", "shallow", "deep"], user_id=effective_user_id)
     if cached:
         scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
         if scan_job:
@@ -138,73 +172,195 @@ def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get
         raise HTTPException(status_code=400, detail=f"Quick scan connection failed for {clean_tgt}: {e}")
 
     if result.get("error"):
-        # Use 400 instead of 502 for user-facing connection errors
         raise HTTPException(status_code=400, detail=result["error"])
+
+    # Persist quick scan for history and results view
+    try:
+        scan_job = ScanJob(
+            targets=[clean_tgt],
+            scan_type="quick",
+            status="completed",
+            user_id=effective_user_id,
+            completed_at=datetime.now(timezone.utc),
+            total_assets=1,
+            total_certificates=1 if result.get("certificate") else 0,
+        )
+        db.add(scan_job)
+        db.commit()
+        db.refresh(scan_job)
+        scan_id_str = str(scan_job.id)
+        
+        # Save Asset
+        from app.models.asset import Asset
+        asset = Asset(
+            scan_id=scan_job.id,
+            hostname=clean_tgt,
+            asset_type=result.get("risk", {}).get("asset_type", "unknown"),
+            tls_version=result.get("tls", {}).get("negotiated_protocol"),
+        )
+        db.add(asset)
+        db.commit()
+        db.refresh(asset)
+        asset_id_str = str(asset.id)
+
+        # Save Certificate & Crypto results
+        from app.services.crypto_inspector import save_crypto_results
+        fingerprint = {
+            "hostname": clean_tgt,
+            "port": request.port,
+            "tls": result.get("tls"),
+            "certificates": [result.get("certificate")] if result.get("certificate") else [],
+            "asset_type": result.get("risk", {}).get("asset_type"),
+            "auth": {"mechanisms": []}
+        }
+        save_crypto_results(scan_id_str, asset_id_str, fingerprint, db)
+
+        # Save CBOM, Risk & Compliance
+        from app.services.cbom_builder import build_cbom, save_cbom, save_cbom_to_db
+        cbom_res = build_cbom(asset_id_str, fingerprint)
+        if cbom_res:
+            file_path = save_cbom(scan_id_str, asset_id_str, cbom_res["cbom_json"])
+            save_cbom_to_db(scan_id_str, asset_id_str, cbom_res, file_path, db)
+
+        from app.models.risk import RiskScore, RiskFactor
+        risk_data = result.get("risk", {})
+        mosca_data = risk_data.get("mosca", {})
+        risk_score = RiskScore(
+            asset_id=asset.id,
+            scan_id=scan_job.id,
+            quantum_risk_score=risk_data.get("score", 0),
+            risk_classification=risk_data.get("classification", "unknown"),
+            mosca_x=mosca_data.get("migration_time_years"),
+            mosca_y=mosca_data.get("data_shelf_life_years"),
+            hndl_exposed=mosca_data.get("exposed_pessimistic", False),
+            tnfl_risk=result.get("quantum_assessment", {}).get("is_quantum_vulnerable", False),
+        )
+        db.add(risk_score)
+        db.commit()
+
+        from app.services.compliance import save_compliance_result
+        comp_data = result.get("compliance", {})
+        # Re-map quick scan compliance to match save_compliance_result expectations
+        # (Though they already mostly match)
+        save_compliance_result(scan_id_str, asset_id_str, comp_data, {"agility_score": comp_data.get("agility_score", 50)}, db)
+
+        # Save cache entry
+        cache = ScanCache(
+            domain=clean_tgt,
+            scan_type="quick",
+            scan_id=scan_job.id,
+            user_id=effective_user_id,
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=1)
+        )
+        db.add(cache)
+        db.commit()
+        
+        # Add the scan_id to the result so the frontend can poll summary if needed
+        result["scan_id"] = str(scan_job.id)
+        result["cached"] = False
+    except Exception as e:
+        logger.error(f"Failed to persist quick scan result: {e}", exc_info=True)
 
     return result
 
 
-@router.post("/shallow")
-def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Run a shallow scan (CT discovery + top-N TLS). Returns results synchronously in 30–90s."""
+@router.post("/shallow", response_model=ScanResponse)
+async def run_shallow_scan(request: ShallowScanRequest, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
+    """Run a shallow scan (CT discovery + top-N TLS). Runs in background thread."""
+    effective_user_id = user.id if user else get_superadmin_id(db)
+    
     # Check cache for existing shallow or deep scan
-    cached = check_scan_cache(db, request.domain, ["shallow", "deep"])
+    cached = check_scan_cache(db, request.domain, ["shallow", "deep"], user_id=effective_user_id)
     if cached:
         scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
         if scan_job:
-            return {
-                "domain": request.domain,
-                "scan_type": scan_job.scan_type,
-                "cached": True,
-                "scan_id": str(scan_job.id),
-                "summary": "Returned from cache (Check /summary endpoint for details)"
-            }
+            return ScanResponse(
+                scan_id=str(scan_job.id),
+                status=scan_job.status,
+                created_at=scan_job.created_at,
+                message="Returned from cache",
+            )
 
     clean_tgt = clean_domain(request.domain)
+    
+    # Create the ScanJob first
+    scan_job = ScanJob(
+        targets=[clean_tgt],
+        scan_type="shallow",
+        status="running",
+        user_id=effective_user_id,
+        started_at=datetime.now(timezone.utc)
+    )
+    db.add(scan_job)
+    db.commit()
+    db.refresh(scan_job)
+    scan_id = str(scan_job.id)
+
+    # Initial cache entry (running state)
+    cache = ScanCache(
+        domain=clean_tgt,
+        scan_type="shallow",
+        scan_id=scan_job.id,
+        user_id=effective_user_id,
+        expires_at=datetime.now(timezone.utc) + timedelta(hours=6)
+    )
+    db.add(cache)
+    db.commit()
+
+    # Capture loop for SSE (must be done on the main thread for async routes)
     try:
-        result = shallow_scan(clean_tgt, top_n=request.top_n, port=request.port)
-        if result and not result.get("error"):
-            # Create a shallow ScanJob to satisfy future cache requests
-            scan_job = ScanJob(
-                targets=[request.domain],
-                scan_type="shallow",
-                status="completed",
-                user_id=current_user.id
-            )
-            db.add(scan_job)
-            db.commit()
-            db.refresh(scan_job)
-            
-            cache = ScanCache(
-                domain=request.domain,
-                scan_type="shallow",
-                scan_id=scan_job.id,
-                user_id=current_user.id,
-                expires_at=datetime.now(timezone.utc) + timedelta(hours=6)
-            )
-            db.add(cache)
-            db.commit()
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Shallow scan failed: {e}")
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
 
-    if result.get("error") and not result.get("assets"):
-        raise HTTPException(status_code=502, detail=result["error"])
+    # Run shallow scan in background thread
+    def _run_shallow():
+        logger.info(f"Background thread starting for shallow scan {scan_id}")
+        try:
+            orch = ScanOrchestrator()
+            orch.run_shallow_scan(scan_id, loop=loop)
+        except Exception as e:
+            logger.error(f"Background shallow scan {scan_id} failed: {e}", exc_info=True)
 
-    return result
+    thread = threading.Thread(target=_run_shallow, daemon=True, name=f"shallow-{scan_id}")
+    thread.start()
+    _running_scans[scan_id] = thread
+
+    return ScanResponse(
+        scan_id=scan_id,
+        status="running",
+        created_at=scan_job.created_at,
+        message="Shallow scan started in background"
+    )
 
 
 @router.get("/{scan_id}", response_model=ScanStatus)
-def get_scan_status(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_scan_status(scan_id: UUID, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Get scan status and phase progress."""
     import uuid
     # Use explicit UUID casting for cross-DB reliability (SQLite/Postgres)
     scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(str(scan_id))).first()
-    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+    
+    # Enforce ownership: Only owner, superadmin, or ANYONE for a public (sa-owned) scan
+    sa_id = get_superadmin_id(db)
+    is_sa = user and user.id == sa_id
+    
+    if not scan_job:
         raise HTTPException(status_code=404, detail="Scan not found")
+        
+    # Access logic:
+    # 1. If scan belongs to superadmin, it's public -> Allow
+    # 2. If user is logged in and owns the scan -> Allow
+    # 3. If user is actual superadmin (ID matched) -> Allow
+    allowed = (scan_job.user_id == sa_id) or (user and scan_job.user_id == user.id) or is_sa
+    
+    if not allowed:
+        raise HTTPException(status_code=404, detail="Scan not found")
+        
     return ScanStatus(
         scan_id=scan_job.id,
         status=scan_job.status,
+        scan_type=scan_job.scan_type,
         current_phase=scan_job.current_phase or 0,
         targets=scan_job.targets or [],
         created_at=scan_job.created_at,
@@ -221,13 +377,14 @@ def cancel_scan(scan_id: UUID, current_user: User = Depends(get_current_user), d
     """Mark a scan as cancelled so the orchestrator thread stops."""
     import uuid
     scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(str(scan_id))).first()
-    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+    is_sa = current_user.email == "superadmin@qushield.local"
+    if not scan_job or (scan_job.user_id != current_user.id and not is_sa):
         raise HTTPException(status_code=404, detail="Scan not found")
     
-    if scan_job.status in (ScanStatus.COMPLETED, ScanStatus.FAILED, ScanStatus.CANCELLED):
+    if scan_job.status in ("completed", "failed", "cancelled"):
         return {"message": "Scan already finished"}
     
-    scan_job.status = ScanStatus.CANCELLED
+    scan_job.status = "cancelled"
     db.commit()
     logger.info(f"Scan {scan_id} cancelled by user {current_user.email}")
     return {"message": "Scan cancellation requested"}
@@ -266,11 +423,23 @@ def list_scans(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     status: Optional[str] = Query(None, description="Filter by status"),
-    current_user: User = Depends(get_current_user),
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """List all scans, sorted by created_at descending."""
-    query = db.query(ScanJob).filter(ScanJob.user_id == current_user.id)
+    if not user:
+        # Anonymous users don't see a history list (otherwise they'd see ALL public scans)
+        return []
+
+    sa_id = get_superadmin_id(db)
+    is_sa = user.id == sa_id
+    
+    if is_sa:
+        # Superadmin sees all scans
+        query = db.query(ScanJob)
+    else:
+        # Others see only their own
+        query = db.query(ScanJob).filter(ScanJob.user_id == user.id)
     if status:
         query = query.filter(ScanJob.status == status)
     scans = query.order_by(ScanJob.created_at.desc()).offset(offset).limit(limit).all()
@@ -278,6 +447,7 @@ def list_scans(
         ScanStatus(
             scan_id=s.id,
             status=s.status,
+            scan_type=s.scan_type,
             current_phase=s.current_phase or 0,
             targets=s.targets or [],
             created_at=s.created_at,
@@ -293,10 +463,19 @@ def list_scans(
 
 
 @router.get("/{scan_id}/summary")
-def get_scan_summary(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_scan_summary(scan_id: UUID, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Get a full scan results summary with counts and breakdowns."""
     scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
-    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+    if not scan_job:
+        raise HTTPException(status_code=404, detail="Scan not found")
+
+    sa_id = get_superadmin_id(db)
+    is_sa = user and user.id == sa_id
+    
+    # Access logic: Same as get_scan_status
+    allowed = (scan_job.user_id == sa_id) or (user and scan_job.user_id == user.id) or is_sa
+    
+    if not allowed:
         raise HTTPException(status_code=404, detail="Scan not found")
 
     assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()

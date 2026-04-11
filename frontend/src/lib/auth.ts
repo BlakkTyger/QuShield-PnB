@@ -31,9 +31,23 @@ export function getAccessToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+/**
+ * Clear all scan-related localStorage state.
+ * Called on logout AND on login to prevent cross-user data leakage.
+ */
+export function clearScanState() {
+  localStorage.removeItem("qushield_active_scan");
+  localStorage.removeItem("qushield_active_domain");
+  localStorage.removeItem("qushield_scan_id");
+  localStorage.removeItem("qushield_reports");
+  // Notify any listening components (e.g. QueryProvider) that state changed
+  window.dispatchEvent(new Event("qushield-auth-change"));
+}
+
 export function clearTokens() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_KEY);
+  clearScanState();
 }
 
 export function isLoggedIn(): boolean {

@@ -13,16 +13,33 @@ from sqlalchemy import func
 from app.core.database import get_db
 from app.models.cbom import CBOMRecord, CBOMComponent
 from app.models.asset import Asset
+from app.models.auth import User
+from app.models.scan import ScanJob
+from app.api.v1.auth import get_optional_user
 
 router = APIRouter()
+
+def get_superadmin_id(db: Session) -> UUID:
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    return sa.id if sa else None
+
+def check_scan_access(db: Session, scan_id: UUID, user: Optional[User]) -> bool:
+    scan = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan: return False
+    sa_id = get_superadmin_id(db)
+    return (scan.user_id == sa_id) or (user and scan.user_id == user.id) or (user and user.id == sa_id)
 
 
 @router.get("/scan/{scan_id}")
 def list_cboms_for_scan(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """List all CBOMs generated for a scan."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     records = db.query(CBOMRecord).filter(CBOMRecord.scan_id == scan_id).all()
     items = []
     for r in records:
@@ -44,6 +61,7 @@ def list_cboms_for_scan(
 @router.get("/asset/{asset_id}")
 def get_cbom_for_asset(
     asset_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Get CBOM for a specific asset with all components."""
@@ -52,6 +70,9 @@ def get_cbom_for_asset(
     ).first()
     if not record:
         raise HTTPException(status_code=404, detail="No CBOM found for this asset")
+
+    if not check_scan_access(db, record.scan_id, user):
+        raise HTTPException(status_code=404, detail="Access denied")
 
     components = db.query(CBOMComponent).filter(CBOMComponent.cbom_id == record.id).all()
     return {
@@ -67,8 +88,10 @@ def get_cbom_for_asset(
             {
                 "id": str(c.id),
                 "name": c.name,
+                "algorithm_name": c.name,  # Frontend expects algorithm_name
                 "component_type": c.component_type,
                 "nist_quantum_level": c.nist_quantum_level,
+                "quantum_vulnerable": c.is_quantum_vulnerable,  # Frontend expects quantum_vulnerable
                 "is_quantum_vulnerable": c.is_quantum_vulnerable,
                 "key_type": c.key_type,
                 "key_length": c.key_length,
@@ -107,12 +130,15 @@ def export_cbom_cyclonedx(
 @router.get("/scan/{scan_id}/aggregate")
 def get_aggregate_cbom(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
     Aggregate CBOM statistics for a scan — algorithm distribution,
     quantum readiness breakdown, component type counts.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     components = db.query(CBOMComponent).filter(CBOMComponent.scan_id == scan_id).all()
     if not components:
         raise HTTPException(status_code=404, detail="No CBOM components found for this scan")
@@ -143,11 +169,22 @@ def get_aggregate_cbom(
 
     quantum_ready_pct = round((1 - vulnerable_count / max(total, 1)) * 100, 1)
 
+    # Count unique assets that have CBOMs
+    unique_assets = len(set(c.cbom_id for c in components))
+    unique_algos = len(set(c.name for c in components if c.name))
+
     return {
         "scan_id": str(scan_id),
+        "total_assets": unique_assets,
         "total_components": total,
+        "unique_algorithms": unique_algos,
         "vulnerable_components": vulnerable_count,
         "quantum_ready_pct": quantum_ready_pct,
+        # Frontend expects these field names:
+        "by_algorithm": algo_dist,
+        "by_type": type_dist,
+        "by_nist_level": nist_dist,
+        # Also keep original names for backward compat:
         "algorithm_distribution": algo_dist,
         "component_type_distribution": type_dist,
         "nist_level_distribution": nist_dist,
@@ -157,9 +194,12 @@ def get_aggregate_cbom(
 @router.get("/scan/{scan_id}/algorithms")
 def get_algorithm_distribution(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Algorithm frequency distribution with quantum vulnerability status."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     components = db.query(CBOMComponent).filter(CBOMComponent.scan_id == scan_id).all()
     algo_map = {}
     for c in components:

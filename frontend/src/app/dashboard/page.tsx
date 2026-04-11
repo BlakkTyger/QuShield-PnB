@@ -10,25 +10,26 @@ import {
   useScans, useScanSummary, useEnterpriseRating,
   useRiskHeatmap, useRegulatoryDeadlines, useCBOMAlgorithms,
 } from "@/lib/hooks";
-import { ScoreGauge, MetricCard, RiskBadge, ProgressBar, EmptyState, Skeleton } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { ScoreGauge, MetricCard, RiskBadge, ProgressBar, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
 
 export default function DashboardPage() {
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
 
   // Get latest completed scan
   const { data: scans, isLoading: scansLoading } = useScans();
 
   useEffect(() => {
-    // Try localStorage first
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    // Try context first
+    if (activeScanId) return;
     // Otherwise use latest completed scan
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   const { data: summary } = useScanSummary(scanId);
   const { data: rating } = useEnterpriseRating(scanId);
@@ -59,9 +60,9 @@ export default function DashboardPage() {
   }));
 
   const algoData = algorithms?.algorithms
-    ? Object.entries(algorithms.algorithms).map(([name, count]) => ({
-        name: name.length > 20 ? name.slice(0, 18) + "…" : name,
-        value: count as number,
+    ? algorithms.algorithms.map((algo: { name: string; count: number }) => ({
+        name: (algo.name || "unknown").length > 20 ? (algo.name || "unknown").slice(0, 18) + "…" : (algo.name || "unknown"),
+        value: algo.count,
       }))
     : [];
 
@@ -81,8 +82,11 @@ export default function DashboardPage() {
             Organization quantum posture overview — {summary.targets.join(", ")}
           </p>
         </div>
-        <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Last scan: {summary.completed_at ? new Date(summary.completed_at).toLocaleString() : "—"}
+        <div className="flex items-center gap-4">
+          <ScanSelector />
+          <div className="text-xs text-right" style={{ color: "var(--text-muted)" }}>
+            Last scan: {summary.completed_at ? new Date(summary.completed_at).toLocaleString() : "—"}
+          </div>
         </div>
       </div>
 

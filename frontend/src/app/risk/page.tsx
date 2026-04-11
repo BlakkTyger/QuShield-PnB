@@ -6,7 +6,7 @@ import {
   ResponsiveContainer, ReferenceLine, ZAxis,
 } from "recharts";
 import { useScans, useRiskHeatmap, useAssetRisk, useEnterpriseRating } from "@/lib/hooks";
-import { ScoreGauge, RiskBadge, MetricCard, EmptyState, Skeleton, ProgressBar } from "@/components/ui";
+import { ScoreGauge, RiskBadge, MetricCard, EmptyState, Skeleton, ProgressBar, ScanSelector } from "@/components/ui";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
 import { AlertTriangle, Shield, X } from "lucide-react";
 
@@ -60,26 +60,29 @@ export default function RiskPage() {
             Mosca&apos;s Theorem analysis and quantum risk scoring
           </p>
         </div>
-        {rating && (
-          <div className="text-right">
-            <span className="text-xs" style={{ color: "var(--text-muted)" }}>Enterprise Rating</span>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-black" style={{
-                color: rating.enterprise_rating < 300 ? "var(--risk-critical)"
-                  : rating.enterprise_rating < 550 ? "var(--risk-vulnerable)"
-                  : "var(--risk-ready)",
+        <div className="flex items-center gap-4">
+          <ScanSelector />
+          {rating && (
+            <div className="text-right">
+              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Enterprise Rating</span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black" style={{
+                  color: rating.enterprise_rating < 300 ? "var(--risk-critical)"
+                    : rating.enterprise_rating < 550 ? "var(--risk-vulnerable)"
+                    : "var(--risk-ready)",
+                }}>
+                  {rating.enterprise_rating}
+                </span>
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>/1000</span>
+              </div>
+              <span className="text-xs font-semibold" style={{
+                color: rating.enterprise_rating < 300 ? "var(--risk-critical)" : "var(--text-secondary)",
               }}>
-                {rating.enterprise_rating}
+                {rating.label}
               </span>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>/1000</span>
             </div>
-            <span className="text-xs font-semibold" style={{
-              color: rating.enterprise_rating < 300 ? "var(--risk-critical)" : "var(--text-secondary)",
-            }}>
-              {rating.label}
-            </span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Top: Distribution Cards */}

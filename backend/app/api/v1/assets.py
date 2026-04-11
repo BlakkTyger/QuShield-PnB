@@ -12,9 +12,24 @@ from app.core.database import get_db
 from app.models.asset import Asset, AssetPort
 from app.models.certificate import Certificate
 from app.models.risk import RiskScore
-from app.models.compliance import ComplianceResult
+from app.api.v1.auth import get_optional_user
+from app.models.auth import User
+from app.models.scan import ScanJob
 
 router = APIRouter()
+
+def get_superadmin_id(db: Session) -> UUID:
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    return sa.id if sa else None
+
+def check_scan_access(db: Session, scan_id: UUID, user: Optional[User]) -> bool:
+    scan = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan:
+        return False
+    sa_id = get_superadmin_id(db)
+    # Allow if: public (sa-owned) OR owner matched OR user is superadmin
+    return (scan.user_id == sa_id) or (user and scan.user_id == user.id) or (user and user.id == sa_id)
 
 
 @router.get("")
@@ -29,9 +44,13 @@ def list_assets(
     sort_dir: Optional[str] = Query("asc", description="Sort direction: asc/desc"),
     limit: int = Query(50, ge=1, le=1000),
     offset: int = Query(0, ge=0),
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Paginated, filterable, sortable asset list."""
+    if scan_id and not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found or access denied")
+        
     query = db.query(Asset)
 
     if scan_id:
@@ -74,11 +93,18 @@ def list_assets(
     for a in assets:
         ports = db.query(AssetPort).filter(AssetPort.asset_id == a.id).all()
         risk = db.query(RiskScore).filter(RiskScore.asset_id == a.id).order_by(RiskScore.computed_at.desc()).first()
+        # Compute cert_expiry_days from earliest cert valid_to
+        first_cert = db.query(Certificate).filter(Certificate.asset_id == a.id).order_by(Certificate.valid_to.asc()).first()
+        cert_expiry_days = None
+        if first_cert and first_cert.valid_to:
+            from datetime import date
+            cert_expiry_days = (first_cert.valid_to.date() - date.today()).days if hasattr(first_cert.valid_to, 'date') else None
         items.append({
             "id": str(a.id),
             "scan_id": str(a.scan_id),
             "hostname": a.hostname,
             "url": a.url,
+            "ip_address": a.ip_v4,  # Frontend expects ip_address
             "ip_v4": a.ip_v4,
             "ip_v6": a.ip_v6,
             "asset_type": a.asset_type,
@@ -91,12 +117,15 @@ def list_assets(
             "waf_detected": a.waf_detected,
             "web_server": a.web_server,
             "tls_version": a.tls_version,
+            "key_exchange": first_cert.key_type if first_cert else None,  # Frontend expects key_exchange
             "confidence_score": a.confidence_score,
             "first_seen_at": str(a.first_seen_at) if a.first_seen_at else None,
             "last_seen_at": str(a.last_seen_at) if a.last_seen_at else None,
             "risk_score": risk.quantum_risk_score if risk else None,
             "risk_classification": risk.risk_classification if risk else None,
-            "ports": [{"port": p.port, "protocol": p.protocol, "service_name": p.service_name} for p in ports],
+            "cert_expiry_days": cert_expiry_days,  # Frontend expects cert_expiry_days
+            "nist_level": first_cert.nist_quantum_level if first_cert else None,
+            "ports": [{"port": p.port, "protocol": p.protocol, "service": p.service_name, "service_name": p.service_name} for p in ports],
         })
 
     return {"items": items, "total": total, "limit": limit, "offset": offset}
@@ -175,10 +204,13 @@ def list_third_party_assets(
 
 
 @router.get("/{asset_id}")
-def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
+def get_asset_detail(asset_id: UUID, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Full asset detail with ports, certificates, risk, and compliance."""
     asset = db.query(Asset).filter(Asset.id == asset_id).first()
     if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    if not check_scan_access(db, asset.scan_id, user):
         raise HTTPException(status_code=404, detail="Asset not found")
 
     ports = db.query(AssetPort).filter(AssetPort.asset_id == asset_id).all()
@@ -209,12 +241,13 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
         "first_seen_at": str(asset.first_seen_at) if asset.first_seen_at else None,
         "last_seen_at": str(asset.last_seen_at) if asset.last_seen_at else None,
         "ports": [
-            {"port": p.port, "protocol": p.protocol, "service_name": p.service_name, "banner": p.banner}
+            {"port": p.port, "protocol": p.protocol, "service": p.service_name, "service_name": p.service_name, "banner": p.banner}
             for p in ports
         ],
         "certificates": [
             {
                 "id": str(c.id),
+                "subject": c.common_name,  # Frontend expects 'subject'
                 "common_name": c.common_name,
                 "issuer": c.issuer,
                 "ca_name": c.ca_name,
@@ -223,6 +256,7 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
                 "signature_algorithm": c.signature_algorithm,
                 "valid_from": str(c.valid_from) if c.valid_from else None,
                 "valid_to": str(c.valid_to) if c.valid_to else None,
+                "fingerprint": c.sha256_fingerprint,  # Frontend expects 'fingerprint'
                 "sha256_fingerprint": c.sha256_fingerprint,
                 "is_ct_logged": c.is_ct_logged,
                 "nist_quantum_level": c.nist_quantum_level,

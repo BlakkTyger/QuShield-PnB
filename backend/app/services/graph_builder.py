@@ -12,19 +12,27 @@ def build_topology_graph(scan_id: str, db) -> dict:
 
     assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
     for asset in assets:
-        G.add_node(asset.hostname, type="Domain", ip=asset.ip_v4, risk_class=asset.asset_type)
+        G.add_node(asset.hostname, label=asset.hostname, type="domain", ip=asset.ip_v4, risk_class=asset.asset_type)
         if asset.ip_v4:
-            G.add_node(asset.ip_v4, type="IP")
+            G.add_node(asset.ip_v4, label=f"IP: {asset.ip_v4}", type="ip")
             G.add_edge(asset.hostname, asset.ip_v4, relation="RESOLVES_TO")
 
         # Map Certificates
         certs = db.query(Certificate).filter(Certificate.asset_id == asset.id).all()
         for cert in certs:
             fingerprint = cert.sha256_fingerprint or cert.common_name
-            G.add_node(fingerprint, type="Certificate", cn=cert.common_name, key_length=cert.key_length)
+            label = f"Cert: {cert.common_name}" if cert.common_name else f"Cert: {fingerprint[:8]}"
+            G.add_node(fingerprint, label=label, type="certificate", cn=cert.common_name, key_length=cert.key_length)
             G.add_edge(asset.hostname, fingerprint, relation="USES_CERTIFICATE")
             if cert.issuer:
-                G.add_node(cert.issuer, type="Issuer")
+                # Try to extract CN from issuer string
+                issuer_label = cert.issuer
+                if "CN=" in cert.issuer:
+                    import re
+                    match = re.search(r"CN=([^,]+)", cert.issuer)
+                    if match:
+                        issuer_label = f"Issuer: {match.group(1)}"
+                G.add_node(cert.issuer, label=issuer_label, type="issuer")
                 G.add_edge(fingerprint, cert.issuer, relation="ISSUED_BY")
 
     data = {
@@ -61,7 +69,7 @@ def compute_blast_radius(scan_id: str, cert_fingerprint: str, db) -> dict:
         return {"error": "Certificate fingerprint not found in topology graph."}
 
     reachable = list(nx.bfs_tree(U, cert_fingerprint))
-    affected_domains = [n for n in reachable if U.nodes[n].get("type") == "Domain"]
+    affected_domains = [n for n in reachable if U.nodes[n].get("type") == "domain"]
 
     return {
         "certificate": cert_fingerprint,

@@ -11,19 +11,36 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.config import PROJECT_ROOT
+from app.config import PROJECT_ROOT, STATIC_DATA_DIR
 from app.models.compliance import ComplianceResult
 from app.models.asset import Asset
+from app.api.v1.auth import get_optional_user
+from app.models.auth import User
+from app.models.scan import ScanJob
 
 router = APIRouter()
+
+def get_superadmin_id(db: Session) -> UUID:
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    return sa.id if sa else None
+
+def check_scan_access(db: Session, scan_id: UUID, user: Optional[User]) -> bool:
+    scan = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan: return False
+    sa_id = get_superadmin_id(db)
+    return (scan.user_id == sa_id) or (user and scan.user_id == user.id) or (user and user.id == sa_id)
 
 
 @router.get("/scan/{scan_id}")
 def list_compliance_results(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """List all compliance results for a scan."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
     items = []
     for r in results:
@@ -55,9 +72,12 @@ def list_compliance_results(
 @router.get("/scan/{scan_id}/fips-matrix")
 def get_fips_matrix(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """FIPS 203/204/205 deployment matrix for all assets in a scan."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
     if not results:
         raise HTTPException(status_code=404, detail="No compliance data for this scan")
@@ -95,9 +115,12 @@ def get_fips_matrix(
 @router.get("/scan/{scan_id}/regulatory")
 def get_regulatory_compliance(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """India-specific regulatory compliance summary (RBI, SEBI, PCI, NPCI)."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
     if not results:
         raise HTTPException(status_code=404, detail="No compliance data for this scan")
@@ -134,9 +157,12 @@ def get_regulatory_compliance(
 @router.get("/scan/{scan_id}/agility")
 def get_agility_distribution(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Crypto-agility score distribution across all assets."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
     if not results:
         raise HTTPException(status_code=404, detail="No compliance data for this scan")
@@ -168,6 +194,7 @@ def get_agility_distribution(
 @router.get("/asset/{asset_id}")
 def get_asset_compliance_detail(
     asset_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Detailed compliance result for a single asset including all checks."""
@@ -176,6 +203,9 @@ def get_asset_compliance_detail(
     ).first()
     if not r:
         raise HTTPException(status_code=404, detail="No compliance data for this asset")
+
+    if not check_scan_access(db, r.scan_id, user):
+        raise HTTPException(status_code=404, detail="Access denied")
 
     asset = db.query(Asset).filter(Asset.id == asset_id).first()
     return {
@@ -205,7 +235,7 @@ def get_asset_compliance_detail(
 @router.get("/deadlines")
 def get_regulatory_deadlines():
     """Regulatory deadline reference data with countdown timers."""
-    data_file = PROJECT_ROOT / "app" / "data" / "regulatory_deadlines.json"
+    data_file = STATIC_DATA_DIR / "regulatory_deadlines.json"
     try:
         with open(data_file) as f:
             deadlines = json.load(f)
@@ -244,7 +274,7 @@ def get_regulatory_deadlines():
 @router.get("/vendor-readiness")
 def get_vendor_readiness():
     """PQC readiness status of key technology vendors (HSMs, CAs, CBS, libraries)."""
-    data_file = PROJECT_ROOT / "app" / "data" / "vendor_readiness.json"
+    data_file = STATIC_DATA_DIR / "vendor_readiness.json"
     try:
         with open(data_file) as f:
             vendors = json.load(f)

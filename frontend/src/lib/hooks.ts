@@ -12,6 +12,8 @@ import type {
   RiskDetail,
   EnterpriseRating,
   FIPSMatrix,
+  ComplianceAgility,
+  ComplianceRegulatory,
   RegulatoryDeadline,
   TopologyGraph,
   ComplianceDetail,
@@ -22,11 +24,13 @@ import type {
 } from "@/lib/types";
 
 /* ─── Scans ──────────────────────────────────────────── */
-export function useScans() {
+export function useScans(limit?: number) {
   return useQuery({
-    queryKey: ["scans"],
+    queryKey: ["scans", limit],
     queryFn: async () => {
-      const { data } = await api.get<ScanStatus[]>("/scans/");
+      const { data } = await api.get<ScanStatus[]>("/scans/", {
+        params: limit ? { limit } : undefined,
+      });
       return data;
     },
   });
@@ -164,7 +168,10 @@ export function useCBOMAlgorithms(scanId: string | null) {
   return useQuery({
     queryKey: ["cbom-algorithms", scanId],
     queryFn: async () => {
-      const { data } = await api.get<{ scan_id: string; algorithms: Record<string, number> }>(
+      const { data } = await api.get<{
+        algorithms: { name: string; count: number; nist_quantum_level: number; is_quantum_vulnerable: boolean; component_type: string }[];
+        total_unique: number;
+      }>(
         `/cbom/scan/${scanId}/algorithms`
       );
       return data;
@@ -265,7 +272,7 @@ export function useComplianceAgility(scanId: string | null) {
   return useQuery({
     queryKey: ["compliance-agility", scanId],
     queryFn: async () => {
-      const { data } = await api.get(`/compliance/scan/${scanId}/agility`);
+      const { data } = await api.get<ComplianceAgility>(`/compliance/scan/${scanId}/agility`);
       return data;
     },
     enabled: !!scanId,
@@ -276,7 +283,7 @@ export function useComplianceRegulatory(scanId: string | null) {
   return useQuery({
     queryKey: ["compliance-regulatory", scanId],
     queryFn: async () => {
-      const { data } = await api.get(`/compliance/scan/${scanId}/regulatory`);
+      const { data } = await api.get<ComplianceRegulatory>(`/compliance/scan/${scanId}/regulatory`);
       return data;
     },
     enabled: !!scanId,

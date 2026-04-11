@@ -13,14 +13,14 @@ from typing import Optional
 
 import numpy as np
 
-from app.config import settings, PROJECT_ROOT
+from app.config import settings, PROJECT_ROOT, STATIC_DATA_DIR
 from app.core.logging import get_logger
 from app.core.timing import timed
 
 logger = get_logger("risk_engine")
 
 # Load static data files
-_DATA_DIR = PROJECT_ROOT / "app" / "data"
+_DATA_DIR = STATIC_DATA_DIR
 
 with open(_DATA_DIR / "data_shelf_life_defaults.json") as f:
     SHELF_LIFE_DEFAULTS = json.load(f)

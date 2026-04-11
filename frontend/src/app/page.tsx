@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers } from "lucide-react";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, AlertCircle, TrendingDown, Activity, Database } from "lucide-react";
 import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
-import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
+import { ScoreGauge, MetricCard, RiskBadge, ProgressBar } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
 
 type ScanTier = "quick" | "shallow" | "deep";
 
@@ -25,13 +26,20 @@ const PHASES = [
 ];
 
 export default function QuickScanPage() {
+  const { activeScanId: scanId, activeDomain, setActiveScan } = useScanContext();
   const [domain, setDomain] = useState("");
-  const [scanId, setScanId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [logsOpen, setLogsOpen] = useState(true);
   const [scanTier, setScanTier] = useState<ScanTier>("deep");
-  const [quickResult, setQuickResult] = useState<Record<string, unknown> | null>(null);
+  const [quickResult, setQuickResult] = useState<any | null>(null);
+  const [reconnectKey, setReconnectKey] = useState(0);
+  const [counters, setCounters] = useState({
+    assets: 0,
+    certs: 0,
+    ips: 0,
+    vuln: 0
+  });
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
@@ -75,27 +83,46 @@ export default function QuickScanPage() {
   useEffect(() => {
     if (!scanId || scanStatus?.status === "completed" || scanStatus?.status === "failed") return;
 
-    // Explicitly hit the proxy endpoint on Next.js matching the FastApi
-    const token = localStorage.getItem("qushield_access_token") || "";
+    const token = typeof window !== "undefined" ? localStorage.getItem("qushield_access_token") : "";
     const es = new EventSource(`/api/v1/scans/${scanId}/stream?token=${token}`);
 
-    es.onmessage = (event) => {
+    const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         if (data.message) {
           setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${data.message}`]);
         }
-      } catch {
-        setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${event.data}`]);
+        if (data.data) {
+          const type = data.event_type;
+          if (type === "asset_discovered") setCounters(c => ({ ...c, assets: c.assets + (data.data.count || 0) }));
+          else if (type === "crypto_result") setCounters(c => ({ ...c, certs: c.certs + 1 }));
+          else if (type === "ip_resolved") setCounters(c => ({ ...c, ips: c.ips + (data.data.count || 1) }));
+        }
+      } catch (err) { console.error("SSE parse error", err); }
+    };
+
+    es.addEventListener("scan_started", handleMessage as any);
+    es.addEventListener("phase_start", handleMessage as any);
+    es.addEventListener("asset_discovered", handleMessage as any);
+    es.addEventListener("crypto_result", handleMessage as any);
+    es.addEventListener("ip_resolved", handleMessage as any);
+    es.addEventListener("scan_complete", handleMessage as any);
+    es.addEventListener("scan_failed", handleMessage as any);
+    es.onmessage = handleMessage;
+
+    let retryCount = 0;
+    es.onerror = () => {
+      es.close();
+      if (retryCount < 5) {
+        retryCount++;
+        setTimeout(() => {
+          if (scanId && isScanning) setReconnectKey(prev => prev + 1);
+        }, 2000 * retryCount);
       }
     };
 
-    es.onerror = () => {
-      es.close();
-    };
-
     return () => es.close();
-  }, [scanId, scanStatus?.status]);
+  }, [scanId, scanStatus?.status, reconnectKey, isScanning]);
 
   // Auto scroll logs
   useEffect(() => {
@@ -104,60 +131,37 @@ export default function QuickScanPage() {
 
   // Restore active scan from localStorage on mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedScan = localStorage.getItem("qushield_active_scan");
-      const savedDomain = localStorage.getItem("qushield_active_domain");
-      if (savedScan && savedDomain) {
-        setScanId(savedScan);
-        setDomain(savedDomain);
-        setIsScanning(true); // Triggers at least one poll to check actual status
+    if (scanId && activeDomain) {
+      setDomain(activeDomain);
+      if (scanStatus?.status && !["completed", "failed", "cancelled"].includes(scanStatus.status)) {
+        setIsScanning(true);
       }
     }
-  }, []);
+  }, [scanId, activeDomain, scanStatus?.status]);
 
   const handleScan = useCallback(async () => {
     if (!domain.trim()) return;
     setIsScanning(true);
     setLogs([]);
     setQuickResult(null);
+    setCounters({ assets: 0, certs: 0, ips: 0, vuln: 0 });
+    const target = domain.trim();
     try {
       if (scanTier === "quick") {
-        const res = await quickScan.mutateAsync({ domain: domain.trim() });
+        const res = await quickScan.mutateAsync({ domain: target });
         setQuickResult(res);
         setIsScanning(false);
-        // If the quick scan returned a cached deep scan, load it
-        if (res.cached && res.scan_id) {
-          setScanId(res.scan_id);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("qushield_active_scan", res.scan_id);
-            localStorage.setItem("qushield_active_domain", domain.trim());
-          }
-        }
+        if (res.scan_id) setActiveScan(res.scan_id, target, "quick");
         return;
       }
       if (scanTier === "shallow") {
-        const res = await shallowScan.mutateAsync({ domain: domain.trim() });
-        setQuickResult(res);
-        setIsScanning(false);
-        if (res.cached && res.scan_id) {
-          setScanId(res.scan_id);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("qushield_active_scan", res.scan_id);
-            localStorage.setItem("qushield_active_domain", domain.trim());
-          }
-        }
+        const res = await shallowScan.mutateAsync({ domain: target });
+        if (res.scan_id) setActiveScan(res.scan_id, target, "shallow");
         return;
       }
-      // Deep scan
-      const res = await startScan.mutateAsync([domain.trim()]);
-      setScanId(res.scan_id);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("qushield_active_scan", res.scan_id);
-        localStorage.setItem("qushield_active_domain", domain.trim());
-      }
-    } catch {
-      setIsScanning(false);
-    }
+      const res = await startScan.mutateAsync([target]);
+      if (res.scan_id) setActiveScan(res.scan_id, target, "deep");
+    } catch { setIsScanning(false); }
   }, [domain, scanTier, startScan, quickScan, shallowScan]);
 
   const handleCancel = useCallback(async () => {
@@ -165,19 +169,16 @@ export default function QuickScanPage() {
     try {
       await cancelScan.mutateAsync(scanId);
       setIsScanning(false);
-      setScanId(null);
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("qushield_active_scan");
-        localStorage.removeItem("qushield_active_domain");
-      }
+      setActiveScan("", "", "");
       setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] SCAN CANCELLED BY USER`]);
     } catch (err) {
       console.error("Cancel failed", err);
     }
-  }, [scanId, isScanning, cancelScan]);
+  }, [scanId, isScanning, cancelScan, setActiveScan]);
 
   const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 5) : 0;
-  const showResults = scanStatus?.status === "completed" && summary;
+  // Show results if scan is completed OR if we have a direct synchronous result (quickResult)
+  const showResults = (scanStatus?.status === "completed" && summary) || (!!quickResult && !isScanning);
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in pb-20">
@@ -296,6 +297,25 @@ export default function QuickScanPage() {
                 Cancel Scan
               </button>
             </div>
+            <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="glass-card-static p-4 border-[rgba(0,255,255,0.1)]">
+                <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Assets Discovered</div>
+                <div className="text-2xl font-black text-cyan-400">{counters.assets}</div>
+              </div>
+              <div className="glass-card-static p-4 border-[rgba(255,255,0,0.1)]">
+                <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Certs Analyzed</div>
+                <div className="text-2xl font-black text-yellow-400">{counters.certs}</div>
+              </div>
+              <div className="glass-card-static p-4 border-[rgba(0,255,0,0.1)]">
+                <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">IPs Scanned</div>
+                <div className="text-2xl font-black text-emerald-400">{counters.ips}</div>
+              </div>
+              <div className="glass-card-static p-4 border-[rgba(251,188,9,0.1)]">
+                <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Vulnerabilities</div>
+                <div className="text-2xl font-black text-orange-400">{counters.vuln}</div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between gap-2 max-w-2xl mx-auto w-full">
               {PHASES.map((phase, i) => {
                 const status =
@@ -342,7 +362,7 @@ export default function QuickScanPage() {
           </div>
 
           {/* Live Log Console */}
-          <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)]">
+          <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)] lg:h-[400px] h-[300px]">
             <div
               className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] cursor-pointer"
               onClick={() => setLogsOpen(!logsOpen)}
@@ -350,19 +370,19 @@ export default function QuickScanPage() {
             >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-xs font-bold font-mono tracking-wider text-green-400">LIVE FEED</span>
+                <span className="text-xs font-bold font-mono tracking-wider text-green-400">LIVE TELEMETRY STREAM</span>
               </div>
               {logsOpen ? <ChevronUp size={14} className="text-zinc-500" /> : <ChevronDown size={14} className="text-zinc-500" />}
             </div>
 
             {logsOpen && (
-              <div className="flex-1 bg-[#0a0a0c] p-4 text-[11px] font-mono leading-relaxed h-[180px] overflow-y-auto no-scrollbar">
+              <div className="flex-1 bg-[#050507] p-4 text-[11px] font-mono leading-relaxed overflow-y-auto scrollbar-thin">
                 {logs.length === 0 ? (
-                  <span className="text-zinc-600 italic">Awaiting telemetry...</span>
+                  <span className="text-zinc-600 italic">Awaiting telemetry from orchestrator...</span>
                 ) : (
                   logs.map((log, i) => (
-                    <div key={i} className={`${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") ? "text-green-400" : "text-zinc-400"}`}>
-                      {log}
+                    <div key={i} className={`mb-1 ${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") || log.includes("complete") ? "text-emerald-400" : "text-zinc-400"}`}>
+                      <span className="text-zinc-600 mr-2 opacity-50">{">"}</span>{log}
                     </div>
                   ))
                 )}
@@ -381,7 +401,135 @@ export default function QuickScanPage() {
         </div>
       )}
 
-      {/* Results (Completed) */}
+      {/* Results (Synchronous Quick Result) */}
+      {quickResult && !isScanning && (
+        <div className="animate-fade-in mb-12">
+          <div className="flex items-center gap-3 mb-6 ml-1">
+            <Zap className="text-[var(--accent-gold)]" size={20} />
+            <h2 className="text-xl font-black uppercase tracking-tight" style={{ color: "var(--text-primary)" }}>
+              Instant Assessment Results
+            </h2>
+            <div className="h-px flex-1 bg-[var(--border-subtle)] ml-4" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Quick Score */}
+            <div className="glass-card-static p-8 flex flex-col items-center justify-center">
+              <ScoreGauge
+                score={quickResult.risk?.score || 0}
+                size={200}
+                label={quickResult.risk?.classification || "unknown"}
+              />
+              <div className="mt-6 text-center">
+                <RiskBadge classification={quickResult.risk?.classification || "unknown"} />
+                <p className="text-[10px] mt-4 uppercase tracking-widest font-bold" style={{ color: "var(--text-muted)" }}>
+                  Primary Endpoint Analysis
+                </p>
+              </div>
+            </div>
+
+            {/* Assessment Details */}
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="glass-card-static p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Lock size={16} className="text-cyan-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">TLS Configuration</span>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-[10px] uppercase text-zinc-500 mb-1">Negotiated Protocol</div>
+                    <div className="text-sm font-bold text-zinc-100">{quickResult.tls?.negotiated_protocol || "Unknown"}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase text-zinc-500 mb-1">Key Exchange / Cipher</div>
+                    <div className="text-sm font-bold text-zinc-100 truncate">{quickResult.tls?.negotiated_cipher || "Unknown"}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {quickResult.tls?.forward_secrecy ? (
+                      <CheckCircle size={14} className="text-emerald-500" />
+                    ) : (
+                      <AlertCircle size={14} className="text-red-500" />
+                    )}
+                    <span className="text-xs font-medium text-zinc-300">Forward Secrecy Enforced</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-card-static p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Shield size={16} className="text-purple-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400">Quantum Assessment</span>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase text-zinc-500">NIST Quantum Level</span>
+                    <span className="text-xs font-black text-purple-300">Level {quickResult.quantum_assessment?.lowest_nist_level >= 0 ? quickResult.quantum_assessment.lowest_nist_level : "0"}</span>
+                  </div>
+                  <ProgressBar
+                    value={quickResult.quantum_assessment?.lowest_nist_level || 0}
+                    max={5}
+                    color="var(--risk-aware)"
+                  />
+                  <div className="p-3 rounded-lg bg-black/30 border border-white/5">
+                    <div className="text-[10px] uppercase text-zinc-500 mb-2">Vulnerable Algorithms</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {quickResult.quantum_assessment?.vulnerable_algorithms?.map((algo: string) => (
+                        <span key={algo} className="text-[9px] px-2 py-0.5 rounded bg-red-500/10 text-red-300 border border-red-500/20">{algo}</span>
+                      ))}
+                      {(!quickResult.quantum_assessment?.vulnerable_algorithms || quickResult.quantum_assessment.vulnerable_algorithms.length === 0) && (
+                        <span className="text-[9px] text-zinc-500 italic">None detected</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-card-static p-6 md:col-span-2">
+                <div className="flex items-center gap-2 mb-4">
+                  <Activity size={16} className="text-emerald-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Compliance & Risk Exposure</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div>
+                     <div className="flex justify-between items-center mb-2">
+                       <span className="text-[10px] uppercase text-zinc-500">Global Compliance Score</span>
+                       <span className="text-xs font-bold text-emerald-400">{quickResult.compliance?.compliance_pct}%</span>
+                     </div>
+                     <ProgressBar value={quickResult.compliance?.compliance_pct || 0} color="var(--risk-ready)" />
+                     <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                        <div className="flex items-center gap-1.5 opacity-70">
+                           {quickResult.compliance?.tls_1_3_enforced ? <CheckCircle size={10} className="text-emerald-500"/> : <AlertCircle size={10} className="text-zinc-500"/>}
+                           <span className="text-[9px] text-zinc-400">TLS 1.3</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-70">
+                           {quickResult.compliance?.pci_dss_4_basic ? <CheckCircle size={10} className="text-emerald-500"/> : <AlertCircle size={10} className="text-zinc-500"/>}
+                           <span className="text-[9px] text-zinc-400">PCI DSS 4.0</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-70">
+                           {quickResult.compliance?.sebi_tls_compliant ? <CheckCircle size={10} className="text-emerald-500"/> : <AlertCircle size={10} className="text-zinc-500"/>}
+                           <span className="text-[9px] text-zinc-400">SEBI CSCRF</span>
+                        </div>
+                     </div>
+                   </div>
+                   <div className="flex flex-col justify-center border-l border-white/5 pl-8">
+                     <div className="flex items-center gap-2 mb-1">
+                        <TrendingDown size={14} className={quickResult.risk?.mosca?.exposed_pessimistic ? "text-red-400" : "text-emerald-400"} />
+                        <span className="text-xs font-bold">HNDL Exposure</span>
+                     </div>
+                     <p className="text-[10px] text-zinc-500 leading-relaxed">
+                        {quickResult.risk?.mosca?.exposed_pessimistic 
+                          ? "Harvest-Now-Decrypt-Later risk detected. Encrypted data captured today may be decrypted by a CRQC."
+                          : "No immediate HNDL exposure detected based on default shelf-life parameters."}
+                     </p>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Results (Deep/Shallow Scan from DB) */}
       {showResults && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-[slide-up_0.5s_ease-out]">
           {/* Left: Scorecard */}
@@ -406,20 +554,20 @@ export default function QuickScanPage() {
             <div className="grid grid-cols-2 gap-4 w-full">
               <MetricCard
                 title="TLS Version"
-                value={`${summary.compliance_summary.tls_13_enforced} TLS 1.3`}
-                subtitle={`of ${summary.total_assets} endpoints`}
+                value={`${summary?.compliance_summary?.tls_13_enforced || 0} TLS 1.3`}
+                subtitle={`of ${summary?.total_assets || 0} endpoints`}
                 icon={<Lock size={16} />}
               />
               <MetricCard
                 title="Key Exchange"
                 value="RSA / ECDH"
-                subtitle={summary.risk_breakdown["quantum_critical"] ? "At Risk to Shor's" : "Secure"}
+                subtitle={summary?.risk_breakdown?.["quantum_critical"] ? "At Risk to Shor's" : "Secure"}
                 icon={<Key size={16} />}
-                color={summary.risk_breakdown["quantum_critical"] ? "var(--risk-critical)" : undefined}
+                color={summary?.risk_breakdown?.["quantum_critical"] ? "var(--risk-critical)" : undefined}
               />
               <MetricCard
                 title="Cert Expiry"
-                value={`${summary.total_certificates} Active`}
+                value={`${summary?.total_certificates || 0} Active`}
                 subtitle="Monitored"
                 icon={<Award size={16} />}
               />
@@ -441,7 +589,7 @@ export default function QuickScanPage() {
 
             <div className="flex flex-col gap-4 flex-1">
               {/* Generate intelligent finding cards based on breakdown */}
-              {summary.risk_breakdown["quantum_critical"] ? (
+              {summary?.risk_breakdown?.["quantum_critical"] ? (
                 <div className="glass-card-static p-5 flex flex-col gap-2 relative overflow-hidden border-l-4 border-l-[var(--risk-critical)]">
                   <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--risk-critical)] opacity-5 blur-2xl rounded-full"></div>
                   <div className="flex items-center gap-3">
@@ -454,19 +602,19 @@ export default function QuickScanPage() {
                 </div>
               ) : null}
 
-              {summary.shadow_assets > 0 ? (
+              {(summary?.shadow_assets || 0) > 0 ? (
                 <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
                   <div className="flex items-center gap-3">
                     <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>High Risk</span>
                     <h4 className="font-bold text-sm text-[var(--text-primary)]">Discovered Shadow Infrastructure</h4>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
-                    {summary.shadow_assets} uncatalogued subdomains identified on the perimeter. Shadow IT drastically increases untracked cryptographic debt.
+                    {summary?.shadow_assets} uncatalogued subdomains identified on the perimeter. Shadow IT drastically increases untracked cryptographic debt.
                   </p>
                 </div>
               ) : null}
 
-              {summary.compliance_summary.tls_13_enforced < summary.total_assets ? (
+              {(summary?.compliance_summary?.tls_13_enforced || 0) < (summary?.total_assets || 0) ? (
                 <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
                   <div className="flex items-center gap-3">
                     <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>Medium Risk</span>
@@ -479,7 +627,7 @@ export default function QuickScanPage() {
               ) : null}
 
               {/* If no critical/high issues found */}
-              {!summary.risk_breakdown["quantum_critical"] && summary.shadow_assets === 0 && (
+              {!summary?.risk_breakdown?.["quantum_critical"] && summary?.shadow_assets === 0 && (
                 <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--risk-ready)]">
                   <div className="flex items-center gap-3">
                     <span className="badge badge-ready">Secure</span>
@@ -496,11 +644,11 @@ export default function QuickScanPage() {
               className="mt-6 px-6 py-4 rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 transition-colors hover:bg-[var(--accent-maroon)] hover:text-white"
               style={{ background: "var(--bg-card)", color: "var(--text-primary)", border: "1px solid var(--border-subtle)" }}
               onClick={() => {
-                if (typeof window !== "undefined") localStorage.setItem("qushield_scan_id", scanId!);
+                if (scanId) setActiveScan(scanId, domain, scanTier);
                 router.push("/assets");
               }}
             >
-              Run Full Infrastructure Audit <ArrowRight size={18} />
+              View Detailed Asset Inventory <ArrowRight size={18} />
             </button>
           </div>
         </div>

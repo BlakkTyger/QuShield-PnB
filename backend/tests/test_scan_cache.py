@@ -8,11 +8,6 @@ def test_check_scan_cache():
     # Mock DB session
     db_session = MagicMock()
     
-    # Setup mock query
-    mock_query = db_session.query.return_value
-    mock_filter = mock_query.filter.return_value
-    mock_order = mock_filter.order_by.return_value
-    
     # Return a mocked cache entry
     cache_entry = ScanCache(
         domain="example.com",
@@ -21,10 +16,17 @@ def test_check_scan_cache():
         user_id="user123",
         expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
     )
-    mock_order.first.return_value = cache_entry
     
-    # Run function
-    result = check_scan_cache(db_session, "example.com", ["deep", "shallow"])
+    # Create a mock that returns itself for chained calls
+    m = MagicMock()
+    m.query.return_value = m
+    m.filter.return_value = m
+    m.order_by.return_value = m
+    m.all.return_value = [cache_entry]
+    m.first.return_value = MagicMock(status="completed", total_assets=1, id="00000000-0000-0000-0000-000000000001")
+    
+    # Run function with user context
+    result = check_scan_cache(m, "example.com", ["deep", "shallow"], user_id="user123")
     
     assert result is not None
     assert result.domain == "example.com"

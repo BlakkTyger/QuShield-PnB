@@ -6,7 +6,9 @@ Calls the Go binary via subprocess and returns structured results.
 import json
 import os
 import subprocess
+import time
 import uuid
+import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -77,23 +79,52 @@ def run_discovery(
     env["LOG_DIR"] = str(settings.log_dir_abs)
 
     try:
-        result = subprocess.run(
+        # Use Popen instead of run() to allow for cancellation checks
+        process = subprocess.Popen(
             cmd,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout_seconds,
             env=env,
         )
-    except subprocess.TimeoutExpired:
-        logger.error(f"Discovery timed out after {timeout_seconds}s for {domain}")
-        raise TimeoutError(f"Discovery timed out after {timeout_seconds}s")
-
-    if result.returncode != 0:
-        logger.error(
-            f"Discovery failed with exit code {result.returncode}",
-            extra={"stderr": result.stderr[:500], "domain": domain},
-        )
-        raise RuntimeError(f"Discovery failed: {result.stderr[:200]}")
+        
+        # Poll for completion while checking for cancellation
+        from app.core.database import SessionLocal
+        from app.models.scan import ScanJob, ScanStatus
+        
+        start_wait = time.time()
+        while process.poll() is None:
+            # Check for timeout
+            if time.time() - start_wait > timeout_seconds:
+                process.kill()
+                raise TimeoutError(f"Discovery timed out after {timeout_seconds}s")
+            
+            # Check for cancellation in DB every 2 seconds
+            if scan_id:
+                try:
+                    db = SessionLocal()
+                    job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
+                    if job and job.status == ScanStatus.CANCELLED:
+                        logger.info(f"Cancellation detected for scan {scan_id}. Killing Go discovery process.")
+                        process.kill()
+                        db.close()
+                        return {"assets": [], "stats": {}, "interrupted": True}
+                    db.close()
+                except Exception as e:
+                    logger.warning(f"Failed to check cancellation status: {e}")
+            
+            time.sleep(2)
+            
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            logger.error(
+                f"Discovery failed with exit code {process.returncode}",
+                extra={"stderr": stderr[:500], "domain": domain},
+            )
+            raise RuntimeError(f"Discovery failed: {stderr[:200]}")
+    except Exception as e:
+        logger.error(f"Discovery execution error: {e}", exc_info=True)
+        raise
 
     # Read output JSON
     if not output_file.exists():

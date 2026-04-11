@@ -14,10 +14,24 @@ from app.models.asset import AssetPort
 from app.models.certificate import Certificate
 from app.models.compliance import ComplianceResult
 from app.models.cbom import CBOMComponent, CBOMRecord
+from app.api.v1.auth import get_optional_user
+from app.models.auth import User
+from app.models.scan import ScanJob
 from app.schemas.risk import MoscaInput
 from app.services.risk_engine import compute_mosca
 
 router = APIRouter()
+
+def get_superadmin_id(db: Session) -> UUID:
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    return sa.id if sa else None
+
+def check_scan_access(db: Session, scan_id: UUID, user: Optional[User]) -> bool:
+    scan = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan: return False
+    sa_id = get_superadmin_id(db)
+    return (scan.user_id == sa_id) or (user and scan.user_id == user.id) or (user and user.id == sa_id)
 
 
 @router.get("/scan/{scan_id}")
@@ -26,9 +40,12 @@ def list_risk_scores(
     risk_class: Optional[str] = Query(None, description="Filter: quantum_ready, quantum_aware, quantum_at_risk, quantum_vulnerable, quantum_critical"),
     sort_by: Optional[str] = Query("quantum_risk_score", description="Sort field"),
     sort_dir: Optional[str] = Query("desc"),
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """List all risk scores for a scan."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     query = db.query(RiskScore).filter(RiskScore.scan_id == scan_id)
     if risk_class:
         query = query.filter(RiskScore.risk_classification == risk_class)
@@ -64,12 +81,15 @@ def list_risk_scores(
 @router.get("/scan/{scan_id}/heatmap")
 def get_risk_heatmap(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
     Risk heatmap data — risk score + classification for each asset,
     structured for frontend visualization.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     risks = db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
@@ -107,6 +127,7 @@ def get_risk_heatmap(
 @router.get("/asset/{asset_id}")
 def get_asset_risk_detail(
     asset_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """Detailed risk breakdown for a single asset with all factors."""
@@ -115,6 +136,9 @@ def get_asset_risk_detail(
     ).first()
     if not risk:
         raise HTTPException(status_code=404, detail="No risk score for this asset")
+
+    if not check_scan_access(db, risk.scan_id, user):
+        raise HTTPException(status_code=404, detail="Access denied")
 
     factors = db.query(RiskFactor).filter(RiskFactor.risk_score_id == risk.id).all()
     asset = db.query(Asset).filter(Asset.id == asset_id).first()
@@ -150,9 +174,12 @@ def get_asset_risk_detail(
 @router.get("/scan/{scan_id}/hndl")
 def get_hndl_exposure(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """HNDL (Harvest Now, Decrypt Later) exposure for all assets in a scan."""
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     risks = db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
@@ -217,6 +244,7 @@ def simulate_mosca(input_data: MoscaInput):
 @router.get("/scan/{scan_id}/enterprise-rating")
 def get_enterprise_quantum_rating(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -231,6 +259,8 @@ def get_enterprise_quantum_rating(
     - Regulatory Compliance (10%): RBI/SEBI/PCI gap score
     - Migration Velocity (10%): Rate of PQC adoption (approximated as % quantum-ready assets)
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     risks = db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
@@ -334,12 +364,15 @@ def get_enterprise_quantum_rating(
 @router.get("/scan/{scan_id}/migration-plan")
 def get_migration_plan(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
     Auto-generated prioritized migration roadmap based on scan data.
     Rule-based (no AI required). Produces 4 migration phases.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
     if not assets:
         raise HTTPException(status_code=404, detail="No assets for this scan")
@@ -522,6 +555,7 @@ def simulate_portfolio_monte_carlo(
     mode_year: float = Query(2032, ge=2027, le=2045),
     sigma: float = Query(3.5, ge=0.5, le=10),
     seed: Optional[int] = Query(None),
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -530,6 +564,8 @@ def simulate_portfolio_monte_carlo(
     Uses same CRQC arrival samples for all assets (correlated risk).
     Returns per-asset exposure probability, portfolio summary, and risk distribution.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     from app.services.monte_carlo import simulate_portfolio
     from app.services.risk_engine import (
         MIGRATION_TIME_DEFAULTS, SHELF_LIFE_DEFAULTS,
@@ -577,6 +613,7 @@ def simulate_portfolio_monte_carlo(
 @router.get("/scan/{scan_id}/cert-race")
 def get_cert_crqc_race(
     scan_id: UUID,
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -589,6 +626,8 @@ def get_cert_crqc_race(
 
     Also estimates migration completion date from complexity scores.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
     from app.services.risk_engine import compute_cert_crqc_race
 
     result = compute_cert_crqc_race(str(scan_id), db)

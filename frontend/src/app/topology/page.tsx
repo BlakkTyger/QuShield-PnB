@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import * as d3 from "d3";
 import { X, ZoomIn, ZoomOut, Maximize2, Filter } from "lucide-react";
 import { useScans, useTopology } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import type { TopologyNode, TopologyEdge } from "@/lib/types";
 
 const NODE_TYPE_COLORS: Record<string, string> = {
@@ -39,19 +40,19 @@ interface SimLink extends d3.SimulationLinkDatum<SimNode> {
 
 export default function TopologyPage() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
   const [selectedNode, setSelectedNode] = useState<SimNode | null>(null);
   const [filterType, setFilterType] = useState<string>("");
 
   const { data: scans } = useScans();
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    if (activeScanId) return;
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   const { data: topology, isLoading } = useTopology(scanId);
 
@@ -253,6 +254,7 @@ export default function TopologyPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <ScanSelector />
           {/* Filter by type */}
           <div className="flex items-center gap-2">
             <Filter size={14} style={{ color: "var(--text-muted)" }} />

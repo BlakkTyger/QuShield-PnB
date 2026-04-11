@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useScans, useGeoMapData } from "@/lib/hooks";
-import { EmptyState, Skeleton, RiskBadge } from "@/components/ui";
+import { useScanContext } from "@/lib/ScanContext";
+import { EmptyState, Skeleton, RiskBadge, ScanSelector } from "@/components/ui";
 import { RISK_COLORS } from "@/lib/types";
 import dynamic from "next/dynamic";
 import type { GeoMarker } from "@/lib/types";
@@ -31,18 +32,18 @@ function getMarkerColor(classification: string | null): string {
 }
 
 export default function GeoMapPage() {
-  const [scanId, setScanId] = useState<string | null>(null);
+  const { activeScanId, setActiveScan } = useScanContext();
+  const scanId = activeScanId;
   const [leafletReady, setLeafletReady] = useState(false);
 
   const { data: scans } = useScans();
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
+    if (activeScanId) return;
     if (scans?.length) {
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) setActiveScan(completed.scan_id, completed.targets[0], completed.scan_type);
     }
-  }, [scans]);
+  }, [scans, activeScanId, setActiveScan]);
 
   // Import leaflet CSS client-side
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function GeoMapPage() {
             Visualize discovered IP addresses on an interactive global map
           </p>
         </div>
+        <ScanSelector />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

@@ -32,6 +32,7 @@ class ScanStatus(BaseModel):
     """Full scan status with phase details."""
     scan_id: UUID
     status: str
+    scan_type: Optional[str] = None
     current_phase: int
     targets: list[str]
     created_at: datetime

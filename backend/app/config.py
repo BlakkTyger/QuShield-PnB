@@ -10,7 +10,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Application base directory (contains the 'app' package)
 APP_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = APP_DIR.parent
+BACKEND_DIR = APP_DIR.parent
+PROJECT_ROOT = BACKEND_DIR.parent
+STATIC_DATA_DIR = APP_DIR / "data"
 
 
 class Settings(BaseSettings):
@@ -75,7 +77,7 @@ class Settings(BaseSettings):
     NVD_API_KEY: str = ""
 
     # --- MaxMind GeoIP ---
-    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "app" / "data" / "geolite" / "GeoLite2-City.mmdb")
+    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "data" / "geolite" / "GeoLite2-City.mmdb")
 
     # --- AI LLM Providers ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"

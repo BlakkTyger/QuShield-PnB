@@ -1,6 +1,7 @@
 """
 GeoIP API Router — IP geolocation endpoints for scan assets.
 """
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -12,19 +13,34 @@ from app.models.asset import Asset
 from app.models.geo import GeoLocation
 from app.models.risk import RiskScore
 from app.services.geo_service import geolocate_batch
+from app.api.v1.auth import get_optional_user
+from app.models.auth import User
+from app.models.scan import ScanJob
 
 logger = get_logger("api.geo")
 router = APIRouter()
 
+def get_superadmin_id(db: Session) -> UUID:
+    sa_email = "superadmin@qushield.local"
+    sa = db.query(User).filter(User.email == sa_email).first()
+    return sa.id if sa else None
+
+def check_scan_access(db: Session, scan_id: UUID, user: Optional[User]) -> bool:
+    scan = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan: return False
+    sa_id = get_superadmin_id(db)
+    return (scan.user_id == sa_id) or (user and scan.user_id == user.id) or (user and user.id == sa_id)
 
 @router.get("/scan/{scan_id}")
-def get_geo_locations(scan_id: UUID, db: Session = Depends(get_db)):
+def get_geo_locations(scan_id: UUID, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """
     Get all IP geolocations for a scan.
-
     If geo data doesn't exist yet, resolves and geolocates all assets on-the-fly.
     Returns GeoJSON-compatible FeatureCollection.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
+        
     # Check for existing geo data
     existing = db.query(GeoLocation).filter(GeoLocation.scan_id == scan_id).all()
 
@@ -94,13 +110,15 @@ def get_geo_locations(scan_id: UUID, db: Session = Depends(get_db)):
         "features": features,
     }
 
-
 @router.get("/scan/{scan_id}/map-data")
-def get_map_data(scan_id: UUID, db: Session = Depends(get_db)):
+def get_map_data(scan_id: UUID, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """
     Get map-ready data: IP, hostname, lat/lon, risk status, asset type.
     Joins geo data with asset and risk data for frontend map visualization.
     """
+    if not check_scan_access(db, scan_id, user):
+        raise HTTPException(status_code=404, detail="Scan not found")
+        
     geo_locs = db.query(GeoLocation).filter(GeoLocation.scan_id == scan_id).all()
     if not geo_locs:
         raise HTTPException(status_code=404, detail="No geo data for this scan. Call GET /geo/scan/{id} first.")

@@ -133,6 +133,7 @@ class ScanOrchestrator:
             _emit("phase_start", phase=1, pct=0, msg="Starting asset discovery")
             
             for i, target in enumerate(targets):
+                if _check_cancelled(): return summary
                 logger.info(f"{TAG} P1: Discovering target {i+1}/{len(targets)}: {target}")
                 t0 = time.time()
                 try:
@@ -192,6 +193,7 @@ class ScanOrchestrator:
             logger.debug(f"{TAG} P2: Main DB session closed before thread pool")
 
             def process_crypto(asset_id_str, asset_hostname):
+                if _check_cancelled(): return None # Not fully aborted but stops this worker
                 t0 = time.time()
                 try:
                     raw_data = raw_asset_map.get(asset_hostname, {})
@@ -217,6 +219,9 @@ class ScanOrchestrator:
             with ThreadPoolExecutor(max_workers=20) as executor:
                 futures = {executor.submit(process_crypto, a_id, a_host): (a_id, a_host) for a_id, a_host in mapped_assets}
                 for future in as_completed(futures):
+                    if _check_cancelled():
+                        executor.shutdown(wait=False, cancel_futures=True)
+                        return summary
                     result_id, fp = future.result()
                     processed_crypto += 1
                     pct = int((processed_crypto / total_mapped) * 100) if total_mapped > 0 else 100
@@ -303,6 +308,7 @@ class ScanOrchestrator:
             logger.debug(f"{TAG} P3: Main DB session closed before thread pool")
 
             def process_cbom(asset_id_str, asset_hostname):
+                if _check_cancelled(): return None
                 if asset_id_str not in assets_to_scan:
                     return None  # Already cloned — skip silently
                 fp = asset_crypto_map.get(asset_id_str)
@@ -334,6 +340,9 @@ class ScanOrchestrator:
             with ThreadPoolExecutor(max_workers=10) as executor:
                 cbom_futures = {executor.submit(process_cbom, a_id, a_host): (a_id, a_host) for a_id, a_host in asset_plain}
                 for f in as_completed(cbom_futures):
+                    if _check_cancelled():
+                        executor.shutdown(wait=False, cancel_futures=True)
+                        return summary
                     result = f.result()
                     processed_cboms += 1
                     if result is True:
@@ -526,6 +535,162 @@ class ScanOrchestrator:
         finally:
             if db is not None:
                 db.close()
+
+    def run_shallow_scan(self, scan_id: str, loop=None) -> dict:
+        """
+        Runs a shallow scan in a background thread: CT discovery + lightweight TLS scan.
+        This provides a middle-ground between the synchronous Quick Scan and the 
+        heavyweight Deep Scan.
+        """
+        from app.services.shallow_scanner import shallow_scan
+        from app.services.asset_manager import save_discovered_assets
+        from app.services.crypto_inspector import save_crypto_results
+        from app.services.cbom_builder import build_cbom, save_cbom, build_aggregate_cbom
+        from app.services.risk_engine import assess_all_assets
+        from app.services.compliance import evaluate_compliance, compute_agility_score, save_compliance_result
+        from app.services.graph_builder import build_topology_graph
+        from app.services.scan_events import scan_events
+
+        start_time = time.time()
+        db: Session = SessionLocal()
+        TAG = f"[SHALLOW:{scan_id[:8]}]"
+        
+        def _emit(event_type: str, phase: int = 0, pct: int = 0, msg: str = "", data: dict = None):
+            logger.info(f"{TAG} SSE: {event_type} | {msg}")
+            if loop and loop.is_running():
+                try:
+                    scan_events.broadcast_sync(scan_id, event_type, phase, pct, msg, data, loop=loop)
+                except Exception as e:
+                    logger.warning(f"{TAG} SSE emit failed ({event_type}): {e}")
+
+        try:
+            import uuid
+            scan_job = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
+            if not scan_job: 
+                logger.error(f"{TAG} Scan job {scan_id} not found in database")
+                return {"error": "not found"}
+
+            logger.info(f"{TAG} Entering shallow scan execution loop")
+            _emit("scan_started", phase=1, pct=5, msg="Starting Shallow Scan lifecycle")
+            scan_job.status = "running"
+            scan_job.current_phase = 1
+            db.commit()
+
+            domain = scan_job.targets[0] if scan_job.targets else ""
+            if not domain: raise ValueError("No targets found in scan job")
+
+            # Phase 1: Run the shallow scanner logic (Discovery + TLS)
+            _emit("phase_start", phase=1, pct=10, msg=f"Discovering subdomains via CT logs for {domain}")
+            
+            results = shallow_scan(domain)
+            if results.get("error") and not results.get("assets"):
+                raise ValueError(results["error"])
+
+            # Phase 2: Persist discovery
+            _emit("asset_discovered", phase=1, pct=40, msg=f"Discovered {len(results['assets'])} live assets", data={"count": len(results['assets'])})
+            assets_data = [{"hostname": a["hostname"], "ip_v4": a["ip"]} for a in results["assets"]]
+            db_assets = save_discovered_assets(scan_id, assets_data, db)
+            scan_job.total_assets = len(db_assets)
+            scan_job.current_phase = 2
+            db.commit()
+
+            # Phase 3: Persist crypto results
+            _emit("phase_start", phase=2, pct=50, msg="Persisting cryptographic analysis results")
+            crypto_count = 0
+            asset_crypto_map = {} # To use in compliance/cbom
+
+            for asset_res in results["assets"]:
+                if not asset_res.get("tls"): continue
+                db_asset = next((a for a in db_assets if a.hostname == asset_res["hostname"]), None)
+                if not db_asset: continue
+                
+                # Adapt shallow_scanner output to what save_crypto_results expects
+                fingerprint = {
+                    "hostname": asset_res["hostname"],
+                    "port": asset_res.get("port", 443),
+                    "tls": asset_res["tls"],
+                    "certificates": [asset_res["certificate"]] if asset_res.get("certificate") else [],
+                    "asset_type": asset_res.get("risk", {}).get("asset_type"),
+                    "auth": {"mechanisms": []}
+                }
+                save_crypto_results(scan_id, str(db_asset.id), fingerprint, db)
+                asset_crypto_map[str(db_asset.id)] = fingerprint
+                crypto_count += 1
+            
+            scan_job.total_certificates = crypto_count
+            scan_job.current_phase = 3
+            db.commit()
+            logger.info(f"{TAG} Saved crypto results for {crypto_count} assets")
+            _emit("crypto_result", phase=3, pct=60, msg=f"Cryptographic results saved for {crypto_count} assets")
+
+            # Phase 4: Risk, CBOM, and Compliance
+            _emit("phase_start", phase=3, pct=70, msg="Building CBOMs and evaluating compliance")
+            assess_all_assets(scan_id, db)
+            
+            for asset in db_assets:
+                asset_id_str = str(asset.id)
+                fp = asset_crypto_map.get(asset_id_str)
+                if not fp: continue
+
+                # Build CBOM
+                cbom_res = build_cbom(asset_id_str, fp)
+                if cbom_res:
+                    file_path = save_cbom(scan_id, asset_id_str, cbom_res["cbom_json"])
+                    from app.services.cbom_builder import save_cbom_to_db
+                    save_cbom_to_db(scan_id, asset_id_str, cbom_res, file_path, db)
+
+                # Evaluate Compliance
+                crypto_data = {
+                    "tls": fp["tls"],
+                    "certificate": fp["certificates"][0] if fp["certificates"] else {},
+                    "asset_type": asset.asset_type,
+                    "auth_mechanisms": []
+                }
+                comp_res = evaluate_compliance(asset_id_str, cbom_res, crypto_data)
+                ag_res = compute_agility_score({
+                    "tls_version": fp["tls"].get("negotiated_protocol", ""),
+                    "cert_issuer": crypto_data["certificate"].get("issuer", ""),
+                    "cdn_detected": asset.cdn_detected
+                })
+                save_compliance_result(scan_id, asset_id_str, comp_res, ag_res, db)
+
+            # Build Aggregate CBOM
+            build_aggregate_cbom(scan_id, db)
+            
+            scan_job.current_phase = 4
+            db.commit()
+
+            # Phase 5: Topology
+            _emit("phase_start", phase=5, pct=90, msg="Building infrastructure topology map")
+            build_topology_graph(scan_id, db)
+            scan_job.current_phase = 6
+            db.commit()
+
+            # Finish
+            scan_job.status = "completed"
+            scan_job.completed_at = datetime.utcnow()
+            db.commit()
+            
+            duration = round(time.time() - start_time, 2)
+            logger.info(f"{TAG} Shallow scan successfully completed in {duration}s")
+            _emit("scan_complete", phase=6, pct=100, msg="Shallow scan successfully completed!", 
+                  data={"assets": len(db_assets), "duration": duration})
+            
+            return {"status": "completed", "duration": duration}
+
+        except Exception as e:
+            logger.error(f"{TAG} Shallow scan failed: {e}", exc_info=True)
+            try:
+                sj = db.query(ScanJob).filter(ScanJob.id == uuid.UUID(scan_id)).first()
+                if sj:
+                    sj.status = "failed"
+                    sj.error_message = str(e)
+                    db.commit()
+            except: pass
+            _emit("scan_failed", phase=0, pct=0, msg=f"Scan failed: {str(e)}")
+            return {"status": "failed", "error": str(e)}
+        finally:
+            db.close()
 
     def get_scan_status(self, scan_id: str) -> dict:
         db: Session = SessionLocal()
