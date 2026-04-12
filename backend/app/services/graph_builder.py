@@ -28,8 +28,24 @@ def build_topology_graph(scan_id: str, db) -> dict:
                 G.add_edge(fingerprint, cert.issuer, relation="ISSUED_BY")
 
     data = {
-        "nodes": [{"id": n, **attr} for n, attr in G.nodes(data=True)],
-        "edges": [{"source": u, "target": v, **attr} for u, v, attr in G.edges(data=True)]
+        "nodes": [
+            {
+                "id": n,
+                "label": n,
+                "type": (attr.get("type") or "unknown").lower(),
+                "risk_level": attr.get("risk_class"),
+                "metadata": {k: v for k, v in attr.items() if k not in ("type", "risk_class")},
+            }
+            for n, attr in G.nodes(data=True)
+        ],
+        "edges": [
+            {
+                "source": u,
+                "target": v,
+                "type": (attr.get("relation") or "related").lower(),
+            }
+            for u, v, attr in G.edges(data=True)
+        ],
     }
 
     # Ensure output directory exists

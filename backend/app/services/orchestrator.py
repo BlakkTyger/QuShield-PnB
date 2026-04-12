@@ -498,6 +498,22 @@ class ScanOrchestrator:
             scan_job.status = "completed"
             scan_job.completed_at = datetime.utcnow()
             db.commit()
+
+            # --- Overwrite old scans if this one is better ---
+            try:
+                previous_scans = db.query(ScanJob).filter(
+                    ScanJob.id != scan_job.id,
+                    ScanJob.scan_type == scan_job.scan_type
+                ).all()
+                for prev in previous_scans:
+                    if prev.targets == scan_job.targets:
+                        if len(db_assets) >= (prev.total_assets or 0):
+                            logger.info(f"{TAG} Overwriting (deleting) older scan {prev.id} (assets: {prev.total_assets}) because new is better/equal ({len(db_assets)})")
+                            db.delete(prev)
+                db.commit()
+            except Exception as e:
+                logger.error(f"{TAG} Error overwriting old scans: {e}")
+            # --------------------------------------------------
             
             summary["status"] = "completed"
             summary["duration_seconds"] = round(time.time() - start_time, 2)

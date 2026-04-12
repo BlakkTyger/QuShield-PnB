@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { ShieldAlert, Clock, Target, TrendingUp } from "lucide-react";
 import {
@@ -58,16 +57,29 @@ export default function DashboardPage() {
     fill: RISK_COLORS[key] || "#888",
   }));
 
-  const algoData = algorithms?.algorithms
-    ? Object.entries(algorithms.algorithms).map(([name, count]) => ({
-        name: name.length > 20 ? name.slice(0, 18) + "…" : name,
-        value: count as number,
-      }))
-    : [];
+  const algoData = (() => {
+    const raw = algorithms?.algorithms;
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return (raw as any[]).map((entry) => ({
+        name: (entry.name as string) || "Unknown",
+        value: (entry.count as number) || 0,
+        vulnerable: (entry.is_quantum_vulnerable as boolean) || false,
+      }));
+    }
+    // fallback: dict {name: count | object}
+    return Object.entries(raw).map(([name, entry]) => {
+      const count = typeof entry === "object" && entry !== null ? ((entry as any).count ?? 1) : (entry as number);
+      const vulnerable = typeof entry === "object" && entry !== null ? (entry as any).is_quantum_vulnerable : false;
+      return { name, value: count, vulnerable };
+    });
+  })();
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
 
-  const hndlCount = heatmap?.assets.filter((a) => a.hndl_exposed).length || 0;
+  const hndlCount = typeof summary?.total_assets === "number"
+    ? Math.min(heatmap?.assets.filter((a) => a.hndl_exposed).length || 0, summary.total_assets)
+    : heatmap?.assets.filter((a) => a.hndl_exposed).length || 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -149,39 +161,39 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Algorithm Exposure Donut */}
+        {/* Algorithm Exposure Grid */}
         <div className="glass-card-static p-6">
           <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
             Algorithm Exposure
           </h3>
           {algoData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={algoData}
-                  innerRadius={50}
-                  outerRadius={85}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {algoData.map((_, i) => (
-                    <Cell key={i} fill={ALGO_COLORS[i % ALGO_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: "#111118",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                    color: "#f0f0f5",
-                  }}
-                />
-                <Legend
-                  formatter={(value) => <span style={{ color: "#9ca3af", fontSize: 10 }}>{value}</span>}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="flex flex-col gap-3 max-h-[260px] overflow-y-auto pr-1">
+              {algoData
+                .sort((a, b) => (b.value as number) - (a.value as number))
+                .slice(0, 20)
+                .map((algo, i) => {
+                  const pct = Math.round(((algo.value as number) / algoData.reduce((s, x) => s + (x.value as number), 0)) * 100);
+                  const barColor = algo.vulnerable ? "var(--risk-critical)" : ALGO_COLORS[i % ALGO_COLORS.length];
+                  return (
+                    <div key={algo.name} className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: barColor }} />
+                      <span
+                        className="text-xs flex-1 truncate"
+                        style={{ color: algo.vulnerable ? "var(--risk-critical)" : "var(--text-secondary)" }}
+                        title={algo.vulnerable ? `${algo.name} — Quantum Vulnerable` : algo.name}
+                      >
+                        {algo.name}
+                      </span>
+                      <span className="text-xs font-bold flex-shrink-0" style={{ color: "var(--text-muted)" }}>
+                        {algo.value}
+                      </span>
+                      <div className="w-16 h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           ) : (
             <div className="flex items-center justify-center h-[260px]" style={{ color: "var(--text-muted)" }}>
               No algorithm data
@@ -213,10 +225,10 @@ export default function DashboardPage() {
                           d.urgency === "overdue"
                             ? "var(--urgency-overdue)"
                             : d.urgency === "critical"
-                            ? "var(--urgency-critical)"
-                            : d.urgency === "warning"
-                            ? "var(--urgency-warning)"
-                            : "var(--urgency-info)",
+                              ? "var(--urgency-critical)"
+                              : d.urgency === "warning"
+                                ? "var(--urgency-warning)"
+                                : "var(--urgency-info)",
                       }}
                     />
                     <span className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
@@ -234,8 +246,8 @@ export default function DashboardPage() {
                       d.days_remaining < 0
                         ? "var(--risk-critical)"
                         : d.days_remaining < 90
-                        ? "var(--risk-vulnerable)"
-                        : "var(--text-secondary)",
+                          ? "var(--risk-vulnerable)"
+                          : "var(--text-secondary)",
                   }}
                 >
                   {d.days_remaining < 0
@@ -283,14 +295,16 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span style={{ color: "var(--text-secondary)" }}>Vulnerable + Critical</span>
+                  <span style={{ color: "var(--text-secondary)" }}>At Risk + Vulnerable + Critical</span>
                   <span style={{ color: "var(--risk-critical)" }}>
-                    {(summary.risk_breakdown["quantum_vulnerable"] || 0) +
+                    {(summary.risk_breakdown["quantum_at_risk"] || 0) +
+                      (summary.risk_breakdown["quantum_vulnerable"] || 0) +
                       (summary.risk_breakdown["quantum_critical"] || 0)} / {summary.total_assets}
                   </span>
                 </div>
                 <ProgressBar
                   value={
+                    (summary.risk_breakdown["quantum_at_risk"] || 0) +
                     (summary.risk_breakdown["quantum_vulnerable"] || 0) +
                     (summary.risk_breakdown["quantum_critical"] || 0)
                   }
@@ -298,6 +312,37 @@ export default function DashboardPage() {
                   color="var(--risk-critical)"
                 />
               </div>
+
+              {(() => {
+                const totalScored =
+                  (summary.risk_breakdown["quantum_ready"] || 0) +
+                  (summary.risk_breakdown["quantum_aware"] || 0) +
+                  (summary.risk_breakdown["quantum_at_risk"] || 0) +
+                  (summary.risk_breakdown["quantum_vulnerable"] || 0) +
+                  (summary.risk_breakdown["quantum_critical"] || 0) +
+                  (summary.risk_breakdown["unknown"] || 0);
+
+                const finalUnknownCount = Math.max(0, summary.total_assets - totalScored) + (summary.risk_breakdown["unknown"] || 0);
+
+                if (finalUnknownCount > 0) {
+                  return (
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span style={{ color: "var(--text-secondary)" }}>Unscanned / Unknown</span>
+                        <span style={{ color: "var(--text-muted)" }}>
+                          {finalUnknownCount} / {summary.total_assets}
+                        </span>
+                      </div>
+                      <ProgressBar
+                        value={finalUnknownCount}
+                        max={summary.total_assets}
+                        color="var(--border-subtle)"
+                      />
+                    </div>
+                  );
+                }
+                return null;
+              })()}
             </div>
           </div>
 

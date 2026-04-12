@@ -17,7 +17,7 @@ from app.core.timing import timed
 logger = get_logger("discovery_runner")
 
 # Path to the Go binary
-DISCOVERY_BINARY = PROJECT_ROOT / "discovery" / "bin" / "discovery-engine"
+DISCOVERY_BINARY = PROJECT_ROOT.parent / "discovery" / "bin" / "discovery-engine"
 
 
 @timed

@@ -17,6 +17,7 @@ export interface ScanResponse {
 
 export interface ScanStatus {
   scan_id: string;
+  scan_type: string;
   status: string;
   current_phase: number;
   targets: string[];
@@ -132,11 +133,11 @@ export interface CBOMAggregate {
   scan_id: string;
   total_assets: number;
   total_components: number;
-  unique_algorithms: number;
+  vulnerable_components: number;
   quantum_ready_pct: number;
-  by_type: Record<string, number>;
-  by_nist_level: Record<string, number>;
-  by_algorithm: Record<string, number>;
+  algorithm_distribution: Record<string, number>;
+  component_type_distribution: Record<string, number>;
+  nist_level_distribution: Record<string, number>;
 }
 
 // ─── Risk ──────────────────────────────────────────────────────
@@ -197,7 +198,7 @@ export interface EnterpriseRating {
   total_assets: number;
   dimensions: Record<
     string,
-    { score: number; weight: number; [key: string]: unknown }
+    { score: number; weight: number;[key: string]: unknown }
   >;
 }
 

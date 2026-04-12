@@ -31,6 +31,7 @@ class ScanResponse(BaseModel):
 class ScanStatus(BaseModel):
     """Full scan status with phase details."""
     scan_id: UUID
+    scan_type: str = "deep"
     status: str
     current_phase: int
     targets: list[str]

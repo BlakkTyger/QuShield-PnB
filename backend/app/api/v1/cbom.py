@@ -160,7 +160,10 @@ def get_algorithm_distribution(
     db: Session = Depends(get_db),
 ):
     """Algorithm frequency distribution with quantum vulnerability status."""
-    components = db.query(CBOMComponent).filter(CBOMComponent.scan_id == scan_id).all()
+    components = db.query(CBOMComponent).filter(
+        CBOMComponent.scan_id == scan_id,
+        CBOMComponent.component_type == "algorithm"
+    ).all()
     algo_map = {}
     for c in components:
         name = c.name or "unknown"

@@ -20,7 +20,7 @@ logger = get_logger("geo_service")
 # MaxMind database path (configurable via env)
 GEOIP_DB_PATH = os.environ.get(
     "GEOIP_DB_PATH",
-    os.path.join(os.path.dirname(__file__), "..", "data", "GeoLite2-City.mmdb"),
+    os.path.join(os.path.dirname(__file__), "..", "..", "data", "GeoLite2-City.mmdb"),
 )
 
 # Check if MaxMind database is available
@@ -120,39 +120,70 @@ def geolocate_batch(
     max_workers: int = 5,
 ) -> list[dict]:
     """
-    Geolocate a batch of assets in parallel.
-
-    Each asset dict should have 'hostname' and optionally 'ip'.
-    Uses conservative parallelism to respect ip-api.com rate limits (45 req/min).
-
-    Returns list of geo results (only successful ones).
+    Geolocate a batch of assets using MaxMind (local) and ip-api.com (batched).
     """
+    import time
     results = []
+    unresolved_assets = []
 
-    def _process(asset):
+    # 1. Resolve hostnames & Try MaxMind first locally
+    for asset in assets:
         hostname = asset.get("hostname", "")
         ip = asset.get("ip")
         if not ip:
             try:
                 ip = socket.gethostbyname(hostname)
             except (socket.gaierror, socket.timeout, OSError):
-                return None
+                continue
 
-        geo = geolocate_ip(ip)
+        geo = _geolocate_maxmind(ip)
         if geo:
             geo["hostname"] = hostname
             geo["asset_id"] = asset.get("asset_id")
-        return geo
+            results.append(geo)
+        else:
+            unresolved_assets.append({
+                "ip": ip,
+                "hostname": hostname,
+                "asset_id": asset.get("asset_id"),
+            })
 
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futures = {pool.submit(_process, a): a for a in assets}
-        for future in as_completed(futures):
-            try:
-                result = future.result()
-                if result:
-                    results.append(result)
-            except Exception:
-                pass
+    # 2. Batch resolve remaining via ip-api.com
+    chunk_size = 90  # API allows up to 100 per request
+    for i in range(0, len(unresolved_assets), chunk_size):
+        chunk = unresolved_assets[i:i + chunk_size]
+        ips = [a["ip"] for a in chunk]
+
+        try:
+            with httpx.Client(timeout=10.0) as client:
+                url = "http://ip-api.com/batch?fields=status,message,country,countryCode,regionName,city,lat,lon,isp,org,as,query"
+                resp = client.post(url, json=ips)
+                
+                if resp.status_code == 200:
+                    api_results = resp.json()
+                    for api_res, asset_info in zip(api_results, chunk):
+                        if api_res.get("status") == "success":
+                            geo = {
+                                "ip": api_res.get("query") or asset_info["ip"],
+                                "latitude": api_res.get("lat"),
+                                "longitude": api_res.get("lon"),
+                                "city": api_res.get("city"),
+                                "state": api_res.get("regionName"),
+                                "country": api_res.get("country"),
+                                "country_code": api_res.get("countryCode"),
+                                "org": api_res.get("org"),
+                                "isp": api_res.get("isp"),
+                                "as_number": api_res.get("as"),
+                                "source": "ip-api.com",
+                                "hostname": asset_info["hostname"],
+                                "asset_id": asset_info["asset_id"],
+                            }
+                            results.append(geo)
+        except Exception as e:
+            logger.debug(f"ip-api.com batch lookup failed for chunk: {e}")
+            
+        if len(unresolved_assets) > chunk_size and i + chunk_size < len(unresolved_assets):
+            time.sleep(2.0)  # Rate limit protection
 
     logger.info(f"Geolocated {len(results)}/{len(assets)} assets")
     return results

@@ -29,12 +29,29 @@ def get_topology_graph(
     if not rebuild and os.path.exists(graph_file):
         with open(graph_file, "r") as f:
             data = json.load(f)
+        # Normalize cached data to match expected frontend format
+        nodes = data.get("nodes", [])
+        for n in nodes:
+            if "type" in n:
+                n["type"] = n["type"].lower()
+            if "label" not in n:
+                n["label"] = n.get("id", "")
+            if "risk_level" not in n:
+                n["risk_level"] = n.pop("risk_class", None)
+            if "metadata" not in n:
+                n["metadata"] = {k: v for k, v in n.items() if k not in ("id", "label", "type", "risk_level", "metadata")}
+        edges = data.get("edges", [])
+        for e in edges:
+            if "relation" in e and "type" not in e:
+                e["type"] = e.pop("relation", "related").lower()
+            elif "type" in e:
+                e["type"] = e["type"].lower()
         return {
             "scan_id": str(scan_id),
-            "node_count": len(data.get("nodes", [])),
-            "edge_count": len(data.get("edges", [])),
-            "nodes": data.get("nodes", []),
-            "edges": data.get("edges", []),
+            "node_count": len(nodes),
+            "edge_count": len(edges),
+            "nodes": nodes,
+            "edges": edges,
         }
 
     # Build from DB

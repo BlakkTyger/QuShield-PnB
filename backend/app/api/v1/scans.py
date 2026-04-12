@@ -34,38 +34,37 @@ router = APIRouter()
 # Track running scans
 _running_scans: dict[str, threading.Thread] = {}
 
-def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Optional[ScanCache]:
-    caches = db.query(ScanCache).filter(
-        ScanCache.domain == domain,
-        ScanCache.scan_type.in_(allowed_types),
-        ScanCache.expires_at > datetime.now(timezone.utc)
-    ).order_by(ScanCache.cached_at.desc()).all()
-    
-    for cache in caches:
-        scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
-        if not scan_job or scan_job.status == "failed" or (scan_job.status == "completed" and getattr(scan_job, "total_assets", 0) == 0):
-            db.delete(cache)
-            db.commit()
-            continue
-        return cache
-    return None
+# def check_scan_cache(db: Session, domain: str, allowed_types: list[str]) -> Optional[ScanCache]:
+#     caches = db.query(ScanCache).filter(
+#         ScanCache.domain == domain,
+#         ScanCache.scan_type.in_(allowed_types),
+#         ScanCache.expires_at > datetime.now(timezone.utc)
+#     ).order_by(ScanCache.cached_at.desc()).all()
+#     for cache in caches:
+#         scan_job = db.query(ScanJob).filter(ScanJob.id == cache.scan_id).first()
+#         if not scan_job or scan_job.status == "failed" or (scan_job.status == "completed" and getattr(scan_job, "total_assets", 0) == 0):
+#             db.delete(cache)
+#             db.commit()
+#             continue
+#         return cache
+#     return None
 
 @router.post("", response_model=ScanResponse, status_code=201)
 async def create_scan(request: ScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Start a new scan. The scan runs in a background thread."""
     
-    # Cache check for single-target deep scan
-    if len(request.targets) == 1:
-        cached = check_scan_cache(db, request.targets[0], ["deep"])
-        if cached:
-            scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
-            if scan_job:
-                return ScanResponse(
-                    scan_id=str(scan_job.id),
-                    status=scan_job.status,
-                    created_at=scan_job.created_at,
-                    message="Returned from cache",
-                )
+    # Cache checks permanently bypassed
+    # if len(request.targets) == 1:
+    #     cached = check_scan_cache(db, request.targets[0], ["deep"])
+    #     if cached:
+    #         scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
+    #         if scan_job:
+    #             return ScanResponse(
+    #                 scan_id=str(scan_job.id),
+    #                 status=scan_job.status,
+    #                 created_at=scan_job.created_at,
+    #                 message="Returned from cache",
+    #             )
 
     orch = ScanOrchestrator()
     try:
@@ -77,18 +76,18 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
     scan_uuid = uuid.UUID(scan_id)
     scan_job = db.query(ScanJob).filter(ScanJob.id == scan_uuid).first()
         
-    # Associate cache entry for single target
-    if len(request.targets) == 1:
-        import uuid
-        cache = ScanCache(
-            domain=request.targets[0],
-            scan_type="deep",
-            scan_id=uuid.UUID(scan_id),
-            user_id=current_user.id,
-            expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
-        )
-        db.add(cache)
-        db.commit()
+    # Associate cache entry for single target (Ignored permanently)
+    # if len(request.targets) == 1:
+    #     import uuid
+    #     cache = ScanCache(
+    #         domain=request.targets[0],
+    #         scan_type="deep",
+    #         scan_id=uuid.UUID(scan_id),
+    #         user_id=current_user.id,
+    #         expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
+    #     )
+    #     db.add(cache)
+    #     db.commit()
 
     # Capture the current asyncio event loop (which is running the FastAPI request)
     # so the background thread can use it to safely broadcast SSE events.
@@ -119,17 +118,17 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
 def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get_optional_user), db: Session = Depends(get_db)):
     """Run a quick scan on a single domain. Returns results synchronously in <8s."""
     # Check cache for existing deep or shallow scan
-    cached = check_scan_cache(db, request.domain, ["quick", "shallow", "deep"])
-    if cached:
-        scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
-        if scan_job:
-            return {
-                "domain": request.domain,
-                "scan_type": scan_job.scan_type,
-                "cached": True,
-                "scan_id": str(scan_job.id),
-                "summary": "Returned from cache (Check /summary endpoint for details)"
-            }
+    # cached = check_scan_cache(db, request.domain, ["quick", "shallow", "deep"])
+    # if cached:
+    #     scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
+    #     if scan_job:
+    #         return {
+    #             "domain": request.domain,
+    #             "scan_type": scan_job.scan_type,
+    #             "cached": True,
+    #             "scan_id": str(scan_job.id),
+    #             "summary": "Returned from cache (Check /summary endpoint for details)"
+    #         }
             
     clean_tgt = clean_domain(request.domain)
     try:
@@ -141,6 +140,23 @@ def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get
         # Use 400 instead of 502 for user-facing connection errors
         raise HTTPException(status_code=400, detail=result["error"])
 
+    # Create a quick ScanJob (for history)
+    try:
+        vuln = 1 if result.get("quantum_assessment", {}).get("is_quantum_vulnerable") else 0
+        scan_job = ScanJob(
+            targets=[request.domain],
+            scan_type="quick",
+            status="completed",
+            user_id=user.id if user else None,
+            total_assets=1,
+            total_certificates=1,
+            total_vulnerable=vuln
+        )
+        db.add(scan_job)
+        db.commit()
+    except Exception as e:
+        logger.error(f"Failed to save quick scan to history: {e}")
+
     return result
 
 
@@ -148,42 +164,46 @@ def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get
 def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Run a shallow scan (CT discovery + top-N TLS). Returns results synchronously in 30–90s."""
     # Check cache for existing shallow or deep scan
-    cached = check_scan_cache(db, request.domain, ["shallow", "deep"])
-    if cached:
-        scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
-        if scan_job:
-            return {
-                "domain": request.domain,
-                "scan_type": scan_job.scan_type,
-                "cached": True,
-                "scan_id": str(scan_job.id),
-                "summary": "Returned from cache (Check /summary endpoint for details)"
-            }
+    # cached = check_scan_cache(db, request.domain, ["shallow", "deep"])
+    # if cached:
+    #     scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
+    #     if scan_job:
+    #         return {
+    #             "domain": request.domain,
+    #             "scan_type": scan_job.scan_type,
+    #             "cached": True,
+    #             "scan_id": str(scan_job.id),
+    #             "summary": "Returned from cache (Check /summary endpoint for details)"
+    #         }
 
     clean_tgt = clean_domain(request.domain)
     try:
         result = shallow_scan(clean_tgt, top_n=request.top_n, port=request.port)
         if result and not result.get("error"):
-            # Create a shallow ScanJob to satisfy future cache requests
+            # Create a shallow ScanJob (for history)
             scan_job = ScanJob(
                 targets=[request.domain],
                 scan_type="shallow",
                 status="completed",
-                user_id=current_user.id
+                user_id=current_user.id,
+                total_assets=result.get("summary", {}).get("scanned", 0),
+                total_certificates=result.get("summary", {}).get("scanned", 0),
+                total_vulnerable=result.get("summary", {}).get("quantum_vulnerable", 0)
             )
             db.add(scan_job)
             db.commit()
             db.refresh(scan_job)
             
-            cache = ScanCache(
-                domain=request.domain,
-                scan_type="shallow",
-                scan_id=scan_job.id,
-                user_id=current_user.id,
-                expires_at=datetime.now(timezone.utc) + timedelta(hours=6)
-            )
-            db.add(cache)
-            db.commit()
+            # Cache saving bypassed completely
+            # cache = ScanCache(
+            #     domain=request.domain,
+            #     scan_type="shallow",
+            #     scan_id=scan_job.id,
+            #     user_id=current_user.id,
+            #     expires_at=datetime.now(timezone.utc) + timedelta(hours=6)
+            # )
+            # db.add(cache)
+            # db.commit()
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Shallow scan failed: {e}")
@@ -204,6 +224,7 @@ def get_scan_status(scan_id: UUID, current_user: User = Depends(get_current_user
         raise HTTPException(status_code=404, detail="Scan not found")
     return ScanStatus(
         scan_id=scan_job.id,
+        scan_type=scan_job.scan_type,
         status=scan_job.status,
         current_phase=scan_job.current_phase or 0,
         targets=scan_job.targets or [],
@@ -224,10 +245,10 @@ def cancel_scan(scan_id: UUID, current_user: User = Depends(get_current_user), d
     if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
         raise HTTPException(status_code=404, detail="Scan not found")
     
-    if scan_job.status in (ScanStatus.COMPLETED, ScanStatus.FAILED, ScanStatus.CANCELLED):
+    if scan_job.status in ("completed", "failed", "cancelled"):
         return {"message": "Scan already finished"}
     
-    scan_job.status = ScanStatus.CANCELLED
+    scan_job.status = "cancelled"
     db.commit()
     logger.info(f"Scan {scan_id} cancelled by user {current_user.email}")
     return {"message": "Scan cancellation requested"}
@@ -257,6 +278,7 @@ async def stream_scan_events(
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
         }
     )
 
@@ -277,6 +299,7 @@ def list_scans(
     return [
         ScanStatus(
             scan_id=s.id,
+            scan_type=s.scan_type,
             status=s.status,
             current_phase=s.current_phase or 0,
             targets=s.targets or [],
@@ -305,20 +328,34 @@ def get_scan_summary(scan_id: UUID, current_user: User = Depends(get_current_use
     cboms = db.query(CBOMRecord).filter(CBOMRecord.scan_id == scan_id).all()
     compliances = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
 
+    # Get latest risk per asset
+    asset_risks = {}
+    for r in risks:
+        if r.asset_id not in asset_risks or r.computed_at > asset_risks[r.asset_id].computed_at:
+            asset_risks[r.asset_id] = r
+
     # Risk classification breakdown
     risk_breakdown = {}
-    for r in risks:
+    for r in asset_risks.values():
         cls = r.risk_classification or "unknown"
         risk_breakdown[cls] = risk_breakdown.get(cls, 0) + 1
 
+    # Get latest compliance per asset
+    asset_compliances = {}
+    for c in compliances:
+        if c.asset_id not in asset_compliances or c.computed_at > asset_compliances[c.asset_id].computed_at:
+            asset_compliances[c.asset_id] = c
+            
+    unique_compliances = list(asset_compliances.values())
+
     # Compliance summary
     compliance_summary = {
-        "tls_13_enforced": sum(1 for c in compliances if c.tls_13_enforced),
-        "forward_secrecy": sum(1 for c in compliances if c.forward_secrecy),
-        "rbi_compliant": sum(1 for c in compliances if c.rbi_compliant),
-        "pci_compliant": sum(1 for c in compliances if c.pci_compliant),
-        "avg_agility_score": round(sum(c.crypto_agility_score for c in compliances) / max(len(compliances), 1), 1),
-        "avg_compliance_pct": round(sum(c.compliance_pct or 0 for c in compliances) / max(len(compliances), 1), 1),
+        "tls_13_enforced": sum(1 for c in unique_compliances if c.tls_13_enforced),
+        "forward_secrecy": sum(1 for c in unique_compliances if c.forward_secrecy),
+        "rbi_compliant": sum(1 for c in unique_compliances if c.rbi_compliant),
+        "pci_compliant": sum(1 for c in unique_compliances if c.pci_compliant),
+        "avg_agility_score": round(sum(c.crypto_agility_score for c in unique_compliances) / max(len(unique_compliances), 1), 1),
+        "avg_compliance_pct": round(sum(c.compliance_pct or 0 for c in unique_compliances) / max(len(unique_compliances), 1), 1),
     }
 
     return {

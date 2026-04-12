@@ -168,7 +168,7 @@ class ScanEventManager:
                 
                 # Format as SSE standard string (data: <json>\n\n)
                 json_str = json.dumps(event_dict)
-                sse_str = f"event: {event_dict['event_type']}\ndata: {json_str}\n\n"
+                sse_str = f"data: {json_str}\n\n"
                 logger.debug(f"SSE yield for {scan_id}: {event_dict['event_type']}")
                 yield sse_str
                 # yield f"data: {json_str}\n\n"

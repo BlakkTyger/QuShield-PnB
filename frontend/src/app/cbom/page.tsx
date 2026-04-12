@@ -55,9 +55,9 @@ export default function CBOMPage() {
   );
 
   const algoData = algorithms?.algorithms
-    ? Object.entries(algorithms.algorithms)
-        .map(([name, count]) => ({ name, value: count as number }))
-        .sort((a, b) => b.value - a.value)
+    ? algorithms.algorithms
+      .map((algo: any) => ({ name: algo.name, value: algo.count }))
+      .sort((a: { value: number }, b: { value: number }) => b.value - a.value)
     : [];
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
@@ -134,22 +134,26 @@ export default function CBOMPage() {
           <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
             NIST Quantum Level Distribution
           </h3>
-          {aggregate?.by_nist_level ? (
+          {aggregate?.nist_level_distribution ? (
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={Object.entries(aggregate.by_nist_level).map(([lvl, cnt]) => ({
-                    name: NIST_LABELS[parseInt(lvl)] || `Level ${lvl}`,
-                    value: cnt as number,
-                  }))}
+                  data={Object.entries(aggregate.nist_level_distribution).map(([lvl, cnt]) => {
+                    const parsedLvl = parseInt(lvl.replace('L', ''));
+                    return {
+                      name: NIST_LABELS[parsedLvl] || `Level ${parsedLvl}`,
+                      value: cnt as number,
+                    };
+                  })}
                   innerRadius={45}
                   outerRadius={80}
                   paddingAngle={3}
                   dataKey="value"
                 >
-                  {Object.keys(aggregate.by_nist_level).map((lvl, i) => (
-                    <Cell key={i} fill={NIST_COLORS[parseInt(lvl)] || "#6b7280"} />
-                  ))}
+                  {Object.keys(aggregate.nist_level_distribution).map((lvl, i) => {
+                    const parsedLvl = parseInt(lvl.replace('L', ''));
+                    return <Cell key={i} fill={NIST_COLORS[parsedLvl] || "#6b7280"} />;
+                  })}
                 </Pie>
                 <Tooltip
                   contentStyle={{

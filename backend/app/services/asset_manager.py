@@ -41,10 +41,10 @@ def save_discovered_assets(
         hostname = asset_data.get("hostname", "")
         ip_v4 = asset_data.get("ip_v4", "")
 
-        # Check for existing asset (by hostname + IP)
+        # Check for existing asset (by hostname) within THIS scan
         existing = db.query(Asset).filter(
             Asset.hostname == hostname,
-            Asset.ip_v4 == ip_v4,
+            Asset.scan_id == (uuid.UUID(scan_id) if isinstance(scan_id, str) else scan_id)
         ).first()
 
         # Shadow IT Heuristics
@@ -64,9 +64,8 @@ def save_discovered_assets(
         elif "fss" in hostname_parts: vendor_match = "FSS"
 
         if existing:
-            # Update existing asset
+            # Update existing asset WITHIN the current scan
             existing.last_seen_at = datetime.now(timezone.utc)
-            existing.scan_id = uuid.UUID(scan_id) if isinstance(scan_id, str) else scan_id
             if asset_data.get("http", {}).get("web_server"):
                 existing.web_server = asset_data["http"]["web_server"]
             if asset_data.get("http", {}).get("tls_version"):
@@ -81,7 +80,11 @@ def save_discovered_assets(
             result_assets.append(existing)
             updated += 1
         else:
-            # Create new asset
+            # Fetch `first_seen_at` from prior scan if exists, to maintain continuity
+            prior_asset = db.query(Asset).filter(Asset.hostname == hostname).order_by(Asset.first_seen_at.asc()).first()
+            first_seen = prior_asset.first_seen_at if prior_asset else datetime.now(timezone.utc)
+            
+            # Create new asset record for this scan
             http_info = asset_data.get("http", {}) or {}
             asset = Asset(
                 scan_id=uuid.UUID(scan_id) if isinstance(scan_id, str) else scan_id,

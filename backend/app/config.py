@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     NVD_API_KEY: str = ""
 
     # --- MaxMind GeoIP ---
-    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "app" / "data" / "geolite" / "GeoLite2-City.mmdb")
+    GEOIP_DB_PATH: str = str(PROJECT_ROOT / "data" /  "GeoLite2-City.mmdb")
 
     # --- AI LLM Providers ---
     OLLAMA_BASE_URL: str = "http://localhost:11434"

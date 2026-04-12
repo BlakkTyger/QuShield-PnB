@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers } from "lucide-react";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
 import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 
@@ -17,11 +17,12 @@ const SCAN_TIERS = [
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
 
 const PHASES = [
-  { id: 1, name: "DNS Resolution" },
-  { id: 2, name: "Certificate Retrieval" },
-  { id: 3, name: "TLS Handshake" },
-  { id: 4, name: "Cipher Negotiation" },
-  { id: 5, name: "Risk Scoring" },
+  { id: 1, name: "Discovery" },
+  { id: 2, name: "Inspection" },
+  { id: 3, name: "CBOM Build" },
+  { id: 4, name: "Risk Score" },
+  { id: 5, name: "Compliance" },
+  { id: 6, name: "Topology" },
 ];
 
 export default function QuickScanPage() {
@@ -32,7 +33,7 @@ export default function QuickScanPage() {
   const [logsOpen, setLogsOpen] = useState(true);
   const [scanTier, setScanTier] = useState<ScanTier>("deep");
   const [quickResult, setQuickResult] = useState<Record<string, unknown> | null>(null);
-  const logsEndRef = useRef<HTMLDivElement>(null);
+  const logsContainerRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const startScan = useStartScan();
@@ -77,7 +78,9 @@ export default function QuickScanPage() {
 
     // Explicitly hit the proxy endpoint on Next.js matching the FastApi
     const token = localStorage.getItem("qushield_access_token") || "";
-    const es = new EventSource(`/api/v1/scans/${scanId}/stream?token=${token}`);
+    // Directly target the FastAPI backend on port 8000 to bypass Next.js proxy buffering
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+    const es = new EventSource(`${backendUrl}/api/v1/scans/${scanId}/stream?token=${token}`);
 
     es.onmessage = (event) => {
       try {
@@ -99,7 +102,9 @@ export default function QuickScanPage() {
 
   // Auto scroll logs
   useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (logsContainerRef.current) {
+      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
+    }
   }, [logs]);
 
   // Restore active scan from localStorage on mount
@@ -120,6 +125,10 @@ export default function QuickScanPage() {
     setIsScanning(true);
     setLogs([]);
     setQuickResult(null);
+    setScanId(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("qushield_active_scan");
+    }
     try {
       if (scanTier === "quick") {
         const res = await quickScan.mutateAsync({ domain: domain.trim() });
@@ -176,8 +185,8 @@ export default function QuickScanPage() {
     }
   }, [scanId, isScanning, cancelScan]);
 
-  const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 5) : 0;
-  const showResults = scanStatus?.status === "completed" && summary;
+  const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 6) : 0;
+  const showResults = scanTier === "deep" && scanStatus?.status === "completed" && summary && !isScanning;
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in pb-20">
@@ -279,7 +288,22 @@ export default function QuickScanPage() {
         )}
       </div>
 
-      {/* Progress Region (Scanner Active) */}
+      {/* Quick/Shallow Scan Loading State */}
+      {isScanning && !scanId && (
+        <div className="glass-card p-12 mb-8 flex flex-col items-center justify-center animate-fade-in text-center">
+          <Loader2 size={40} className="animate-spin mb-6" style={{ color: "var(--accent-gold)" }} />
+          <h3 className="text-xl font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text-primary)" }}>
+            Probing Target
+          </h3>
+          <p className="text-sm max-w-md leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            {scanTier === "quick"
+              ? "Establishing secure connection and assessing primary TLS endpoint for quantum risk posture..."
+              : "Discovering active infrastructure elements across the perimeter. This may take up to 90 seconds depending on target size..."}
+          </p>
+        </div>
+      )}
+
+      {/* Progress Region (Deep Scan Active) */}
       {isScanning && scanId && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 animate-fade-in">
           {/* Progress Stepper */}
@@ -296,7 +320,7 @@ export default function QuickScanPage() {
                 Cancel Scan
               </button>
             </div>
-            <div className="flex items-center justify-between gap-2 max-w-2xl mx-auto w-full">
+            <div className="flex items-center justify-between gap-2 max-w-2xl mx-auto w-full pb-10 pt-2">
               {PHASES.map((phase, i) => {
                 const status =
                   currentPhase > phase.id
@@ -342,9 +366,9 @@ export default function QuickScanPage() {
           </div>
 
           {/* Live Log Console */}
-          <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)]">
+          <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)]" style={{ height: "250px" }}>
             <div
-              className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] cursor-pointer"
+              className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] cursor-pointer shrink-0"
               onClick={() => setLogsOpen(!logsOpen)}
               style={{ background: "rgba(0,0,0,0.2)" }}
             >
@@ -356,17 +380,19 @@ export default function QuickScanPage() {
             </div>
 
             {logsOpen && (
-              <div className="flex-1 bg-[#0a0a0c] p-4 text-[11px] font-mono leading-relaxed h-[180px] overflow-y-auto no-scrollbar">
+              <div
+                ref={logsContainerRef}
+                className="flex-1 bg-[#0a0a0c] p-4 text-[11px] font-mono leading-relaxed overflow-y-auto scroll-smooth"
+              >
                 {logs.length === 0 ? (
                   <span className="text-zinc-600 italic">Awaiting telemetry...</span>
                 ) : (
                   logs.map((log, i) => (
-                    <div key={i} className={`${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") ? "text-green-400" : "text-zinc-400"}`}>
+                    <div key={i} className={`${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") ? "text-green-400" : "text-zinc-400"} pb-1`}>
                       {log}
                     </div>
                   ))
                 )}
-                <div ref={logsEndRef} />
               </div>
             )}
           </div>
@@ -381,7 +407,7 @@ export default function QuickScanPage() {
         </div>
       )}
 
-      {/* Results (Completed) */}
+      {/* Results (Completed Deep Scan) */}
       {showResults && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-[slide-up_0.5s_ease-out]">
           {/* Left: Scorecard */}
@@ -503,6 +529,109 @@ export default function QuickScanPage() {
               Run Full Infrastructure Audit <ArrowRight size={18} />
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Quick and Shallow Scan Results */}
+      {quickResult && !isScanning && (
+        <div className="glass-card-static p-8 shadow-2xl relative overflow-hidden animate-[slide-up_0.5s_ease-out]">
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-[var(--accent-gold)] opacity-5 blur-3xl rounded-full"></div>
+
+          <h3 className="text-sm font-bold uppercase tracking-wider mb-8 flex justify-between items-center" style={{ color: "var(--text-muted)" }}>
+            {quickResult.scan_type === "quick" ? "Quick Probe Results" : "Shallow Scan Results"}
+            <span className="text-xs font-mono" style={{ color: "var(--text-secondary)" }}>{quickResult.duration_ms}ms</span>
+          </h3>
+
+          {quickResult.scan_type === "quick" && quickResult.risk && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center justify-center">
+                <ScoreGauge
+                  score={(quickResult.risk as any).score || 0}
+                  size={180}
+                  label={(quickResult.risk as any).classification?.replace("quantum_", "") || ""}
+                />
+              </div>
+              <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                <MetricCard
+                  title="TLS Protocol"
+                  value={(quickResult.tls as any)?.negotiated_protocol || "Unknown"}
+                  subtitle={(quickResult.tls as any)?.forward_secrecy ? "Forward Secrecy OK" : "No Forward Secrecy"}
+                  icon={<Lock size={16} />}
+                />
+                <MetricCard
+                  title="Target Host"
+                  value={String(quickResult.domain)}
+                  subtitle={`Port ${quickResult.port}`}
+                  icon={<Server size={16} />}
+                />
+                <MetricCard
+                  title="NIST Post-Quantum"
+                  value={`Level ${(quickResult.quantum_assessment as any)?.nist_level || 1}`}
+                  subtitle={(quickResult.quantum_assessment as any)?.is_quantum_vulnerable ? "Vulnerable to Shor's" : "PQC Protected"}
+                  icon={<Shield size={16} />}
+                  color={(quickResult.quantum_assessment as any)?.is_quantum_vulnerable ? "var(--risk-critical)" : "var(--risk-ready)"}
+                />
+                <div className="flex items-center justify-center p-2 rounded-xl" style={{ border: "1px dashed var(--border-subtle)" }}>
+                  <button
+                    className="w-full h-full py-4 rounded-lg font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all hover:bg-[var(--accent-gold-dim)] hover:text-[var(--accent-gold)]"
+                    style={{ color: "var(--text-primary)" }}
+                    onClick={() => {
+                      setScanTier("deep");
+                      setDomain(String(quickResult.domain));
+                      // Slight delay to allow state to settle
+                      setTimeout(() => handleScan(), 100);
+                    }}
+                  >
+                    Run Deep Scan <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {quickResult.scan_type === "shallow" && quickResult.summary && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <MetricCard
+                title="Average Risk Score"
+                value={String((quickResult.summary as any).avg_risk_score || 0)}
+                subtitle={(quickResult.summary as any).avg_risk_classification?.replace("quantum_", "") || ""}
+                icon={<ScoreGauge score={(quickResult.summary as any).avg_risk_score || 0} size={0} label="" /> && <Layers size={16} />}
+                color={(quickResult.summary as any).avg_risk_score < 700 ? "var(--risk-vulnerable)" : "var(--risk-ready)"}
+              />
+              <MetricCard
+                title="Elements Discovered"
+                value={String((quickResult.summary as any).total_subdomains_discovered || 0)}
+                subtitle={`${(quickResult.summary as any).live_subdomains || 0} live assets`}
+                icon={<Target size={16} />}
+              />
+              <MetricCard
+                title="Vulnerable Assets"
+                value={String((quickResult.summary as any).quantum_vulnerable || 0)}
+                subtitle="High Priority"
+                icon={<ShieldAlert size={16} />}
+                color={(quickResult.summary as any).quantum_vulnerable > 0 ? "var(--urgent-amber)" : undefined}
+              />
+              <div className="flex items-center justify-center p-2 rounded-xl" style={{ border: "1px dashed var(--border-subtle)" }}>
+                <button
+                  className="w-full h-full py-4 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all hover:bg-[var(--accent-gold-dim)] hover:text-[var(--accent-gold)]"
+                  style={{ color: "var(--text-primary)", textAlign: "center" }}
+                  onClick={() => {
+                    setScanTier("deep");
+                    setDomain(String(quickResult.domain));
+                    setTimeout(() => handleScan(), 100);
+                  }}
+                >
+                  Upgrade to Deep Scan <ArrowRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {quickResult.error && (
+            <div className="mt-4 p-4 border border-[var(--risk-critical)] rounded-lg text-[var(--risk-critical)] text-sm font-mono text-center">
+              Error: {String(quickResult.error)}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -7,14 +7,14 @@ export function RiskBadge({ classification }: { classification: string }) {
     classification === "quantum_critical"
       ? "badge-critical"
       : classification === "quantum_vulnerable"
-      ? "badge-vulnerable"
-      : classification === "quantum_at_risk"
-      ? "badge-at-risk"
-      : classification === "quantum_aware"
-      ? "badge-aware"
-      : classification === "quantum_ready"
-      ? "badge-ready"
-      : "badge-aware";
+        ? "badge-vulnerable"
+        : classification === "quantum_at_risk"
+          ? "badge-at-risk"
+          : classification === "quantum_aware"
+            ? "badge-aware"
+            : classification === "quantum_ready"
+              ? "badge-ready"
+              : "badge-aware";
 
   return (
     <span className={`badge ${badgeClass}`}>
@@ -43,58 +43,59 @@ export function ScoreGauge({
     score < 300
       ? "var(--risk-critical)"
       : score < 500
-      ? "var(--risk-vulnerable)"
-      : score < 700
-      ? "var(--risk-at-risk)"
-      : score < 850
-      ? "var(--risk-aware)"
-      : "var(--risk-ready)";
+        ? "var(--risk-vulnerable)"
+        : score < 700
+          ? "var(--risk-at-risk)"
+          : score < 850
+            ? "var(--risk-aware)"
+            : "var(--risk-ready)";
 
   return (
-    <div className="relative inline-flex flex-col items-center">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Track */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          className="gauge-track"
-          strokeDasharray={`${circumference} ${2 * Math.PI * radius - circumference}`}
-          strokeDashoffset={0}
-          transform={`rotate(135, ${size / 2}, ${size / 2})`}
-        />
-        {/* Fill */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          className="gauge-fill"
-          style={{ stroke: color }}
-          strokeDasharray={circumference.toString()}
-          strokeDashoffset={dashOffset}
-          transform={`rotate(135, ${size / 2}, ${size / 2})`}
-        />
-      </svg>
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center"
-        style={{ paddingTop: size * 0.05 }}
-      >
-        <span
-          className="font-black"
-          style={{ fontSize: size * 0.22, color, lineHeight: 1 }}
+    <div className="inline-flex flex-col items-center">
+      <div className="relative">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          {/* Track */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            className="gauge-track"
+            strokeDasharray={`${circumference} ${2 * Math.PI * radius - circumference}`}
+            strokeDashoffset={0}
+            transform={`rotate(135, ${size / 2}, ${size / 2})`}
+          />
+          {/* Fill */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            className="gauge-fill"
+            style={{ stroke: color }}
+            strokeDasharray={circumference.toString()}
+            strokeDashoffset={dashOffset}
+            transform={`rotate(135, ${size / 2}, ${size / 2})`}
+          />
+        </svg>
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center"
         >
-          {score}
-        </span>
-        <span
-          className="text-xs font-semibold mt-1"
-          style={{ color: "var(--text-muted)" }}
-        >
-          / {maxScore}
-        </span>
+          <span
+            className="font-black"
+            style={{ fontSize: size * 0.22, color, lineHeight: 1 }}
+          >
+            {score}
+          </span>
+          <span
+            className="text-xs font-semibold mt-1"
+            style={{ color: "var(--text-muted)" }}
+          >
+            / {maxScore}
+          </span>
+        </div>
       </div>
       {label && (
         <span
-          className="mt-1 text-xs font-semibold uppercase tracking-wide"
+          className="mt-2 text-[11px] font-bold uppercase tracking-widest text-center whitespace-nowrap"
           style={{ color }}
         >
           {label}

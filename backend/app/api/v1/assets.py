@@ -70,16 +70,25 @@ def list_assets(
     total = query.count()
     assets = query.offset(offset).limit(limit).all()
 
+    from datetime import datetime, timezone
     items = []
     for a in assets:
         ports = db.query(AssetPort).filter(AssetPort.asset_id == a.id).all()
         risk = db.query(RiskScore).filter(RiskScore.asset_id == a.id).order_by(RiskScore.computed_at.desc()).first()
+        cert = db.query(Certificate).filter(Certificate.asset_id == a.id).first()
+        
+        cert_expiry_days = None
+        if cert and cert.valid_to:
+            delta = cert.valid_to - datetime.now(timezone.utc)
+            cert_expiry_days = max(0, delta.days)
+
         items.append({
             "id": str(a.id),
             "scan_id": str(a.scan_id),
             "hostname": a.hostname,
             "url": a.url,
             "ip_v4": a.ip_v4,
+            "ip_address": a.ip_v4,
             "ip_v6": a.ip_v6,
             "asset_type": a.asset_type,
             "discovery_method": a.discovery_method,
@@ -91,6 +100,9 @@ def list_assets(
             "waf_detected": a.waf_detected,
             "web_server": a.web_server,
             "tls_version": a.tls_version,
+            "key_exchange": cert.key_type if cert else None,
+            "cert_expiry": str(cert.valid_to) if cert and cert.valid_to else None,
+            "cert_expiry_days": cert_expiry_days,
             "confidence_score": a.confidence_score,
             "first_seen_at": str(a.first_seen_at) if a.first_seen_at else None,
             "last_seen_at": str(a.last_seen_at) if a.last_seen_at else None,

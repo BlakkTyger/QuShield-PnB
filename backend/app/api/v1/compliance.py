@@ -63,33 +63,40 @@ def get_fips_matrix(
         raise HTTPException(status_code=404, detail="No compliance data for this scan")
 
     matrix = []
+    columns = [
+        "FIPS 203 (ML-KEM)", 
+        "FIPS 204 (ML-DSA)", 
+        "FIPS 205 (SLH-DSA)", 
+        "Hybrid Mode", 
+        "Classical Deprecated", 
+        "TLS 1.3", 
+        "Forward Secrecy"
+    ]
+    
+    col_counts = {c: 0 for c in columns}
+
     for r in results:
         asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
-        matrix.append({
+        row = {
             "asset_id": str(r.asset_id),
             "hostname": asset.hostname if asset else "unknown",
-            "asset_type": asset.asset_type if asset else "unknown",
-            "fips_203_ml_kem": r.fips_203_deployed,
-            "fips_204_ml_dsa": r.fips_204_deployed,
-            "fips_205_slh_dsa": r.fips_205_deployed,
-            "hybrid_mode": r.hybrid_mode_active,
-            "classical_deprecated": r.classical_deprecated,
-            "tls_13": r.tls_13_enforced,
-            "forward_secrecy": r.forward_secrecy,
-        })
+            "FIPS 203 (ML-KEM)": r.fips_203_deployed,
+            "FIPS 204 (ML-DSA)": r.fips_204_deployed,
+            "FIPS 205 (SLH-DSA)": r.fips_205_deployed,
+            "Hybrid Mode": r.hybrid_mode_active,
+            "Classical Deprecated": r.classical_deprecated,
+            "TLS 1.3": r.tls_13_enforced,
+            "Forward Secrecy": r.forward_secrecy,
+        }
+        matrix.append(row)
+        for col in columns:
+            if row[col]:
+                col_counts[col] += 1
 
-    # Summary
     total = len(matrix)
-    summary = {
-        "total_assets": total,
-        "fips_203_deployed": sum(1 for m in matrix if m["fips_203_ml_kem"]),
-        "fips_204_deployed": sum(1 for m in matrix if m["fips_204_ml_dsa"]),
-        "fips_205_deployed": sum(1 for m in matrix if m["fips_205_slh_dsa"]),
-        "hybrid_active": sum(1 for m in matrix if m["hybrid_mode"]),
-        "tls_13_enforced": sum(1 for m in matrix if m["tls_13"]),
-    }
+    pass_rates = {c: (col_counts[c] / max(total, 1)) for c in columns}
 
-    return {"scan_id": str(scan_id), "summary": summary, "matrix": matrix}
+    return {"scan_id": str(scan_id), "columns": columns, "column_pass_rates": pass_rates, "assets": matrix}
 
 
 @router.get("/scan/{scan_id}/regulatory")
@@ -105,28 +112,25 @@ def get_regulatory_compliance(
     total = len(results)
     return {
         "scan_id": str(scan_id),
-        "total_assets": total,
-        "regulations": {
-            "rbi_it_framework": {
-                "compliant": sum(1 for r in results if r.rbi_compliant),
-                "non_compliant": sum(1 for r in results if not r.rbi_compliant),
-                "pct": round(sum(1 for r in results if r.rbi_compliant) / max(total, 1) * 100, 1),
-            },
-            "sebi_cscrf": {
-                "compliant": sum(1 for r in results if r.sebi_compliant),
-                "non_compliant": sum(1 for r in results if not r.sebi_compliant),
-                "pct": round(sum(1 for r in results if r.sebi_compliant) / max(total, 1) * 100, 1),
-            },
-            "pci_dss_4": {
-                "compliant": sum(1 for r in results if r.pci_compliant),
-                "non_compliant": sum(1 for r in results if not r.pci_compliant),
-                "pct": round(sum(1 for r in results if r.pci_compliant) / max(total, 1) * 100, 1),
-            },
-            "npci_upi": {
-                "compliant": sum(1 for r in results if r.npci_compliant),
-                "non_compliant": sum(1 for r in results if not r.npci_compliant),
-                "pct": round(sum(1 for r in results if r.npci_compliant) / max(total, 1) * 100, 1),
-            },
+        "rbi_it_framework": {
+            "compliant": sum(1 for r in results if r.rbi_compliant),
+            "total": total,
+            "pct": round(sum(1 for r in results if r.rbi_compliant) / max(total, 1) * 100, 1),
+        },
+        "sebi_cscrf": {
+            "compliant": sum(1 for r in results if r.sebi_compliant),
+            "total": total,
+            "pct": round(sum(1 for r in results if r.sebi_compliant) / max(total, 1) * 100, 1),
+        },
+        "pci_dss_4": {
+            "compliant": sum(1 for r in results if r.pci_compliant),
+            "total": total,
+            "pct": round(sum(1 for r in results if r.pci_compliant) / max(total, 1) * 100, 1),
+        },
+        "npci_upi": {
+            "compliant": sum(1 for r in results if r.npci_compliant),
+            "total": total,
+            "pct": round(sum(1 for r in results if r.npci_compliant) / max(total, 1) * 100, 1),
         },
     }
 
@@ -155,12 +159,16 @@ def get_agility_distribution(
         else:
             buckets["81-100"] += 1
 
+    migration_blocked = sum(1 for s in scores if s <= 20)
+    low_agility = sum(1 for s in scores if 20 < s <= 60)
+    high_agility = sum(1 for s in scores if s > 60)
+
     return {
         "scan_id": str(scan_id),
-        "total_assets": len(scores),
-        "average_agility": round(sum(scores) / max(len(scores), 1), 1),
-        "min_agility": min(scores) if scores else 0,
-        "max_agility": max(scores) if scores else 0,
+        "average_score": round(sum(scores) / max(len(scores), 1), 1),
+        "migration_blocked": migration_blocked,
+        "low_agility": low_agility,
+        "high_agility": high_agility,
         "distribution": buckets,
     }
 

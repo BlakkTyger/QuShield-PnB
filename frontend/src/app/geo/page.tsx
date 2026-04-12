@@ -33,6 +33,26 @@ function getMarkerColor(classification: string | null): string {
 export default function GeoMapPage() {
   const [scanId, setScanId] = useState<string | null>(null);
   const [leafletReady, setLeafletReady] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    // Read initial theme
+    const docTheme = document.documentElement.getAttribute("data-theme") as "dark" | "light" | null;
+    const storedTheme = typeof window !== "undefined" ? localStorage.getItem("theme") as "dark" | "light" | null : null;
+    setTheme(docTheme || storedTheme || "dark");
+
+    // Listen for toggle
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.attributeName === "data-theme") {
+          const newTheme = document.documentElement.getAttribute("data-theme") as "dark" | "light" | null;
+          if (newTheme) setTheme(newTheme);
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   const { data: scans } = useScans();
   useEffect(() => {
@@ -122,7 +142,7 @@ export default function GeoMapPage() {
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org">OSM</a>'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                url={`https://{s}.basemaps.cartocdn.com/${theme === "light" ? "light_all" : "dark_all"}/{z}/{x}/{y}{r}.png`}
               />
               {geoData.markers.map((marker: GeoMarker, i: number) => (
                 <CircleMarker

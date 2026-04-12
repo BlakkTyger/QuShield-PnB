@@ -36,9 +36,9 @@ export default function CompliancePage() {
   // Agility histogram data
   const agilityData = agility?.distribution
     ? Object.entries(agility.distribution as Record<string, number>).map(([range, count]) => ({
-        name: range,
-        value: count,
-      }))
+      name: range,
+      value: count,
+    }))
     : [];
 
   const tabs = [
@@ -102,13 +102,12 @@ export default function CompliancePage() {
               className="flex-shrink-0 p-4 rounded-lg min-w-[200px]"
               style={{
                 background: "var(--bg-card)",
-                border: `1px solid ${
-                  d.urgency === "overdue"
-                    ? "rgba(239,68,68,0.3)"
-                    : d.urgency === "critical"
+                border: `1px solid ${d.urgency === "overdue"
+                  ? "rgba(239,68,68,0.3)"
+                  : d.urgency === "critical"
                     ? "rgba(249,115,22,0.3)"
                     : "var(--border-subtle)"
-                }`,
+                  }`,
               }}
             >
               <div className="flex items-center gap-2 mb-1">
@@ -118,8 +117,8 @@ export default function CompliancePage() {
                     background:
                       d.urgency === "overdue" ? "var(--risk-critical)"
                         : d.urgency === "critical" ? "var(--risk-vulnerable)"
-                        : d.urgency === "warning" ? "var(--risk-at-risk)"
-                        : "var(--risk-aware)",
+                          : d.urgency === "warning" ? "var(--risk-at-risk)"
+                            : "var(--risk-aware)",
                   }}
                 />
                 <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
@@ -135,7 +134,7 @@ export default function CompliancePage() {
                   color:
                     d.days_remaining < 0 ? "var(--risk-critical)"
                       : d.days_remaining < 90 ? "var(--risk-vulnerable)"
-                      : "var(--text-primary)",
+                        : "var(--text-primary)",
                 }}
               >
                 {d.days_remaining < 0
@@ -172,12 +171,12 @@ export default function CompliancePage() {
           </h3>
           {fipsMatrix ? (
             <div className="overflow-x-auto">
-              <table className="data-table">
+              <table className="data-table" style={{ width: "100%", tableLayout: "fixed" }}>
                 <thead>
                   <tr>
-                    <th>Asset</th>
+                    <th style={{ width: "200px", textAlign: "left" }}>Asset</th>
                     {fipsMatrix.columns?.map((col) => (
-                      <th key={col} className="text-center">
+                      <th key={col} style={{ textAlign: "center", whiteSpace: "nowrap", fontSize: "11px" }}>
                         <div>{col}</div>
                         {fipsMatrix.column_pass_rates?.[col] != null && (
                           <div className="text-[9px] font-normal mt-0.5" style={{ color: "var(--text-muted)" }}>
@@ -189,15 +188,15 @@ export default function CompliancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {fipsMatrix.assets?.slice(0, 30).map((asset: Record<string, unknown>, i: number) => (
+                  {fipsMatrix.assets?.map((asset: Record<string, unknown>, i: number) => (
                     <tr key={i}>
-                      <td>
+                      <td style={{ textAlign: "left" }}>
                         <span className="font-medium text-xs" style={{ color: "var(--text-primary)" }}>
                           {asset.hostname as string}
                         </span>
                       </td>
                       {fipsMatrix.columns?.map((col) => (
-                        <td key={col} className="text-center">
+                        <td key={col} style={{ textAlign: "center" }}>
                           {asset[col] ? (
                             <CheckCircle size={14} style={{ color: "var(--risk-ready)", display: "inline" }} />
                           ) : (
