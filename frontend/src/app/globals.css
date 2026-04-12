@@ -4,6 +4,9 @@
 :root {
   --bg-primary: #0a0a0f;
   --bg-secondary: #111118;
+  /* Solid surfaces (header, popovers) — avoids invisible UI over scrolling content */
+  --bg-document: #12121a;
+  --header-bg: #12121a;
   --bg-card: rgba(255, 255, 255, 0.04);
   --bg-card-hover: rgba(255, 255, 255, 0.07);
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -51,6 +54,8 @@
 [data-theme="light"] {
   --bg-primary: #f9f9fc;
   --bg-secondary: #f3f3f6;
+  --bg-document: #ffffff;
+  --header-bg: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f9f9fc;
   --border-subtle: #e2e2e5;

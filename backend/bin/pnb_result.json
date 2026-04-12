@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "Tls": {
+        "targetspec": {
+          "host": "aafip.pnb.bank.in",
+          "port": 443
+        },
+        "addr": "103.109.224.159:443",
+        "error": null,
+        "pqc_supported": true,
+        "pqc_algos": [],
+        "hybrid_algos": [
+          "X25519MLKEM768"
+        ],
+        "nonpqc_algos": []
+      }
+    }
+  ],
+  "start_time": "2026-04-12T13:53:21.262522667Z",
+  "end_time": "2026-04-12T13:53:23.591544909Z",
+  "version": "0.8.0",
+  "scan_type": "Tls"
+}

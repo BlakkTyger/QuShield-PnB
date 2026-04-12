@@ -12,7 +12,7 @@ type ScanTier = "quick" | "shallow" | "deep";
 const SCAN_TIERS = [
   { value: "quick" as ScanTier, label: "Quick", time: "3–8s", desc: "Single SSL probe", icon: Zap },
   { value: "shallow" as ScanTier, label: "Shallow", time: "30–90s", desc: "CT discovery + top-N TLS", icon: Clock },
-  { value: "deep" as ScanTier, label: "Deep", time: "5–10 min", desc: "Full infrastructure audit", icon: Layers },
+  { value: "deep" as ScanTier, label: "Deep", time: "10–15 min", desc: "Full infrastructure audit", icon: Layers },
 ];
 
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
@@ -35,6 +35,8 @@ export default function QuickScanPage() {
   const [scanTier, setScanTier] = useState<ScanTier>("deep");
   const [quickResult, setQuickResult] = useState<Record<string, unknown> | null>(null);
   const logsContainerRef = useRef<HTMLDivElement>(null);
+  // Guard: prevent firing the "scan finished" notification more than once per scan
+  const notifiedRef = useRef(false);
 
   const router = useRouter();
   const startScan = useStartScan();
@@ -68,18 +70,24 @@ export default function QuickScanPage() {
     if (scanStatus?.status === "completed" && isScanning) {
       if (summary) {
         setIsScanning(false);
-        notificationStore.addNotification({
-          title: "Deep Scan Finished",
-          message: `Scanned ${summary.total_assets} assets on ${domain || "target"}`,
-        });
+        if (!notifiedRef.current) {
+          notifiedRef.current = true;
+          notificationStore.addNotification({
+            title: "Deep Scan Finished",
+            message: `Scanned ${summary.total_assets} assets on ${domain || "target"}`,
+          });
+        }
       }
     }
     if (scanStatus?.status === "failed" && isScanning) {
       setIsScanning(false);
-      notificationStore.addNotification({
-        title: "Scan Failed",
-        message: scanStatus.error_message || "Target could not be resolved.",
-      });
+      if (!notifiedRef.current) {
+        notifiedRef.current = true;
+        notificationStore.addNotification({
+          title: "Scan Failed",
+          message: scanStatus.error_message || "Target could not be resolved.",
+        });
+      }
     }
   }, [scanStatus, isScanning, summary, domain]);
 
@@ -136,6 +144,7 @@ export default function QuickScanPage() {
     setIsScanning(true);
     setLogs([]);
     setQuickResult(null);
+    notifiedRef.current = false; // reset for new scan
     setScanId(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem("qushield_active_scan");

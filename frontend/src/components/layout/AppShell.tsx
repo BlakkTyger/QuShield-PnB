@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <Sidebar />
             <Header />
             <main
-                className="min-h-screen"
+                className="min-h-screen transition-all duration-300"
                 style={{
                     marginLeft: "var(--sidebar-width)",
                     paddingTop: "var(--header-height)",

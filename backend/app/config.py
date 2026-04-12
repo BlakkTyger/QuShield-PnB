@@ -74,6 +74,12 @@ class Settings(BaseSettings):
     # --- NVD API Key (optional) ---
     NVD_API_KEY: str = ""
 
+    # --- PQCscan (Anvil) TLS PQC/hybrid probe — binaries in backend/bin/ ---
+    PQCSCAN_ENABLED: bool = True
+    PQCSCAN_TIMEOUT_SEC: int = 45
+    PQCSCAN_BIN: str = ""  # override path; empty = auto (bin/pqcscan_bin or .exe)
+    PQCSCAN_IN_QUICK_SCAN: bool = False  # when True, quick_scan also runs PQCscan (~2s+)
+
     # --- MaxMind GeoIP ---
     GEOIP_DB_PATH: str = str(PROJECT_ROOT / "data" /  "GeoLite2-City.mmdb")
 

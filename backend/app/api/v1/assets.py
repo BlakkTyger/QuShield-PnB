@@ -13,6 +13,7 @@ from app.models.asset import Asset, AssetPort
 from app.models.certificate import Certificate
 from app.models.risk import RiskScore
 from app.models.compliance import ComplianceResult
+from app.models.cbom import CBOMRecord, CBOMComponent
 
 router = APIRouter()
 
@@ -82,6 +83,25 @@ def list_assets(
             delta = cert.valid_to - datetime.now(timezone.utc)
             cert_expiry_days = max(0, delta.days)
 
+        compliance = db.query(ComplianceResult).filter(ComplianceResult.asset_id == a.id).order_by(ComplianceResult.computed_at.desc()).first()
+        kex = cert.key_type if cert else None
+        
+        # Extract exact PQC info from CBOM if compliance says it is PQC
+        if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
+            # Fetch CBOM Record directly
+            cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == a.id).order_by(CBOMRecord.id.desc()).first()
+            if cbom_rec:
+                kex_comp = db.query(CBOMComponent).filter(
+                    CBOMComponent.cbom_id == cbom_rec.id, 
+                    CBOMComponent.component_type == "key_exchange"
+                ).first()
+                if kex_comp and kex_comp.name and kex_comp.name.strip():
+                    kex = kex_comp.name
+                else:
+                    kex = "X25519MLKEM768 (Hybrid)" if compliance.hybrid_mode_active else "ML-KEM Key Exchange"
+            else:
+                kex = "Classical + Hybrid PQC supported" if compliance.hybrid_mode_active else "PQC Key Exchange"
+
         items.append({
             "id": str(a.id),
             "scan_id": str(a.scan_id),
@@ -100,7 +120,7 @@ def list_assets(
             "waf_detected": a.waf_detected,
             "web_server": a.web_server,
             "tls_version": a.tls_version,
-            "key_exchange": cert.key_type if cert else None,
+            "key_exchange": kex,
             "cert_expiry": str(cert.valid_to) if cert and cert.valid_to else None,
             "cert_expiry_days": cert_expiry_days,
             "confidence_score": a.confidence_score,
@@ -198,6 +218,23 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
     risk = db.query(RiskScore).filter(RiskScore.asset_id == asset_id).order_by(RiskScore.computed_at.desc()).first()
     compliance = db.query(ComplianceResult).filter(ComplianceResult.asset_id == asset_id).order_by(ComplianceResult.computed_at.desc()).first()
 
+    # Calculate key exchange to display based on cert + compliance
+    first_cert = certs[0] if certs else None
+    kex = first_cert.key_type if first_cert else None
+    if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
+        cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset_id).order_by(CBOMRecord.id.desc()).first()
+        if cbom_rec:
+            kex_comp = db.query(CBOMComponent).filter(
+                CBOMComponent.cbom_id == cbom_rec.id, 
+                CBOMComponent.component_type == "key_exchange"
+            ).first()
+            if kex_comp and kex_comp.name and kex_comp.name.strip():
+                kex = kex_comp.name
+            else:
+                kex = "X25519MLKEM768 (Hybrid)" if compliance.hybrid_mode_active else "ML-KEM Key Exchange"
+        else:
+            kex = "Classical + Hybrid PQC supported" if compliance.hybrid_mode_active else "PQC Key Exchange"
+
     return {
         "id": str(asset.id),
         "scan_id": str(asset.scan_id),
@@ -215,6 +252,7 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
         "waf_detected": asset.waf_detected,
         "web_server": asset.web_server,
         "tls_version": asset.tls_version,
+        "key_exchange": kex,
         "auth_mechanisms": asset.auth_mechanisms,
         "jwt_algorithm": asset.jwt_algorithm,
         "confidence_score": asset.confidence_score,

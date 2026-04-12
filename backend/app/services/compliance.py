@@ -4,9 +4,11 @@ Compliance Service — FIPS checks, India-specific regulatory compliance, crypto
 Evaluates assets against FIPS 203/204/205, TLS requirements, RBI IT Framework,
 SEBI CSCRF, PCI DSS 4.0, NPCI UPI, and computes a crypto-agility score (0-100).
 """
+import json
 import uuid
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 
@@ -15,6 +17,10 @@ from app.models.certificate import Certificate
 from app.models.cbom import CBOMRecord, CBOMComponent
 
 logger = logging.getLogger(__name__)
+
+_PQC_OID_PATH = Path(__file__).resolve().parent.parent / "data" / "pqc_oids.json"
+with open(_PQC_OID_PATH, encoding="utf-8") as _f:
+    PQC_OIDS_FOR_COMPLIANCE: dict = json.load(_f)
 
 
 def evaluate_compliance(asset_id: str, cbom_data: dict, crypto_data: dict) -> dict:
@@ -43,6 +49,8 @@ def evaluate_compliance(asset_id: str, cbom_data: dict, crypto_data: dict) -> di
     ct_logged = cert_data.get("ct_logged", False)
     chain_valid = cert_data.get("chain_valid", False)
     signature_algo = cert_data.get("signature_algorithm", "") or ""
+    signature_oid = (cert_data.get("signature_algorithm_oid") or "").strip()
+    pqc_tls = crypto_data.get("pqc_tls") or {}
 
     # --- CBOM component scanning ---
     has_mlkem = False
@@ -71,6 +79,39 @@ def evaluate_compliance(asset_id: str, cbom_data: dict, crypto_data: dict) -> di
     if "X25519MLKEM" in negotiated_cipher.upper() or "ML-KEM" in key_exchange.upper():
         has_hybrid = True
         has_mlkem = True
+        has_classical_only = False
+
+    # PQCscan TLS results (IANA hybrid groups include ML-KEM — FIPS 203 / hybrid columns)
+    if pqc_tls.get("hybrid_algorithms"):
+        has_hybrid = True
+        has_mlkem = True
+        has_classical_only = False
+    for a in pqc_tls.get("pure_pqc_algorithms") or []:
+        au = (a or "").upper()
+        if "ML-KEM" in au or "MLKEM" in au or "KYBER" in au:
+            has_mlkem = True
+            has_classical_only = False
+
+    # Leaf certificate signature OID → FIPS 204 / 205 (CBOM names are usually hostnames)
+    if signature_oid:
+        for algo_name, info in PQC_OIDS_FOR_COMPLIANCE.items():
+            if info.get("oid") != signature_oid:
+                continue
+            an = algo_name.upper()
+            if "ML-DSA" in an:
+                has_mldsa = True
+                has_classical_only = False
+            if "SLH-DSA" in an or "SPHINCS" in an:
+                has_slhdsa = True
+                has_classical_only = False
+            break
+
+    sigu = (signature_algo or "").upper()
+    if "ML-DSA" in sigu or "MLDSA" in sigu or "DILITHIUM" in sigu:
+        has_mldsa = True
+        has_classical_only = False
+    if "SLH-DSA" in sigu or "SLHDSA" in sigu or "SPHINCS" in sigu:
+        has_slhdsa = True
         has_classical_only = False
 
     # ─── 1. FIPS 203 (ML-KEM) ───

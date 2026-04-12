@@ -24,9 +24,9 @@ from app.services.crypto_inspector import (
     get_nist_quantum_level,
     parse_certificate_chain,
     classify_asset_type,
-    detect_pqc,
     NIST_LEVELS,
 )
+from app.services.pqcscan_client import maybe_run_pqcscan_tls
 from app.services.risk_engine import (
     compute_mosca,
     MIGRATION_TIME_DEFAULTS,
@@ -228,6 +228,10 @@ def quick_scan(domain: str, port: int = 443, timeout: int = 8) -> dict:
                 quantum_assessment["has_pqc"] = True
                 break
 
+    pq = maybe_run_pqcscan_tls(domain, port, for_quick_scan=True)
+    if pq and pq.get("ok") and (pq.get("hybrid_algos") or pq.get("pqc_algos") or pq.get("pqc_supported")):
+        quantum_assessment["has_pqc"] = True
+
     result["quantum_assessment"] = quantum_assessment
 
     # ── Step 4: Risk score (Mosca's theorem) ─────────────────────────────
@@ -313,6 +317,14 @@ def quick_scan(domain: str, port: int = 443, timeout: int = 8) -> dict:
         if "MLDSA" in name_upper or "ML_DSA" in name_upper:
             compliance["fips_204_detected"] = True
         if "SLHDSA" in name_upper or "SLH_DSA" in name_upper:
+            compliance["fips_205_detected"] = True
+    if pq and pq.get("ok") and (pq.get("hybrid_algos") or pq.get("pqc_algos")):
+        compliance["fips_203_detected"] = True
+    if cert_info:
+        sig_u = (cert_info.get("signature_algorithm") or "").upper()
+        if "ML-DSA" in sig_u or "MLDSA" in sig_u or "DILITHIUM" in sig_u:
+            compliance["fips_204_detected"] = True
+        if "SLH-DSA" in sig_u or "SLHDSA" in sig_u or "SPHINCS" in sig_u:
             compliance["fips_205_detected"] = True
 
     checks_passed = sum(1 for v in compliance.values() if v is True)

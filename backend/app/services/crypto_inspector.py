@@ -18,6 +18,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, ec, ed25519, ed448
 import httpx
 
 from app.config import settings, PROJECT_ROOT
+from app.services.pqcscan_client import maybe_run_pqcscan_tls
 from app.core.logging import get_logger
 from app.core.timing import timed
 
@@ -198,6 +199,8 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
             )
 
             # Key exchange
+            # TLS 1.3 ciphers (TLS_*) do NOT embed the KEX name in the cipher string;
+            # they always use ephemeral KEX (X25519 by default), never RSA key-encipherment.
             for cs in result["cipher_suites"]:
                 name = cs["name"]
                 if "ECDHE" in name:
@@ -206,7 +209,12 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
                 elif "DHE" in name:
                     result["key_exchange"] = "DHE"
                     break
-                elif "RSA" in name:
+                elif name.startswith("TLS_"):
+                    # TLS 1.3 — ephemeral KEX (X25519 is the standard default)
+                    result["key_exchange"] = "X25519"
+                    break
+                elif "RSA" in name and not name.startswith("TLS_"):
+                    # Only set RSA for pre-TLS-1.3 RSA key-encipherment suites
                     result["key_exchange"] = "RSA"
 
     logger.info(
@@ -273,7 +281,12 @@ def _scan_with_stdlib(hostname: str, port: int, timeout: int) -> dict:
                     result["key_exchange"] = "ECDHE"
                 elif "DHE" in name:
                     result["key_exchange"] = "DHE"
+                elif name.startswith("TLS_"):
+                    # TLS 1.3 cipher — always ephemeral KEX, never RSA key-encipherment.
+                    # X25519 is the de-facto default; PQCscan may upgrade this further.
+                    result["key_exchange"] = "X25519"
                 else:
+                    # Pre-TLS-1.3 RSA key-encipherment suite
                     result["key_exchange"] = "RSA"
 
             # Get all supported ciphers
@@ -650,6 +663,34 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
     except Exception as e:
         result["note"] = f"PQC detection error: {str(e)}"
 
+    # Layer 3b: PQCscan TLS probe (hybrid ML-KEM groups not visible in Python cipher names)
+    pq = maybe_run_pqcscan_tls(hostname, port, for_quick_scan=False)
+    result["hybrid_tls_algorithms"] = []
+    result["pure_pqc_tls_algorithms"] = []
+    if pq is None:
+        result["pqcscan"] = {"performed": False, "skipped": True, "reason": "PQCSCAN_DISABLED"}
+    else:
+        result["pqcscan"] = {
+            "performed": bool(pq.get("performed")),
+            "ok": bool(pq.get("ok")),
+            "scan_version": pq.get("scan_version"),
+            "pqc_supported": bool(pq.get("pqc_supported")),
+            "error": pq.get("error"),
+            "tls_error": pq.get("tls_error"),
+            "subprocess_error": pq.get("subprocess_error"),
+        }
+        if pq.get("ok"):
+            hybrids = list(pq.get("hybrid_algos") or [])
+            pure = list(pq.get("pqc_algos") or [])
+            result["hybrid_tls_algorithms"] = hybrids
+            result["pure_pqc_tls_algorithms"] = pure
+            for name in hybrids + pure:
+                if name and name not in result["pqc_algorithms_found"]:
+                    result["pqc_algorithms_found"].append(name)
+            if hybrids or pure or pq.get("pqc_supported"):
+                result["pqc_key_exchange"] = True
+                result["detection_method"] = "oid_check+pqcscan"
+
     # Layer 4: Hybrid TLS group detection via pattern matching
     # Known hybrid PQC named groups (IANA registered or draft)
     _HYBRID_GROUPS = {
@@ -674,11 +715,20 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
     result["hybrid_groups"] = hybrid_groups_detected
     result["is_hybrid"] = len(hybrid_groups_detected) > 0
 
-    if not result["pqc_key_exchange"] and not result["pqc_signature"]:
-        result["note"] = (
-            "No PQC detected. Full PQC key exchange detection requires "
-            "OpenSSL 3.5+ with oqs-provider. OID-based signature check completed."
-        )
+    if result["pqc_key_exchange"] or result["pqc_signature"]:
+        result["note"] = None
+    else:
+        fragments = []
+        if result.get("note"):
+            fragments.append(result["note"])
+        if pq is not None:
+            if pq.get("subprocess_error"):
+                fragments.append(f"PQCscan: {pq['subprocess_error']}")
+            elif pq.get("ok") and pq.get("tls_error"):
+                fragments.append(f"PQCscan: {pq['tls_error']}")
+        if not fragments:
+            fragments.append("No PQC TLS or PQC certificate signature detected.")
+        result["note"] = " ".join(fragments)
 
     logger.info(
         f"PQC detection for {hostname}:{port}",
@@ -1398,6 +1448,20 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
         pqc_result = detect_pqc(hostname, port)
         fingerprint["pqc"] = pqc_result
         fingerprint["quantum_summary"]["has_pqc"] = pqc_result["pqc_signature"] or pqc_result["pqc_key_exchange"]
+
+        # Upgrade tls.key_exchange with PQCscan hybrid/PQC results.
+        # The TLS scan uses Python's ssl module which only sees the cipher name
+        # (e.g. TLS_AES_128_GCM_SHA256) — hybrid KEX groups like X25519MLKEM768
+        # are invisible there. PQCscan probes supported named groups, so we
+        # merge its result back into the tls fingerprint for the UI to see.
+        if fingerprint.get("tls") is not None:
+            hybrid_algos = pqc_result.get("hybrid_tls_algorithms") or []
+            pure_pqc_algos = pqc_result.get("pure_pqc_tls_algorithms") or []
+            if hybrid_algos:
+                # Show the first detected hybrid group (e.g. "X25519MLKEM768")
+                fingerprint["tls"]["key_exchange"] = hybrid_algos[0]
+            elif pure_pqc_algos:
+                fingerprint["tls"]["key_exchange"] = pure_pqc_algos[0]
     except Exception as e:
         logger.error(f"PQC detection failed for {hostname}: {e}")
 

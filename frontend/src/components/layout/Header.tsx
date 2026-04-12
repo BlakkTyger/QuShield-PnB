@@ -47,12 +47,11 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 right-0 flex items-center justify-between px-8 z-30"
+      className="fixed top-0 right-0 flex items-center justify-between px-8 z-30 transition-all duration-300"
       style={{
         left: "var(--sidebar-width)",
         height: "var(--header-height)",
-        background: theme === "light" ? "rgba(255, 255, 255, 0.85)" : "rgba(10, 10, 15, 0.85)",
-        backdropFilter: "blur(12px)",
+        background: "var(--header-bg)",
         borderBottom: "1px solid var(--border-subtle)",
       }}
     >
@@ -103,6 +102,7 @@ export default function Header() {
                 background: "var(--bg-document)",
                 border: "1px solid var(--border-subtle)",
                 color: "var(--text-primary)",
+                boxShadow: "0 16px 48px rgba(0,0,0,0.35)",
               }}
             >
               <div className="flex items-center justify-between mb-4">
@@ -128,7 +128,11 @@ export default function Header() {
                       key={n.id}
                       className="p-3 rounded-lg flex flex-col gap-1 cursor-pointer transition-colors"
                       style={{
-                        background: n.read ? "transparent" : "var(--bg-card)",
+                        background: n.read
+                          ? "var(--bg-secondary)"
+                          : theme === "dark"
+                            ? "#1e1e28"
+                            : "var(--bg-card)",
                         border: "1px solid var(--border-subtle)",
                       }}
                       onClick={() => markAsRead(n.id)}

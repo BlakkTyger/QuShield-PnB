@@ -415,6 +415,7 @@ class ScanOrchestrator:
                     certs_list = fp.get("certificates") or []
                     first_cert = certs_list[0] if certs_list else {}
                     auth_data = fp.get("auth") or {}
+                    pqc_fp = fp.get("pqc") or {}
                     crypto_data = {
                         "tls": {
                             "negotiated_protocol": tls_data.get("negotiated_protocol", "") or "",
@@ -428,6 +429,11 @@ class ScanOrchestrator:
                             "ct_logged": first_cert.get("ct_logged", False),
                             "chain_valid": first_cert.get("chain_valid", False),
                             "signature_algorithm": first_cert.get("signature_algorithm", "") or "",
+                            "signature_algorithm_oid": first_cert.get("signature_algorithm_oid", "") or "",
+                        },
+                        "pqc_tls": {
+                            "hybrid_algorithms": pqc_fp.get("hybrid_tls_algorithms") or [],
+                            "pure_pqc_algorithms": pqc_fp.get("pure_pqc_tls_algorithms") or [],
                         },
                         "asset_type": asset.asset_type or "",
                         "auth_mechanisms": auth_data.get("mechanisms", []) if isinstance(auth_data, dict) else [],
@@ -499,22 +505,10 @@ class ScanOrchestrator:
             scan_job.completed_at = datetime.utcnow()
             db.commit()
 
-            # --- Overwrite old scans if this one is better ---
-            try:
-                previous_scans = db.query(ScanJob).filter(
-                    ScanJob.id != scan_job.id,
-                    ScanJob.scan_type == scan_job.scan_type
-                ).all()
-                for prev in previous_scans:
-                    if prev.targets == scan_job.targets:
-                        if len(db_assets) >= (prev.total_assets or 0):
-                            logger.info(f"{TAG} Overwriting (deleting) older scan {prev.id} (assets: {prev.total_assets}) because new is better/equal ({len(db_assets)})")
-                            db.delete(prev)
-                db.commit()
-            except Exception as e:
-                logger.error(f"{TAG} Error overwriting old scans: {e}")
-            # --------------------------------------------------
-            
+            # Intentionally no auto-delete of older ScanJobs: the UI scan history lists
+            # past runs by scan_id; pruning them broke FK-safe deletes and removed history.
+            # To remove a scan explicitly, use a dedicated admin path + scan_cleanup.purge_scan_dependencies.
+
             summary["status"] = "completed"
             summary["duration_seconds"] = round(time.time() - start_time, 2)
             logger.info(f"{TAG} ═══ DEEP SCAN COMPLETED ═══ {summary['duration_seconds']}s "
