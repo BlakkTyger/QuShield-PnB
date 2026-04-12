@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -33,6 +34,12 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredNavItems = NAV_ITEMS.filter((item) =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <aside
@@ -76,6 +83,8 @@ export default function Sidebar() {
         <input
           type="text"
           placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full py-2.5 pl-9 pr-3 text-sm rounded-lg"
           style={{
             background: "var(--sidebar-hover-bg)",
@@ -88,7 +97,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 flex flex-col gap-1 px-1">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        {filteredNavItems.map(({ href, label, icon: Icon }) => {
           const isActive =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (

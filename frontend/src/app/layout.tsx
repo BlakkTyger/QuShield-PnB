@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "QuShield — Quantum-Safe Crypto Scanner",
+  title: "QuShield",
   description:
     "Post-Quantum Cryptographic Bill of Materials (CBOM) Scanner for Indian Banking Infrastructure. " +
     "Discover, inventory, and assess quantum risk across your organization.",

@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bell, Sun, Moon, LogOut, User as UserIcon } from "lucide-react";
 import { fetchCurrentUser, clearTokens, UserResponse } from "@/lib/auth";
+import { useNotifications } from "@/lib/notifications";
 
 export default function Header() {
   const router = useRouter();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   useEffect(() => {
     // Check initial theme from document (if any) or localStorage
@@ -77,17 +80,70 @@ export default function Header() {
         </button>
 
         {/* Notification Bell */}
-        <button
-          className="relative p-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-          style={{ color: "var(--text-secondary)" }}
-          title="Notifications"
-        >
-          <Bell size={18} />
-          <span
-            className="absolute top-1 right-1 w-2 h-2 rounded-full"
-            style={{ background: "var(--accent-magenta)" }}
-          />
-        </button>
+        <div className="relative">
+          <button
+            className="p-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5 relative"
+            style={{ color: "var(--text-secondary)" }}
+            title="Notifications"
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span
+                className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                style={{ background: "var(--accent-magenta)" }}
+              />
+            )}
+          </button>
+
+          {notificationsOpen && (
+            <div
+              className="absolute right-0 mt-2 w-80 rounded-xl shadow-2xl p-4 z-50 text-sm"
+              style={{
+                background: "var(--bg-document)",
+                border: "1px solid var(--border-subtle)",
+                color: "var(--text-primary)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={() => markAllAsRead()}
+                    className="text-xs hover:underline"
+                    style={{ color: "var(--accent-magenta)" }}
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <p className="text-xs text-center py-4" style={{ color: "var(--text-muted)" }}>
+                    No notifications yet.
+                  </p>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className="p-3 rounded-lg flex flex-col gap-1 cursor-pointer transition-colors"
+                      style={{
+                        background: n.read ? "transparent" : "var(--bg-card)",
+                        border: "1px solid var(--border-subtle)",
+                      }}
+                      onClick={() => markAsRead(n.id)}
+                    >
+                      <h4 className="font-semibold text-xs">{n.title}</h4>
+                      <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
+                        {n.message}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="w-px h-6 bg-current opacity-20 mx-2" style={{ color: "var(--border-subtle)" }}></div>
 

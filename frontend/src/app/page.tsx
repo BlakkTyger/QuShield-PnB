@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
 import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
+import { notificationStore } from "@/lib/notifications";
 
 type ScanTier = "quick" | "shallow" | "deep";
 
@@ -65,12 +66,22 @@ export default function QuickScanPage() {
   // Stop polling when done
   useEffect(() => {
     if (scanStatus?.status === "completed" && isScanning) {
-      setIsScanning(false);
+      if (summary) {
+        setIsScanning(false);
+        notificationStore.addNotification({
+          title: "Deep Scan Finished",
+          message: `Scanned ${summary.total_assets} assets on ${domain || "target"}`,
+        });
+      }
     }
     if (scanStatus?.status === "failed" && isScanning) {
       setIsScanning(false);
+      notificationStore.addNotification({
+        title: "Scan Failed",
+        message: scanStatus.error_message || "Target could not be resolved.",
+      });
     }
-  }, [scanStatus, isScanning]);
+  }, [scanStatus, isScanning, summary, domain]);
 
   // Hook up SSE stream
   useEffect(() => {
@@ -134,6 +145,10 @@ export default function QuickScanPage() {
         const res = await quickScan.mutateAsync({ domain: domain.trim() });
         setQuickResult(res);
         setIsScanning(false);
+        notificationStore.addNotification({
+          title: "Quick Scan Finished",
+          message: `Scanned 1 asset on ${domain.trim()}`,
+        });
         // If the quick scan returned a cached deep scan, load it
         if (res.cached && res.scan_id) {
           setScanId(res.scan_id);
@@ -148,6 +163,10 @@ export default function QuickScanPage() {
         const res = await shallowScan.mutateAsync({ domain: domain.trim() });
         setQuickResult(res);
         setIsScanning(false);
+        notificationStore.addNotification({
+          title: "Shallow Scan Finished",
+          message: `Scanned ${(res.summary as any)?.total_subdomains_discovered || 1} assets on ${domain.trim()}`,
+        });
         if (res.cached && res.scan_id) {
           setScanId(res.scan_id);
           if (typeof window !== "undefined") {
