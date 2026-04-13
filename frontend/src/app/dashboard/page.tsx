@@ -140,17 +140,19 @@ export default function DashboardPage() {
           </h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={riskDistData} layout="vertical" margin={{ left: 20, right: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis type="number" tick={{ fill: "#6b7280", fontSize: 11 }} />
-              <YAxis dataKey="name" type="category" tick={{ fill: "#9ca3af", fontSize: 11 }} width={130} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis type="number" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} />
+              <YAxis dataKey="name" type="category" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} width={130} />
               <Tooltip
                 contentStyle={{
-                  background: "#111118",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "var(--tooltip-bg)",
+                  border: "1px solid var(--tooltip-border)",
                   borderRadius: 8,
                   fontSize: 12,
-                  color: "#f0f0f5",
+                  color: "var(--tooltip-text)",
                 }}
+                itemStyle={{ color: "var(--tooltip-text)" }}
+                labelStyle={{ color: "var(--tooltip-text)" }}
               />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {riskDistData.map((entry, i) => (
@@ -187,7 +189,7 @@ export default function DashboardPage() {
                       <span className="text-xs font-bold flex-shrink-0" style={{ color: "var(--text-muted)" }}>
                         {algo.value}
                       </span>
-                      <div className="w-16 h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div className="w-16 h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: "var(--border-subtle)" }}>
                         <div className="h-full rounded-full" style={{ width: `${pct}%`, background: barColor }} />
                       </div>
                     </div>

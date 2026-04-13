@@ -107,6 +107,9 @@ def run_pqcscan_tls(hostname: str, port: int = 443) -> dict[str, Any]:
         "scan_version": None,
         "performed": True,
         "subprocess_error": None,
+        "raw_output_json": None,
+        "command": None,
+        "target": f"{hostname}:{port}",
     }
 
     if not getattr(settings, "PQCSCAN_ENABLED", True):
@@ -140,6 +143,7 @@ def run_pqcscan_tls(hostname: str, port: int = 443) -> dict[str, Any]:
         "--num-threads",
         "1",
     ]
+    base["command"] = cmd
 
     try:
         completed = subprocess.run(
@@ -158,6 +162,7 @@ def run_pqcscan_tls(hostname: str, port: int = 443) -> dict[str, Any]:
             base["subprocess_error"] = "PQCscan did not write output file"
             return base
         raw = json.loads(out_path.read_text(encoding="utf-8"))
+        base["raw_output_json"] = raw
     except subprocess.TimeoutExpired:
         base["subprocess_error"] = f"PQCscan timed out after {timeout}s"
         logger.warning("PQCscan timeout for %s", target)
@@ -176,6 +181,9 @@ def run_pqcscan_tls(hostname: str, port: int = 443) -> dict[str, Any]:
 
     parsed = parse_pqcscan_tls_json(raw)
     parsed["performed"] = True
+    parsed["raw_output_json"] = base.get("raw_output_json")
+    parsed["command"] = base.get("command")
+    parsed["target"] = base.get("target")
     if base.get("subprocess_error"):
         parsed["subprocess_error"] = base["subprocess_error"]
     return parsed

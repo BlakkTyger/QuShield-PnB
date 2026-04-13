@@ -307,7 +307,7 @@ export default function TopologyPage() {
         return r + 12;
       })
       .attr("text-anchor", "middle")
-      .attr("fill", "rgba(255,255,255,0.6)")
+      .attr("fill", "var(--text-secondary)")
       .attr("font-size", "9px")
       .attr("font-family", "Inter, sans-serif")
       .attr("pointer-events", "none")
@@ -328,7 +328,7 @@ export default function TopologyPage() {
         const hoveredId = d.id;
         // Highlight node
         d3.select(this).select("circle, rect, polygon")
-          .attr("stroke", "#fff")
+          .attr("stroke", "var(--text-primary)")
           .attr("stroke-width", 2.5);
         // Highlight connected links
         link.attr("stroke-opacity", (l: SimLink) => {
@@ -354,7 +354,7 @@ export default function TopologyPage() {
       })
       .on("mouseleave", function () {
         d3.select(this).select("circle, rect, polygon")
-          .attr("stroke", "rgba(255,255,255,0.3)")
+          .attr("stroke", "var(--border-subtle)")
           .attr("stroke-width", 1.5);
         link
           .attr("stroke-opacity", 1)

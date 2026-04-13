@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import AuthGuard from "./AuthGuard";
+import ScanAlertCenter from "./ScanAlertCenter";
 
 /**
  * AppShell — conditionally renders the Sidebar + Header chrome.
@@ -25,6 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <AuthGuard>
             <Sidebar />
             <Header />
+            <ScanAlertCenter />
             <main
                 className="min-h-screen transition-all duration-300"
                 style={{

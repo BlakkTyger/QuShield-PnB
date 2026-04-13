@@ -62,6 +62,11 @@ export interface Asset {
   asset_type: string | null;
   tls_version: string | null;
   key_exchange: string | null;
+  tls_key_exchange: string | null;
+  cert_key_type: string | null;
+  cert_crypto_plane?: string | null;
+  kex_crypto_plane?: string | null;
+  crypto_transition_state?: string | null;
   risk_score: number | null;
   risk_classification: string | null;
   cert_expiry: string | null;

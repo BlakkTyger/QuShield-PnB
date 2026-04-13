@@ -70,26 +70,14 @@ export default function QuickScanPage() {
     if (scanStatus?.status === "completed" && isScanning) {
       if (summary) {
         setIsScanning(false);
-        if (!notifiedRef.current) {
-          notifiedRef.current = true;
-          notificationStore.addNotification({
-            title: "Deep Scan Finished",
-            message: `Scanned ${summary.total_assets} assets on ${domain || "target"}`,
-          });
-        }
+        notifiedRef.current = true;
       }
     }
     if (scanStatus?.status === "failed" && isScanning) {
       setIsScanning(false);
-      if (!notifiedRef.current) {
-        notifiedRef.current = true;
-        notificationStore.addNotification({
-          title: "Scan Failed",
-          message: scanStatus.error_message || "Target could not be resolved.",
-        });
-      }
+      notifiedRef.current = true;
     }
-  }, [scanStatus, isScanning, summary, domain]);
+  }, [scanStatus, isScanning, summary]);
 
   // Hook up SSE stream
   useEffect(() => {
@@ -157,6 +145,7 @@ export default function QuickScanPage() {
         notificationStore.addNotification({
           title: "Quick Scan Finished",
           message: `Scanned 1 asset on ${domain.trim()}`,
+          scanId: res.scan_id || undefined,
         });
         // If the quick scan returned a cached deep scan, load it
         if (res.cached && res.scan_id) {
@@ -175,6 +164,7 @@ export default function QuickScanPage() {
         notificationStore.addNotification({
           title: "Shallow Scan Finished",
           message: `Scanned ${(res.summary as any)?.total_subdomains_discovered || 1} assets on ${domain.trim()}`,
+          scanId: res.scan_id || undefined,
         });
         if (res.cached && res.scan_id) {
           setScanId(res.scan_id);
@@ -225,7 +215,7 @@ export default function QuickScanPage() {
           style={{
             background: "var(--accent-gold-dim)",
             color: "var(--accent-gold)",
-            border: "1px solid rgba(251,188,9,0.3)",
+            border: "1px solid var(--border-active)",
           }}
         >
           <Shield size={12} /> Quantum-Safe Crypto Scanner
@@ -363,7 +353,7 @@ export default function QuickScanPage() {
                         className={`w-10 h-10 relative z-10 rounded-full flex items-center justify-center transition-all ${status === "active" ? "animate-pulse shadow-[0_0_15px_rgba(251,188,9,0.5)]" : ""}`}
                         style={{
                           background: status === "completed" ? "var(--risk-ready)" : status === "active" ? "var(--accent-gold)" : "var(--bg-card)",
-                          color: status === "pending" ? "var(--text-muted)" : "#fff",
+                          color: status === "pending" ? "var(--text-muted)" : "var(--bg-document)",
                           border: status === "pending" ? "1px solid var(--border-subtle)" : "none"
                         }}
                       >
@@ -396,27 +386,38 @@ export default function QuickScanPage() {
           {/* Live Log Console */}
           <div className="glass-card-static flex flex-col border-[var(--accent-gold-dim)]" style={{ height: "250px" }}>
             <div
-              className="flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] cursor-pointer shrink-0"
+              className="flex items-center justify-between px-4 py-3 border-b cursor-pointer shrink-0"
               onClick={() => setLogsOpen(!logsOpen)}
-              style={{ background: "rgba(0,0,0,0.2)" }}
+              style={{ background: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
             >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="text-xs font-bold font-mono tracking-wider text-green-400">LIVE FEED</span>
               </div>
-              {logsOpen ? <ChevronUp size={14} className="text-zinc-500" /> : <ChevronDown size={14} className="text-zinc-500" />}
+              {logsOpen ? <ChevronUp size={14} style={{ color: "var(--text-muted)" }} /> : <ChevronDown size={14} style={{ color: "var(--text-muted)" }} />}
             </div>
 
             {logsOpen && (
               <div
                 ref={logsContainerRef}
-                className="flex-1 bg-[#0a0a0c] p-4 text-[11px] font-mono leading-relaxed overflow-y-auto scroll-smooth"
+                className="flex-1 p-4 text-[11px] font-mono leading-relaxed overflow-y-auto scroll-smooth"
+                style={{ background: "var(--console-bg)" }}
               >
                 {logs.length === 0 ? (
-                  <span className="text-zinc-600 italic">Awaiting telemetry...</span>
+                  <span className="italic" style={{ color: "var(--text-muted)" }}>Awaiting telemetry...</span>
                 ) : (
                   logs.map((log, i) => (
-                    <div key={i} className={`${log.includes("ERROR") ? "text-red-400" : log.includes("SUCCESS") || log.includes("Found") ? "text-green-400" : "text-zinc-400"} pb-1`}>
+                    <div
+                      key={i}
+                      className="pb-1"
+                      style={{
+                        color: log.includes("ERROR")
+                          ? "var(--risk-critical)"
+                          : log.includes("SUCCESS") || log.includes("Found")
+                            ? "var(--risk-ready)"
+                            : "var(--text-secondary)",
+                      }}
+                    >
                       {log}
                     </div>
                   ))
@@ -511,7 +512,7 @@ export default function QuickScanPage() {
               {summary.shadow_assets > 0 ? (
                 <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
                   <div className="flex items-center gap-3">
-                    <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>High Risk</span>
+                    <span className="badge" style={{ background: "var(--accent-gold-dim)", color: "var(--urgent-amber)" }}>High Risk</span>
                     <h4 className="font-bold text-sm text-[var(--text-primary)]">Discovered Shadow Infrastructure</h4>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
@@ -523,7 +524,7 @@ export default function QuickScanPage() {
               {summary.compliance_summary.tls_13_enforced < summary.total_assets ? (
                 <div className="glass-card-static p-5 flex flex-col gap-2 border-l-4 border-l-[var(--urgent-amber)]">
                   <div className="flex items-center gap-3">
-                    <span className="badge" style={{ background: "rgba(249,115,22,0.1)", color: "#f97316" }}>Medium Risk</span>
+                    <span className="badge" style={{ background: "var(--accent-gold-dim)", color: "var(--urgent-amber)" }}>Medium Risk</span>
                     <h4 className="font-bold text-sm text-[var(--text-primary)]">Legacy TLS Versions Supported</h4>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">

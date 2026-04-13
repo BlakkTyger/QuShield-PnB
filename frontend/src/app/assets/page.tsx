@@ -28,8 +28,11 @@ export default function AssetsPage() {
     const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
     if (stored) { setScanId(stored); return; }
     if (scans?.length) {
-      const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      const sorted = [...scans].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      const preferred = sorted.find((s) => s.status === "running" || s.status === "completed");
+      setScanId((preferred || sorted[0]).scan_id);
     }
   }, [scans]);
 
@@ -75,11 +78,18 @@ export default function AssetsPage() {
     return sortDir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />;
   };
 
+  const transitionLabel = (state?: string | null) => {
+    if (state === "full_pqc_transition") return "Full PQC";
+    if (state === "partial_pqc_transition") return "Partial PQC";
+    if (state === "classical_only") return "Classical";
+    return "Unknown";
+  };
+
   const handleExportCSV = () => {
     if (!sortedAssets.length) return;
-    const headers = ["Hostname", "IP", "Type", "TLS", "Key Exchange", "Risk Score", "Risk Class"];
+    const headers = ["Hostname", "IP", "Type", "TLS", "TLS Key Exchange", "Cert Key Type", "Risk Score", "Risk Class"];
     const rows = sortedAssets.map((a) => [
-      a.hostname, a.ip_address, a.asset_type, a.tls_version, a.key_exchange,
+      a.hostname, a.ip_address, a.asset_type, a.tls_version, a.tls_key_exchange || a.key_exchange, a.cert_key_type,
       a.risk_score, a.risk_classification,
     ]);
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
@@ -174,7 +184,9 @@ export default function AssetsPage() {
                     { key: "ip_address", label: "IP Address" },
                     { key: "asset_type", label: "Type" },
                     { key: "tls_version", label: "TLS" },
-                    { key: "key_exchange", label: "Key Exchange" },
+                    { key: "tls_key_exchange", label: "TLS Key Exchange" },
+                    { key: "cert_key_type", label: "Cert Key Type" },
+                    { key: "crypto_transition_state", label: "Transition State" },
                     { key: "risk_score", label: "Risk Score" },
                     { key: "risk_classification", label: "Risk Class" },
                     { key: "cert_expiry_days", label: "Cert Expiry" },
@@ -219,7 +231,9 @@ export default function AssetsPage() {
                       )}
                     </td>
                     <td>{asset.tls_version || "—"}</td>
-                    <td className="max-w-[150px] truncate">{asset.key_exchange || "—"}</td>
+                    <td className="max-w-[150px] truncate">{asset.tls_key_exchange || asset.key_exchange || "—"}</td>
+                    <td>{asset.cert_key_type || "—"}</td>
+                    <td>{transitionLabel(asset.crypto_transition_state)}</td>
                     <td>
                       <span
                         className="font-bold"
@@ -313,7 +327,25 @@ export default function AssetsPage() {
                   </div>
                   <div>
                     <span className="text-xs" style={{ color: "var(--text-muted)" }}>Key Exchange</span>
-                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>{assetDetail.key_exchange || "—"}</p>
+                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>
+                      {assetDetail.tls_key_exchange || assetDetail.key_exchange || "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Cert Key Type</span>
+                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>{assetDetail.cert_key_type || "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Cert Plane</span>
+                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>{assetDetail.cert_crypto_plane || "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>KEX Plane</span>
+                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>{assetDetail.kex_crypto_plane || "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>Transition</span>
+                    <p className="text-sm" style={{ color: "var(--text-primary)" }}>{transitionLabel(assetDetail.crypto_transition_state)}</p>
                   </div>
                 </div>
 

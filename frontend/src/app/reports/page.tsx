@@ -9,6 +9,7 @@ interface GeneratedReport {
   scanId: string;
   domain: string;
   generatedAt: string;
+  reportType: string;
 }
 
 export default function ReportsPage() {
@@ -27,7 +28,17 @@ export default function ReportsPage() {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("qushield_reports");
       if (saved) {
-        try { setGeneratedReports(JSON.parse(saved)); } catch { /* noop */ }
+        try {
+          const parsed = JSON.parse(saved) as GeneratedReport[];
+          setGeneratedReports(
+            parsed.map((item) => ({
+              ...item,
+              reportType: item.reportType || "executive",
+            }))
+          );
+        } catch {
+          // noop
+        }
       }
     }
   }, []);
@@ -40,7 +51,7 @@ export default function ReportsPage() {
     setSuccessMsg(null);
     setErrorMsg(null);
     try {
-      const blob = await generateReport.mutateAsync(selectedScanId);
+      const blob = await generateReport.mutateAsync({ scanId: selectedScanId, reportType });
       // Download the blob as PDF
       const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
       const a = document.createElement("a");
@@ -54,6 +65,7 @@ export default function ReportsPage() {
         scanId: selectedScanId,
         domain: scan?.targets.join(", ") || selectedScanId.slice(0, 8),
         generatedAt: new Date().toISOString(),
+        reportType,
       };
       const updated = [newReport, ...generatedReports].slice(0, 20);
       setGeneratedReports(updated);
@@ -183,13 +195,13 @@ export default function ReportsPage() {
           {/* Alerts */}
           {successMsg && (
             <div className="flex items-center gap-2 p-3 rounded-lg mb-4 animate-fade-in"
-                 style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#22c55e" }}>
+                 style={{ background: "color-mix(in srgb, var(--risk-ready) 14%, transparent)", border: "1px solid color-mix(in srgb, var(--risk-ready) 35%, transparent)", color: "var(--risk-ready)" }}>
               <CheckCircle size={16} /> <span className="text-sm">{successMsg}</span>
             </div>
           )}
           {errorMsg && (
             <div className="flex items-center gap-2 p-3 rounded-lg mb-4 animate-fade-in"
-                 style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#ef4444" }}>
+                 style={{ background: "color-mix(in srgb, var(--risk-critical) 14%, transparent)", border: "1px solid color-mix(in srgb, var(--risk-critical) 35%, transparent)", color: "var(--risk-critical)" }}>
               <AlertTriangle size={16} /> <span className="text-sm">{errorMsg}</span>
             </div>
           )}
@@ -226,7 +238,7 @@ export default function ReportsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                        Executive Report — {r.domain}
+                        {r.reportType.replaceAll("_", " ")} — {r.domain}
                       </p>
                       <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                         {new Date(r.generatedAt).toLocaleString()} • PDF • Scan {r.scanId.slice(0, 8)}
@@ -238,7 +250,10 @@ export default function ReportsPage() {
                     onClick={() => {
                       // Re-generate and download
                       setSelectedScanId(r.scanId);
-                      handleGenerate();
+                      setReportType(r.reportType);
+                      setTimeout(() => {
+                        handleGenerate();
+                      }, 0);
                     }}
                   >
                     <Download size={12} /> Download

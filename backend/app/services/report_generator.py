@@ -1,10 +1,8 @@
-"""
-AI Report Generator — Builds Executive and Technical HTML/PDF reports using WeasyPrint
-and Jinja2 templates, featuring AI-generated narrative summaries.
-"""
+"""Report generation service with per-report templates and datasets."""
 import os
 import logging
 from datetime import datetime, timezone
+from typing import Any, Dict, List
 from jinja2 import Environment, FileSystemLoader
 
 try:
@@ -16,6 +14,8 @@ from sqlalchemy.orm import Session
 from app.models.scan import ScanJob
 from app.models.asset import Asset
 from app.models.risk import RiskScore
+from app.models.compliance import ComplianceResult
+from app.models.cbom import CBOMRecord, CBOMComponent
 from app.models.auth import User
 from app.services.ai_service import get_ai_provider
 
@@ -23,6 +23,14 @@ logger = logging.getLogger(__name__)
 
 
 class ReportGenerator:
+    TEMPLATE_BY_TYPE = {
+        "executive": "executive.html",
+        "cbom_audit": "cbom_audit.html",
+        "rbi_submission": "rbi_submission.html",
+        "migration_progress": "migration_progress.html",
+        "full_scan": "full_scan.html",
+    }
+
     def __init__(self, db: Session, user: User):
         self.db = db
         self.user = user
@@ -30,85 +38,156 @@ class ReportGenerator:
         template_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
 
-    def _generate_ai_narrative(self, stats: dict, high_risks: list) -> str:
-        """Prompts the LLM to generate an Executive Summary based on scan stats."""
-        system_prompt = "You are a CIO-level Quantum Security Advisor. Provide a brief, 3-paragraph executive narrative summarizing the scan results and prioritizing action. Use professional board-room language."
-        
-        prompt = f"""
-Scan Statistics:
-Total Assets: {stats['total']}
-Critical/High Risks: {stats['high_count']}
-Average Readiness (0-10): {stats['avg_readiness']}
+    def generate_report(self, scan_id: str, report_type: str) -> bytes:
+        if report_type not in self.TEMPLATE_BY_TYPE:
+            raise ValueError("Unsupported report type")
 
-Significant High Risk Assets:
-"""
-        for r in high_risks[:10]: # Limit context length
-            prompt += f"- {r['hostname']} ({r['asset_type']}): {r['weakness']}\n"
-            
-        try:
-            return self.ai.generate(prompt=prompt, system=system_prompt, temperature=0.3)
-        except Exception as e:
-            logger.error(f"Failed to generate narrative: {e}")
-            return "AI Narrative generation temporarily unavailable."
-
-    def generate_executive_report(self, scan_id: str) -> bytes:
-        """Generates an Executive PDF report via Jinja + WeasyPrint."""
         scan_job = self.db.query(ScanJob).filter(ScanJob.id == scan_id).first()
         if not scan_job or scan_job.user_id != self.user.id:
             raise ValueError("Scan not found or unauthorized")
 
-        assets = self.db.query(Asset).filter(Asset.scan_id == scan_id).all()
-        risks = self.db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
+        dataset = self._build_dataset(scan_job)
+        if report_type == "executive":
+            dataset["ai_narrative"] = self._generate_ai_narrative(dataset["stats"], dataset["critical_assets"])
 
-        total_assets = len(assets)
-        high_risks = []
-        
-        asset_map = {str(a.id): a for a in assets}
-        
-        sum_readiness = 0
-        for r in risks:
-            # Compute a 0-10 readiness from 0-1000 risk score (inverted: lower risk = higher readiness)
-            readiness = max(0, 10 - (r.quantum_risk_score or 0) / 100)
+        template = self.jinja_env.get_template(self.TEMPLATE_BY_TYPE[report_type])
+        html_content = template.render(**dataset)
+        return self._to_pdf_or_html(html_content)
+
+    def _to_pdf_or_html(self, html_content: str) -> bytes:
+        if HTML:
+            return HTML(string=html_content).write_pdf()
+        logger.warning("WeasyPrint missing, returning raw HTML instead.")
+        return html_content.encode("utf-8")
+
+    def _build_dataset(self, scan_job: ScanJob) -> Dict[str, Any]:
+        scan_id = str(scan_job.id)
+        assets = self.db.query(Asset).filter(Asset.scan_id == scan_job.id).all()
+        risks = self.db.query(RiskScore).filter(RiskScore.scan_id == scan_job.id).all()
+        compliance = self.db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_job.id).all()
+        cbom_records = self.db.query(CBOMRecord).filter(CBOMRecord.scan_id == scan_job.id).all()
+
+        asset_by_id = {str(asset.id): asset for asset in assets}
+        risk_by_asset = {str(r.asset_id): r for r in risks}
+        compliance_by_asset = {str(c.asset_id): c for c in compliance}
+        cbom_by_asset = {str(c.asset_id): c for c in cbom_records}
+
+        critical_assets: List[Dict[str, Any]] = []
+        scored_assets: List[Dict[str, Any]] = []
+        risk_counts: Dict[str, int] = {}
+        sum_readiness = 0.0
+
+        for risk in risks:
+            risk_class = risk.risk_classification or "unknown"
+            risk_counts[risk_class] = risk_counts.get(risk_class, 0) + 1
+            readiness = max(0, 10 - (risk.quantum_risk_score or 0) / 100)
             sum_readiness += readiness
-            if r.risk_classification in ("quantum_critical", "quantum_vulnerable"):
-                asset = asset_map.get(str(r.asset_id))
+            if risk_class in ("quantum_critical", "quantum_vulnerable"):
+                asset = asset_by_id.get(str(risk.asset_id))
                 if asset:
-                    high_risks.append({
-                        "hostname": asset.hostname,
-                        "ip_address": asset.ip_v4 or "N/A",
-                        "asset_type": asset.asset_type,
-                        "risk_score": r.quantum_risk_score,
-                        "classification": (r.risk_classification or "unknown").upper(),
-                        "weakness": f"Quantum risk score {r.quantum_risk_score}/1000 — classical crypto vulnerable to CRQC"
-                    })
+                    critical_assets.append(
+                        {
+                            "hostname": asset.hostname,
+                            "ip_address": asset.ip_v4 or "N/A",
+                            "asset_type": asset.asset_type or "unknown",
+                            "risk_score": risk.quantum_risk_score or 0,
+                            "classification": risk_class.replace("quantum_", "").upper(),
+                            "weakness": f"Quantum risk score {risk.quantum_risk_score or 0}/1000",
+                        }
+                    )
+
+        for asset in assets:
+            asset_id = str(asset.id)
+            risk = risk_by_asset.get(asset_id)
+            comp = compliance_by_asset.get(asset_id)
+            cbom = cbom_by_asset.get(asset_id)
+            scored_assets.append(
+                {
+                    "hostname": asset.hostname,
+                    "asset_type": asset.asset_type or "unknown",
+                    "ip_address": asset.ip_v4 or "N/A",
+                    "risk_score": risk.quantum_risk_score if risk else 0,
+                    "risk_classification": (risk.risk_classification or "unknown").replace("quantum_", ""),
+                    "hndl_exposed": bool(risk.hndl_exposed) if risk else False,
+                    "crypto_agility_score": comp.crypto_agility_score if comp else 0,
+                    "rbi_compliant": bool(comp.rbi_compliant) if comp else False,
+                    "tls_13_enforced": bool(comp.tls_13_enforced) if comp else False,
+                    "cbom_components": cbom.total_components if cbom else 0,
+                    "cbom_ready_pct": round(cbom.quantum_ready_pct or 0, 1) if cbom else 0.0,
+                }
+            )
 
         avg_readiness = round(sum_readiness / len(risks), 1) if risks else 0.0
-
-        stats = {
-            "total": total_assets,
-            "high_count": len(high_risks),
-            "avg_readiness": avg_readiness
-        }
-
-        # Generate LLM Narrative Narrative
-        ai_narrative = self._generate_ai_narrative(stats, high_risks)
-
-        # Render HTML Template
-        template = self.jinja_env.get_template("executive.html")
-        html_content = template.render(
-            scan_id=scan_id,
-            generation_date=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-            total_assets=total_assets,
-            high_risks_count=len(high_risks),
-            avg_readiness=avg_readiness,
-            ai_narrative=ai_narrative,
-            critical_assets=high_risks
+        avg_compliance_pct = round(
+            (sum((c.compliance_pct or 0) for c in compliance) / len(compliance)) if compliance else 0.0, 1
+        )
+        avg_crypto_agility = round(
+            (sum((c.crypto_agility_score or 0) for c in compliance) / len(compliance)) if compliance else 0.0, 1
         )
 
-        # Convert to PDF
-        if HTML:
-            pdf_bytes = HTML(string=html_content).write_pdf()
-            return pdf_bytes
-        else:
-            logger.warning("WeasyPrint missing, returning raw HTML instead.")
-            return html_content.encode('utf-8')
+        cbom_components = (
+            self.db.query(CBOMComponent).filter(CBOMComponent.scan_id == scan_job.id).all()
+        )
+        algorithm_distribution: Dict[str, int] = {}
+        vulnerable_components = 0
+        for component in cbom_components:
+            name = component.name or "Unknown"
+            algorithm_distribution[name] = algorithm_distribution.get(name, 0) + 1
+            if component.is_quantum_vulnerable:
+                vulnerable_components += 1
+
+        top_algorithms = sorted(
+            [{"name": name, "count": count} for name, count in algorithm_distribution.items()],
+            key=lambda row: row["count"],
+            reverse=True,
+        )[:20]
+
+        stats = {
+            "total": len(assets),
+            "high_count": len(critical_assets),
+            "avg_readiness": avg_readiness,
+            "avg_compliance_pct": avg_compliance_pct,
+            "avg_crypto_agility": avg_crypto_agility,
+            "total_cbom_components": len(cbom_components),
+            "vulnerable_cbom_components": vulnerable_components,
+            "rbi_compliant_assets": sum(1 for c in compliance if c.rbi_compliant),
+            "tls_13_assets": sum(1 for c in compliance if c.tls_13_enforced),
+            "hybrid_assets": sum(1 for c in compliance if c.hybrid_mode_active),
+        }
+
+        return {
+            "scan_id": scan_id,
+            "scan_type": scan_job.scan_type,
+            "scan_status": scan_job.status,
+            "targets": scan_job.targets or [],
+            "generation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            "completed_at": scan_job.completed_at.strftime("%Y-%m-%d %H:%M UTC") if scan_job.completed_at else "N/A",
+            "stats": stats,
+            "risk_counts": risk_counts,
+            "critical_assets": sorted(critical_assets, key=lambda row: row["risk_score"], reverse=True),
+            "assets": sorted(scored_assets, key=lambda row: row["risk_score"], reverse=True),
+            "top_algorithms": top_algorithms,
+        }
+
+    def _generate_ai_narrative(self, stats: Dict[str, Any], high_risks: List[Dict[str, Any]]) -> str:
+        system_prompt = (
+            "You are a CIO-level Quantum Security Advisor. "
+            "Provide a concise 3-paragraph narrative and prioritize action items."
+        )
+        prompt = (
+            f"Total Assets: {stats['total']}\n"
+            f"Critical/High Risks: {stats['high_count']}\n"
+            f"Average Readiness (0-10): {stats['avg_readiness']}\n"
+            f"Compliance %: {stats['avg_compliance_pct']}\n\n"
+            "Top high-risk assets:\n"
+        )
+        for row in high_risks[:10]:
+            prompt += f"- {row['hostname']} ({row['asset_type']}): {row['weakness']}\n"
+        try:
+            return self.ai.generate(prompt=prompt, system=system_prompt, temperature=0.3)
+        except Exception as exc:
+            logger.error("Failed to generate narrative: %s", exc)
+            return (
+                "Automated narrative generation is unavailable. "
+                "Prioritize critical/vulnerable assets and accelerate migration to PQC-ready controls."
+            )

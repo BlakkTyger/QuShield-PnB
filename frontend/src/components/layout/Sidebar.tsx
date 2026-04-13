@@ -153,7 +153,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / Status */}
-      {!collapsed ? (
+      {/* {!collapsed ? (
         <div
           className="mt-auto mx-1 p-3 rounded-lg text-xs"
           style={{ background: "var(--bg-card)", color: "var(--text-muted)" }}
@@ -175,7 +175,7 @@ export default function Sidebar() {
             style={{ background: "var(--risk-ready)" }}
           />
         </div>
-      )}
+      )} */}
     </aside>
   );
 }

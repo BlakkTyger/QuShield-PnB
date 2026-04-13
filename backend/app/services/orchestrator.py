@@ -2,8 +2,11 @@ import logging
 import time
 import re
 import socket
+import json
+import threading
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
@@ -20,6 +23,7 @@ from app.services.graph_builder import build_topology_graph
 
 from app.core.logging import get_logger
 from app.core.utils import clean_domain, is_valid_domain
+from app.config import PROJECT_ROOT
 logger = get_logger("orchestrator")
 
 DOMAIN_REGEX = re.compile(
@@ -185,6 +189,111 @@ class ScanOrchestrator:
             mapped_assets = [(str(a.id), a.hostname) for a in db_assets]
             total_mapped = len(mapped_assets)
             logger.info(f"{TAG} P2: {total_mapped} assets mapped for crypto scan, workers=20")
+            trace_file = PROJECT_ROOT / "data" / "crypto_traces" / f"{scan_id}.txt"
+            trace_file.parent.mkdir(parents=True, exist_ok=True)
+            trace_lock = threading.Lock()
+            subdomains_dir = PROJECT_ROOT / "data" / "subdomains"
+            subdomains_dir.mkdir(parents=True, exist_ok=True)
+
+            def _safe_subdomain_filename(hostname: str, asset_id_str: str) -> Path:
+                safe_host = re.sub(r"[^a-zA-Z0-9._-]", "_", hostname or "unknown-host")
+                return subdomains_dir / f"{safe_host}.json"
+
+            def _append_subdomain_block(asset_id_str: str, asset_hostname: str, section: str, payload: dict):
+                path = _safe_subdomain_filename(asset_hostname, asset_id_str)
+                with trace_lock:
+                    existing = {
+                        "hostname": asset_hostname,
+                        "asset_id": asset_id_str,
+                        "scan_id": scan_id,
+                        "entries": [],
+                    }
+                    if path.exists():
+                        try:
+                            existing = json.loads(path.read_text(encoding="utf-8"))
+                            if not isinstance(existing, dict):
+                                existing = {
+                                    "hostname": asset_hostname,
+                                    "asset_id": asset_id_str,
+                                    "scan_id": scan_id,
+                                    "entries": [],
+                                }
+                        except Exception:
+                            existing = {
+                                "hostname": asset_hostname,
+                                "asset_id": asset_id_str,
+                                "scan_id": scan_id,
+                                "entries": [],
+                            }
+                    existing.setdefault("entries", [])
+                    existing["entries"].append(
+                        {
+                            "timestamp_utc": datetime.utcnow().isoformat() + "Z",
+                            "section": section,
+                            "payload": payload,
+                        }
+                    )
+                    path.write_text(json.dumps(existing, default=str, indent=2), encoding="utf-8")
+
+            def _write_crypto_trace(asset_id_str: str, asset_hostname: str, raw_data: dict, fingerprint: dict | None, error: str | None = None):
+                """Persist per-asset raw + parsed crypto inspection evidence for debugging/audit."""
+                fp = fingerprint or {}
+                tls = fp.get("tls") or {}
+                pqc = fp.get("pqc") or {}
+                pqcscan = pqc.get("pqcscan") or {}
+                record = {
+                    "scan_id": scan_id,
+                    "asset_id": asset_id_str,
+                    "hostname": asset_hostname,
+                    "timestamp_utc": datetime.utcnow().isoformat() + "Z",
+                    "raw_discovery_input": raw_data or {},
+                    "raw_tls_prefetched": (raw_data or {}).get("tls_results"),
+                    "parsed_crypto_fingerprint": fingerprint,
+                    "engines": {
+                        "tls_engine": tls.get("engine"),
+                        "pqc_detection_method": pqc.get("detection_method"),
+                        "pqcscan_performed": pqcscan.get("performed"),
+                        "asset_type_classifier": "classify_asset_type",
+                    },
+                    "error": error,
+                }
+                with trace_lock:
+                    with trace_file.open("a", encoding="utf-8") as f:
+                        f.write(json.dumps(record, default=str))
+                        f.write("\n")
+                subdomain_crypto_payload = {
+                    "scan_id": scan_id,
+                    "asset_id": asset_id_str,
+                    "hostname": asset_hostname,
+                    "phase": "phase_2_crypto_inspection",
+                    "raw_input_initial_discovery": raw_data or {},
+                    "raw_engine_outputs": {
+                        "openssl_raw_text": tls.get("raw_openssl_output"),
+                        "pqcscan_raw_json": pqcscan.get("raw_output_json"),
+                        "pqcscan_command": pqcscan.get("command"),
+                    },
+                    "parsed_output": fingerprint,
+                    "db_payload_preview": {
+                        "asset_update": {
+                            "tls_version": tls.get("negotiated_protocol"),
+                            "hosting_provider": (fp.get("infrastructure") or {}).get("hosting_provider"),
+                            "cdn_detected": (fp.get("infrastructure") or {}).get("cdn_detected"),
+                            "waf_detected": (fp.get("infrastructure") or {}).get("waf_detected"),
+                            "web_server": (fp.get("infrastructure") or {}).get("server_header"),
+                            "auth_mechanisms": ",".join((fp.get("auth") or {}).get("auth_mechanisms", [])),
+                            "jwt_algorithm": (fp.get("auth") or {}).get("jwt_algorithm"),
+                            "asset_type": fp.get("asset_type"),
+                        },
+                        "certificate_count_to_db": len(fp.get("certificates", [])),
+                    },
+                    "frontend_payload_preview": {
+                        "tls": fp.get("tls"),
+                        "pqc": fp.get("pqc"),
+                        "quantum_summary": fp.get("quantum_summary"),
+                    },
+                    "error": error,
+                }
+                _append_subdomain_block(asset_id_str, asset_hostname, "CRYPTO_TRACE", subdomain_crypto_payload)
 
             # Close main session before thread pool to prevent concurrent access
             db.close()
@@ -193,19 +302,25 @@ class ScanOrchestrator:
 
             def process_crypto(asset_id_str, asset_hostname):
                 t0 = time.time()
+                raw_data = raw_asset_map.get(asset_hostname, {})
                 try:
-                    raw_data = raw_asset_map.get(asset_hostname, {})
                     has_prefetched = raw_data.get("tls_results") is not None
-                    fp = inspect_asset(asset_hostname, pre_fetched_tls=raw_data.get("tls_results"))
+                    fp = inspect_asset(
+                        asset_hostname,
+                        pre_fetched_tls=raw_data.get("tls_results"),
+                        discovered_ip=raw_data.get("ip_v4"),
+                    )
                     local_db = SessionLocal()
                     try:
                         save_crypto_results(scan_id, asset_id_str, fp, local_db)
                     finally:
                         local_db.close()
+                    _write_crypto_trace(asset_id_str, asset_hostname, raw_data, fp)
                     certs = len(fp.get("certificates", []))
                     logger.debug(f"{TAG} P2: ✓ {asset_hostname} — {certs} certs, prefetched={has_prefetched}, {time.time()-t0:.1f}s")
                     return asset_id_str, fp
                 except Exception as e:
+                    _write_crypto_trace(asset_id_str, asset_hostname, raw_data, None, error=str(e))
                     logger.error(f"{TAG} P2: ✗ {asset_hostname} FAILED ({time.time()-t0:.1f}s): {e}")
                     return asset_id_str, None
 
@@ -236,6 +351,7 @@ class ScanOrchestrator:
             
             logger.info(f"{TAG} P2: Crypto complete — {successful_crypto}/{total_mapped} succeeded, "
                        f"{failed_crypto} failed, {time.time()-crypto_t0:.1f}s elapsed={_elapsed()}")
+            logger.info(f"{TAG} P2: Crypto raw trace written to {trace_file}")
             summary["crypto_scans"] = successful_crypto
             summary["phases_completed"].append(2)
 
@@ -320,6 +436,46 @@ class ScanOrchestrator:
                         finally:
                             local_db.close()
                         n_comps = len(cbom_data.get("components", []))
+                        _append_subdomain_block(
+                            asset_id_str,
+                            asset_hostname,
+                            "TRACE_SECTION_BREAK",
+                            {
+                                "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+                                "scan_id": scan_id,
+                                "asset_id": asset_id_str,
+                                "hostname": asset_hostname,
+                            },
+                        )
+                        _append_subdomain_block(
+                            asset_id_str,
+                            asset_hostname,
+                            "CBOM_AND_PQCSCAN_TRACE",
+                            {
+                                "scan_id": scan_id,
+                                "asset_id": asset_id_str,
+                                "hostname": asset_hostname,
+                                "raw_cbom_builder_output": cbom_data,
+                                "raw_cbom_json_written": cbom_data.get("cbom_json"),
+                                "cbom_file_path": file_path,
+                                "db_payload_preview": {
+                                    "cbom_record": {
+                                        "scan_id": scan_id,
+                                        "asset_id": asset_id_str,
+                                        "total_components": (cbom_data.get("stats") or {}).get("total_components"),
+                                        "vulnerable_components": (cbom_data.get("stats") or {}).get("vulnerable_count"),
+                                        "quantum_ready_pct": (cbom_data.get("stats") or {}).get("quantum_ready_pct"),
+                                        "file_path": file_path,
+                                    },
+                                    "cbom_components": cbom_data.get("components", []),
+                                },
+                                "frontend_payload_preview": {
+                                    "components": cbom_data.get("components", []),
+                                    "stats": cbom_data.get("stats", {}),
+                                },
+                                "raw_pqcscan_json_from_phase2": ((fp.get("pqc") or {}).get("pqcscan") or {}).get("raw_output_json"),
+                            },
+                        )
                         logger.debug(f"{TAG} P3: ✓ {asset_hostname} — {n_comps} components, {time.time()-t0:.1f}s")
                         return True
                     else:

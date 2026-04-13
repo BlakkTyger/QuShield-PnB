@@ -198,12 +198,51 @@ def compute_risk_score(
     else:
         pqc_score = 300  # No crypto data = max risk
 
+    # Cert-vs-KEX transition adjustment:
+    # - Hybrid KEX with classical cert is partial progress (small risk reduction).
+    # - Pure classical cert + classical KEX remains higher risk.
+    certs_for_posture = asset_data.get("certificates", []) or []
+    cert_key_types = [(c.get("key_type") or "").upper() for c in certs_for_posture]
+    has_classical_cert = any(
+        ("RSA" in c) or ("ECDSA" in c) or (c.startswith("EC-"))
+        for c in cert_key_types
+    )
+    has_pqc_cert = any(
+        any(marker in c for marker in ("ML-DSA", "SLH-DSA", "FALCON", "FN-DSA"))
+        for c in cert_key_types
+    )
+    kex_name = (asset_data.get("tls_key_exchange") or "").upper()
+    has_hybrid_kex = bool(
+        (compliance_data or {}).get("hybrid_mode_active")
+        or ("MLKEM" in kex_name)
+        or ("ML-KEM" in kex_name)
+        or ("KYBER" in kex_name)
+    )
+
+    posture_adjustment = 0
+    posture_note = "No cert/KEX posture adjustment"
+    if has_hybrid_kex and has_classical_cert and not has_pqc_cert:
+        posture_adjustment = -40
+        posture_note = "Hybrid/PQC KEX present, but certificate auth remains classical (partial transition)"
+    elif (not has_hybrid_kex) and has_classical_cert:
+        posture_adjustment = 20
+        posture_note = "Classical certificate and no hybrid/PQC key exchange detected"
+    elif has_hybrid_kex and has_pqc_cert:
+        posture_adjustment = -80
+        posture_note = "PQC/hybrid detected in both certificate and key exchange planes"
+    pqc_score = max(0, min(300, pqc_score + posture_adjustment))
+
     factors.append({
         "name": "pqc_deployment",
         "score": pqc_score,
         "weight": 0.30,
         "max_possible": 300,
-        "rationale": f"{pqc_count}/{total_crypto} algorithms are PQC-safe ({pqc_ratio*100:.0f}%)" if total_crypto > 0 else "No crypto components found",
+        "rationale": (
+            f"{pqc_count}/{total_crypto} algorithms are PQC-safe ({pqc_ratio*100:.0f}%). "
+            f"{posture_note} (adjustment {posture_adjustment:+d})."
+            if total_crypto > 0
+            else f"No crypto components found. {posture_note} (adjustment {posture_adjustment:+d})."
+        ),
     })
 
     # ── Factor 2: HNDL Exposure (25%) ────────────────────────────────────
@@ -639,6 +678,7 @@ def assess_asset_risk(asset_id: str, scan_id: str, db) -> dict:
     from app.models.asset import Asset
     from app.models.cbom import CBOMRecord, CBOMComponent
     from app.models.certificate import Certificate
+    from app.models.compliance import ComplianceResult
     from app.models.risk import RiskScore, RiskFactor
 
     asset_uuid = uuid_mod.UUID(asset_id) if isinstance(asset_id, str) else asset_id
@@ -666,12 +706,17 @@ def assess_asset_risk(asset_id: str, scan_id: str, db) -> dict:
         Certificate.asset_id == asset_uuid,
         Certificate.scan_id == scan_uuid,
     ).all()
+    compliance = db.query(ComplianceResult).filter(
+        ComplianceResult.asset_id == asset_uuid,
+        ComplianceResult.scan_id == scan_uuid,
+    ).order_by(ComplianceResult.computed_at.desc()).first()
 
     # Build data dicts for risk computation
     asset_type = _infer_asset_type(asset.hostname)
     asset_data = {
         "hostname": asset.hostname,
         "asset_type": asset_type,
+        "tls_key_exchange": certificates[0].negotiated_cipher if certificates else None,
         "certificates": [
             {
                 "key_type": c.key_type,
@@ -697,9 +742,30 @@ def assess_asset_risk(asset_id: str, scan_id: str, db) -> dict:
             for c in cbom_components
         ],
     }
+    kex_component_name = next(
+        (
+            c.get("name")
+            for c in cbom_data["components"]
+            if c.get("type") == "key_exchange" and c.get("name")
+        ),
+        None,
+    )
+    if kex_component_name:
+        asset_data["tls_key_exchange"] = kex_component_name
 
     # Compute risk score
-    risk_result = compute_risk_score(asset_data, cbom_data)
+    risk_result = compute_risk_score(
+        asset_data,
+        cbom_data,
+        compliance_data={
+            "hybrid_mode_active": bool(compliance.hybrid_mode_active) if compliance else False,
+            "fips_203_deployed": bool(compliance.fips_203_deployed) if compliance else False,
+            "fips_204_deployed": bool(compliance.fips_204_deployed) if compliance else False,
+            "fips_205_deployed": bool(compliance.fips_205_deployed) if compliance else False,
+            "crypto_agility_score": (compliance.crypto_agility_score if compliance else 50),
+            "compliance_pct": (compliance.compliance_pct if compliance else 50),
+        },
+    )
 
     # Compute HNDL window
     first_seen = asset.created_at if hasattr(asset, "created_at") and asset.created_at else datetime.now(timezone.utc)

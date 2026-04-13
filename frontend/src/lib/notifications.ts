@@ -6,6 +6,7 @@ export type NotificationType = {
     message: string;
     date: string;
     read: boolean;
+    scanId?: string;
 };
 
 // A simple event-based store since we don't have Zustand
