@@ -139,7 +139,7 @@ export default function Header() {
                     >
                       <h4 className="font-semibold text-xs">{n.title}</h4>
                       <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
-                        {n.message}
+                        {n.panelMessage || n.message}
                       </p>
                     </div>
                   ))

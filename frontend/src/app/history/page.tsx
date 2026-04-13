@@ -6,7 +6,7 @@ import { useScans } from "@/lib/hooks";
 import { EmptyState, Skeleton, RiskBadge } from "@/components/ui";
 import { RefreshCw, ArrowRight, Clock, Zap, Search as SearchIcon, Layers } from "lucide-react";
 
-type ScanTypeFilter = "" | "quick" | "shallow" | "deep";
+type ScanTypeFilter = "" | "quick" | "shallow" | "deep" | "deeper";
 
 export default function ScanHistoryPage() {
   const router = useRouter();
@@ -39,6 +39,7 @@ export default function ScanHistoryPage() {
       case "quick": return "var(--risk-ready)";
       case "shallow": return "var(--accent-gold)";
       case "deep": return "var(--accent-magenta)";
+      case "deeper": return "var(--accent-gold)";
       default: return "var(--text-muted)";
     }
   };
@@ -95,6 +96,7 @@ export default function ScanHistoryPage() {
           <option value="quick">Quick</option>
           <option value="shallow">Shallow</option>
           <option value="deep">Deep</option>
+          <option value="deeper">More Deep</option>
         </select>
         <select
           className="py-2.5 px-4 text-sm rounded-lg"

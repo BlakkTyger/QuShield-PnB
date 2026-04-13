@@ -4,6 +4,7 @@ export type NotificationType = {
     id: string;
     title: string;
     message: string;
+    panelMessage?: string;
     date: string;
     read: boolean;
     scanId?: string;

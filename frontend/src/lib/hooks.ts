@@ -82,8 +82,8 @@ export function useCancelScan() {
 
 export function useStartScan() {
   return useMutation({
-    mutationFn: async (targets: string[]) => {
-      const { data } = await api.post<ScanResponse>("/scans/", { targets });
+    mutationFn: async (params: { targets: string[]; scan_type?: "deep" | "deeper" }) => {
+      const { data } = await api.post<ScanResponse>("/scans/", params);
       return data;
     },
   });

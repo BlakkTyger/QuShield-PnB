@@ -3,16 +3,16 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
-import { useStartScan, useQuickScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
+import { useStartScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 import { notificationStore } from "@/lib/notifications";
 
-type ScanTier = "quick" | "shallow" | "deep";
+type ScanTier = "shallow" | "deep" | "deeper";
 
 const SCAN_TIERS = [
-  { value: "quick" as ScanTier, label: "Quick", time: "3–8s", desc: "Single SSL probe", icon: Zap },
   { value: "shallow" as ScanTier, label: "Shallow", time: "30–90s", desc: "CT discovery + top-N TLS", icon: Clock },
   { value: "deep" as ScanTier, label: "Deep", time: "10–15 min", desc: "Full infrastructure audit", icon: Layers },
+  { value: "deeper" as ScanTier, label: "More Deep", time: "15–20 min", desc: "Extended deep profile", icon: ShieldAlert },
 ];
 
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
@@ -40,7 +40,6 @@ export default function QuickScanPage() {
 
   const router = useRouter();
   const startScan = useStartScan();
-  const quickScan = useQuickScan();
   const shallowScan = useShallowScan();
   const cancelScan = useCancelScan();
 
@@ -138,25 +137,8 @@ export default function QuickScanPage() {
       localStorage.removeItem("qushield_active_scan");
     }
     try {
-      if (scanTier === "quick") {
-        const res = await quickScan.mutateAsync({ domain: domain.trim() });
-        setQuickResult(res);
-        setIsScanning(false);
-        notificationStore.addNotification({
-          title: "Quick Scan Finished",
-          message: `Scanned 1 asset on ${domain.trim()}`,
-          scanId: res.scan_id || undefined,
-        });
-        // If the quick scan returned a cached deep scan, load it
-        if (res.cached && res.scan_id) {
-          setScanId(res.scan_id);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("qushield_active_scan", res.scan_id);
-            localStorage.setItem("qushield_active_domain", domain.trim());
-          }
-        }
-        return;
-      }
+      // QUICK SCAN FLOW DISABLED.
+      // if (scanTier === "quick") { ... }
       if (scanTier === "shallow") {
         const res = await shallowScan.mutateAsync({ domain: domain.trim() });
         setQuickResult(res);
@@ -176,7 +158,10 @@ export default function QuickScanPage() {
         return;
       }
       // Deep scan
-      const res = await startScan.mutateAsync([domain.trim()]);
+      const res = await startScan.mutateAsync({
+        targets: [domain.trim()],
+        scan_type: scanTier === "deeper" ? "deeper" : "deep",
+      });
       setScanId(res.scan_id);
       if (typeof window !== "undefined") {
         localStorage.setItem("qushield_active_scan", res.scan_id);
@@ -185,7 +170,7 @@ export default function QuickScanPage() {
     } catch {
       setIsScanning(false);
     }
-  }, [domain, scanTier, startScan, quickScan, shallowScan]);
+  }, [domain, scanTier, startScan, shallowScan]);
 
   const handleCancel = useCallback(async () => {
     if (!scanId || !isScanning) return;
@@ -204,7 +189,7 @@ export default function QuickScanPage() {
   }, [scanId, isScanning, cancelScan]);
 
   const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 6) : 0;
-  const showResults = scanTier === "deep" && scanStatus?.status === "completed" && summary && !isScanning;
+  const showResults = (scanTier === "deep" || scanTier === "deeper") && scanStatus?.status === "completed" && summary && !isScanning;
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in pb-20">
@@ -254,7 +239,7 @@ export default function QuickScanPage() {
             disabled={isScanning || !domain.trim()}
             className="btn-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:scale-100 whitespace-nowrap"
           >
-            {isScanning ? <Loader2 size={24} className="animate-spin" /> : <Zap size={24} />}
+            {isScanning ? <Loader2 size={24} className="animate-spin" /> : <Layers size={24} />}
             {isScanning ? "Scanning…" : "Scan Now"}
           </button>
         </div>
@@ -314,9 +299,9 @@ export default function QuickScanPage() {
             Probing Target
           </h3>
           <p className="text-sm max-w-md leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            {scanTier === "quick"
-              ? "Establishing secure connection and assessing primary TLS endpoint for quantum risk posture..."
-              : "Discovering active infrastructure elements across the perimeter. This may take up to 90 seconds depending on target size..."}
+            {scanTier === "shallow"
+              ? "Discovering active infrastructure elements across the perimeter. This may take up to 90 seconds depending on target size..."
+              : "Running full deep infrastructure analysis. This may take several minutes depending on target size..."}
           </p>
         </div>
       )}
@@ -567,56 +552,9 @@ export default function QuickScanPage() {
           <div className="absolute -top-20 -right-20 w-80 h-80 bg-[var(--accent-gold)] opacity-5 blur-3xl rounded-full"></div>
 
           <h3 className="text-sm font-bold uppercase tracking-wider mb-8 flex justify-between items-center" style={{ color: "var(--text-muted)" }}>
-            {quickResult.scan_type === "quick" ? "Quick Probe Results" : "Shallow Scan Results"}
+            Shallow Scan Results
             <span className="text-xs font-mono" style={{ color: "var(--text-secondary)" }}>{quickResult.duration_ms}ms</span>
           </h3>
-
-          {quickResult.scan_type === "quick" && quickResult.risk && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center justify-center">
-                <ScoreGauge
-                  score={(quickResult.risk as any).score || 0}
-                  size={180}
-                  label={(quickResult.risk as any).classification?.replace("quantum_", "") || ""}
-                />
-              </div>
-              <div className="md:col-span-2 grid grid-cols-2 gap-4">
-                <MetricCard
-                  title="TLS Protocol"
-                  value={(quickResult.tls as any)?.negotiated_protocol || "Unknown"}
-                  subtitle={(quickResult.tls as any)?.forward_secrecy ? "Forward Secrecy OK" : "No Forward Secrecy"}
-                  icon={<Lock size={16} />}
-                />
-                <MetricCard
-                  title="Target Host"
-                  value={String(quickResult.domain)}
-                  subtitle={`Port ${quickResult.port}`}
-                  icon={<Server size={16} />}
-                />
-                <MetricCard
-                  title="NIST Post-Quantum"
-                  value={`Level ${(quickResult.quantum_assessment as any)?.nist_level || 1}`}
-                  subtitle={(quickResult.quantum_assessment as any)?.is_quantum_vulnerable ? "Vulnerable to Shor's" : "PQC Protected"}
-                  icon={<Shield size={16} />}
-                  color={(quickResult.quantum_assessment as any)?.is_quantum_vulnerable ? "var(--risk-critical)" : "var(--risk-ready)"}
-                />
-                <div className="flex items-center justify-center p-2 rounded-xl" style={{ border: "1px dashed var(--border-subtle)" }}>
-                  <button
-                    className="w-full h-full py-4 rounded-lg font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all hover:bg-[var(--accent-gold-dim)] hover:text-[var(--accent-gold)]"
-                    style={{ color: "var(--text-primary)" }}
-                    onClick={() => {
-                      setScanTier("deep");
-                      setDomain(String(quickResult.domain));
-                      // Slight delay to allow state to settle
-                      setTimeout(() => handleScan(), 100);
-                    }}
-                  >
-                    Run Deep Scan <ArrowRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {quickResult.scan_type === "shallow" && quickResult.summary && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

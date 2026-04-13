@@ -68,7 +68,8 @@ async def create_scan(request: ScanRequest, current_user: User = Depends(get_cur
 
     orch = ScanOrchestrator()
     try:
-        scan_id = orch.start_scan(request.targets, request.config, user_id=current_user.id)
+        scan_type = request.scan_type if request.scan_type in ("deep", "deeper") else "deep"
+        scan_id = orch.start_scan(request.targets, request.config, user_id=current_user.id, scan_type=scan_type)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     

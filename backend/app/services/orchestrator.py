@@ -51,14 +51,14 @@ class ScanOrchestrator:
     def __init__(self):
         pass
 
-    def start_scan(self, targets: list[str], config: dict = None, user_id=None) -> str:
+    def start_scan(self, targets: list[str], config: dict = None, user_id=None, scan_type: str = "deep") -> str:
         valid_targets = validate_targets(targets)
         if not valid_targets:
             raise ValueError("No valid targets provided that pass DNS resolution.")
 
         db: Session = SessionLocal()
         try:
-            scan_job = create_scan_job(valid_targets, db, user_id=user_id)
+            scan_job = create_scan_job(valid_targets, db, user_id=user_id, scan_type=scan_type)
             scan_id = str(scan_job.id)
             logger.info(f"Started scan job: {scan_id}")
             return scan_id

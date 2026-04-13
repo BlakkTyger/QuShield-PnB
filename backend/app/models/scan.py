@@ -20,6 +20,7 @@ class ScanType(str, enum.Enum):
     QUICK = "quick"
     SHALLOW = "shallow"
     DEEP = "deep"
+    DEEPER = "deeper"
 
 
 class ScanJob(Base):

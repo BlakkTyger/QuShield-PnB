@@ -75,6 +75,7 @@ export default function ScanAlertCenter() {
           notificationStore.addNotification({
             title: "Deep Scan Finished",
             message: `Scan for ${activeDomain} completed. Click to view results.`,
+            panelMessage: `Scan finished. ${data.total_assets || 0} assets scanned.`,
             scanId: activeScanId,
           });
         } else if (data.status === "cancelled") {

@@ -9,6 +9,7 @@ class ScanRequest(BaseModel):
     """Request to start a new scan."""
     targets: list[str] = Field(..., min_length=1, description="List of domains/IPs to scan")
     config: Optional[dict] = Field(default=None, description="Optional scan configuration overrides")
+    scan_type: str = Field(default="deep", description="Scan type label for history (e.g. deep, deeper)")
 
 
 class ScanPhaseStatus(BaseModel):
