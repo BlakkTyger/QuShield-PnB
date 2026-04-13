@@ -44,7 +44,7 @@ def compute_fingerprint(
 
 def compute_asset_fingerprint(asset: Asset, crypto_fingerprint: dict) -> str:
     """Compute fingerprint from an Asset model + its crypto inspection result."""
-    tls = crypto_fingerprint.get("tls", {})
+    tls = crypto_fingerprint.get("tls") or {}
     certs = crypto_fingerprint.get("certificates", [])
     cert_fp = certs[0].get("sha256_fingerprint", "") if certs else ""
     key_exchange = tls.get("key_exchange", "") or ""

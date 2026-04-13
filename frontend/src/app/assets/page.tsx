@@ -28,8 +28,11 @@ export default function AssetsPage() {
     const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
     if (stored) { setScanId(stored); return; }
     if (scans?.length) {
-      const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      const sorted = [...scans].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      const preferred = sorted.find((s) => s.status === "running" || s.status === "completed");
+      setScanId((preferred || sorted[0]).scan_id);
     }
   }, [scans]);
 

@@ -197,19 +197,50 @@ class ScanOrchestrator:
 
             def _safe_subdomain_filename(hostname: str, asset_id_str: str) -> Path:
                 safe_host = re.sub(r"[^a-zA-Z0-9._-]", "_", hostname or "unknown-host")
-                return subdomains_dir / f"{safe_host}.txt"
+                return subdomains_dir / f"{safe_host}.json"
 
             def _append_subdomain_block(asset_id_str: str, asset_hostname: str, section: str, payload: dict):
-                line_prefix = f"[{datetime.utcnow().isoformat()}Z] [{section}]"
                 path = _safe_subdomain_filename(asset_hostname, asset_id_str)
                 with trace_lock:
-                    with path.open("a", encoding="utf-8") as f:
-                        f.write(f"{line_prefix}\n")
-                        f.write(json.dumps(payload, default=str, indent=2))
-                        f.write("\n\n")
+                    existing = {
+                        "hostname": asset_hostname,
+                        "asset_id": asset_id_str,
+                        "scan_id": scan_id,
+                        "entries": [],
+                    }
+                    if path.exists():
+                        try:
+                            existing = json.loads(path.read_text(encoding="utf-8"))
+                            if not isinstance(existing, dict):
+                                existing = {
+                                    "hostname": asset_hostname,
+                                    "asset_id": asset_id_str,
+                                    "scan_id": scan_id,
+                                    "entries": [],
+                                }
+                        except Exception:
+                            existing = {
+                                "hostname": asset_hostname,
+                                "asset_id": asset_id_str,
+                                "scan_id": scan_id,
+                                "entries": [],
+                            }
+                    existing.setdefault("entries", [])
+                    existing["entries"].append(
+                        {
+                            "timestamp_utc": datetime.utcnow().isoformat() + "Z",
+                            "section": section,
+                            "payload": payload,
+                        }
+                    )
+                    path.write_text(json.dumps(existing, default=str, indent=2), encoding="utf-8")
 
             def _write_crypto_trace(asset_id_str: str, asset_hostname: str, raw_data: dict, fingerprint: dict | None, error: str | None = None):
                 """Persist per-asset raw + parsed crypto inspection evidence for debugging/audit."""
+                fp = fingerprint or {}
+                tls = fp.get("tls") or {}
+                pqc = fp.get("pqc") or {}
+                pqcscan = pqc.get("pqcscan") or {}
                 record = {
                     "scan_id": scan_id,
                     "asset_id": asset_id_str,
@@ -219,9 +250,9 @@ class ScanOrchestrator:
                     "raw_tls_prefetched": (raw_data or {}).get("tls_results"),
                     "parsed_crypto_fingerprint": fingerprint,
                     "engines": {
-                        "tls_engine": (fingerprint or {}).get("tls", {}).get("engine"),
-                        "pqc_detection_method": (fingerprint or {}).get("pqc", {}).get("detection_method"),
-                        "pqcscan_performed": (fingerprint or {}).get("pqc", {}).get("pqcscan", {}).get("performed"),
+                        "tls_engine": tls.get("engine"),
+                        "pqc_detection_method": pqc.get("detection_method"),
+                        "pqcscan_performed": pqcscan.get("performed"),
                         "asset_type_classifier": "classify_asset_type",
                     },
                     "error": error,
@@ -237,28 +268,28 @@ class ScanOrchestrator:
                     "phase": "phase_2_crypto_inspection",
                     "raw_input_initial_discovery": raw_data or {},
                     "raw_engine_outputs": {
-                        "sslyze_raw": ((fingerprint or {}).get("tls") or {}).get("raw_sslyze"),
-                        "pqcscan_raw_json": ((fingerprint or {}).get("pqc") or {}).get("pqcscan", {}).get("raw_output_json"),
-                        "pqcscan_command": ((fingerprint or {}).get("pqc") or {}).get("pqcscan", {}).get("command"),
+                        "openssl_raw_text": tls.get("raw_openssl_output"),
+                        "pqcscan_raw_json": pqcscan.get("raw_output_json"),
+                        "pqcscan_command": pqcscan.get("command"),
                     },
                     "parsed_output": fingerprint,
                     "db_payload_preview": {
                         "asset_update": {
-                            "tls_version": (fingerprint or {}).get("tls", {}).get("negotiated_protocol"),
-                            "hosting_provider": (fingerprint or {}).get("infrastructure", {}).get("hosting_provider"),
-                            "cdn_detected": (fingerprint or {}).get("infrastructure", {}).get("cdn_detected"),
-                            "waf_detected": (fingerprint or {}).get("infrastructure", {}).get("waf_detected"),
-                            "web_server": (fingerprint or {}).get("infrastructure", {}).get("server_header"),
-                            "auth_mechanisms": ",".join(((fingerprint or {}).get("auth") or {}).get("auth_mechanisms", [])),
-                            "jwt_algorithm": ((fingerprint or {}).get("auth") or {}).get("jwt_algorithm"),
-                            "asset_type": (fingerprint or {}).get("asset_type"),
+                            "tls_version": tls.get("negotiated_protocol"),
+                            "hosting_provider": (fp.get("infrastructure") or {}).get("hosting_provider"),
+                            "cdn_detected": (fp.get("infrastructure") or {}).get("cdn_detected"),
+                            "waf_detected": (fp.get("infrastructure") or {}).get("waf_detected"),
+                            "web_server": (fp.get("infrastructure") or {}).get("server_header"),
+                            "auth_mechanisms": ",".join((fp.get("auth") or {}).get("auth_mechanisms", [])),
+                            "jwt_algorithm": (fp.get("auth") or {}).get("jwt_algorithm"),
+                            "asset_type": fp.get("asset_type"),
                         },
-                        "certificate_count_to_db": len((fingerprint or {}).get("certificates", [])),
+                        "certificate_count_to_db": len(fp.get("certificates", [])),
                     },
                     "frontend_payload_preview": {
-                        "tls": (fingerprint or {}).get("tls"),
-                        "pqc": (fingerprint or {}).get("pqc"),
-                        "quantum_summary": (fingerprint or {}).get("quantum_summary"),
+                        "tls": fp.get("tls"),
+                        "pqc": fp.get("pqc"),
+                        "quantum_summary": fp.get("quantum_summary"),
                     },
                     "error": error,
                 }

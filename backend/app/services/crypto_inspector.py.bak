@@ -46,8 +46,8 @@ def scan_tls(hostname: str, port: int = 443, timeout: int = 15) -> dict:
     """
     Perform TLS handshake analysis and cipher suite enumeration.
 
-    Uses Python's ssl module first, then falls back to OpenSSL s_client
-    when stdlib probing fails to negotiate TLS data.
+    Uses Python's ssl module to probe TLS versions and cipher suites,
+    falling back to SSLyze for deeper analysis if available.
 
     Returns dict with tls_versions_supported, cipher_suites, negotiated_cipher,
     key_exchange, forward_secrecy, certificate chain, etc.
@@ -66,23 +66,185 @@ def scan_tls(hostname: str, port: int = 443, timeout: int = 15) -> dict:
         "error": None,
     }
 
-    # Primary: stdlib ssl module
+    # Try SSLyze first for comprehensive scanning
+    sslyze_result = None
+    try:
+        sslyze_result = _scan_with_sslyze(hostname, port, timeout)
+        # If SSLyze returned results with cipher suites, use them
+        if sslyze_result.get("cipher_suites") and len(sslyze_result["cipher_suites"]) > 0:
+            return sslyze_result
+        else:
+            logger.warning(
+                f"SSLyze returned empty cipher suites for {hostname}:{port}, falling back to stdlib",
+                extra={"hostname": hostname, "port": port},
+            )
+    except Exception as sslyze_err:
+        logger.warning(
+            f"SSLyze scan failed for {hostname}:{port}, falling back to stdlib: {sslyze_err}",
+            extra={"hostname": hostname, "port": port, "sslyze_error": str(sslyze_err)},
+        )
+
+    # Fallback: stdlib ssl module
     try:
         result = _scan_with_stdlib(hostname, port, timeout)
-        if result.get("negotiated_protocol") and not result.get("error"):
-            return result
+        # Merge SSLyze cert chain (richer — has full chain with intermediates)
+        if sslyze_result and sslyze_result.get("certificate_chain_pem"):
+            result["certificate_chain_pem"] = sslyze_result["certificate_chain_pem"]
     except Exception as e:
         result["error"] = str(e)
-        logger.warning(f"stdlib TLS scan failed for {hostname}:{port}: {e}")
+        logger.error(f"TLS scan failed for {hostname}:{port}: {e}")
 
-    # Fallback: openssl s_client
-    openssl_result = _scan_with_openssl(hostname, port, timeout=timeout)
-    if openssl_result.get("negotiated_protocol") and not openssl_result.get("error"):
-        return openssl_result
-    if openssl_result.get("certificate_chain_pem"):
-        return openssl_result
-    if openssl_result.get("raw_openssl_output"):
-        return openssl_result
+    return result
+
+
+def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
+    """Use SSLyze for comprehensive TLS scanning."""
+    from sslyze import (
+        Scanner,
+        ServerScanRequest,
+        ServerNetworkLocation,
+        ScanCommand,
+    )
+
+    result = {
+        "hostname": hostname,
+        "port": port,
+        "tls_versions_supported": [],
+        "cipher_suites": [],
+        "negotiated_cipher": None,
+        "negotiated_protocol": None,
+        "key_exchange": None,
+        "forward_secrecy": False,
+        "certificate_chain_pem": [],
+        "server_name": None,
+        "error": None,
+        "engine": "sslyze",
+        "raw_sslyze": {
+            "target": {"hostname": hostname, "port": port},
+            "accepted_cipher_suites_by_tls": {},
+            "certificate_chain_subjects": [],
+            "errors": [],
+        },
+    }
+
+    location = ServerNetworkLocation(hostname=hostname, port=port)
+    request = ServerScanRequest(
+        server_location=location,
+        scan_commands={
+            ScanCommand.CERTIFICATE_INFO,
+            # ScanCommand.TLS_1_0_CIPHER_SUITES,
+            # ScanCommand.TLS_1_1_CIPHER_SUITES,
+            ScanCommand.TLS_1_2_CIPHER_SUITES,
+            ScanCommand.TLS_1_3_CIPHER_SUITES,
+        },
+    )
+
+    scanner = Scanner()
+    scanner.queue_scans([request])
+
+    for scan_result in scanner.get_results():
+        # Check for connectivity errors
+        if scan_result.connectivity_error_trace:
+            result["error"] = "Connectivity error"
+            return result
+
+        # Cipher suites by TLS version
+        tls_version_map = {
+            ScanCommand.TLS_1_0_CIPHER_SUITES: "TLSv1.0",
+            ScanCommand.TLS_1_1_CIPHER_SUITES: "TLSv1.1",
+            ScanCommand.TLS_1_2_CIPHER_SUITES: "TLSv1.2",
+            ScanCommand.TLS_1_3_CIPHER_SUITES: "TLSv1.3",
+        }
+
+        for cmd, version_name in tls_version_map.items():
+            try:
+                cmd_result = scan_result.scan_result.scan_commands_results.get(cmd)
+                if cmd_result is None:
+                    continue
+                accepted = cmd_result.accepted_cipher_suites
+                result["raw_sslyze"]["accepted_cipher_suites_by_tls"][version_name] = [
+                    {
+                        "name": cs.cipher_suite.name,
+                        "key_size": getattr(cs.cipher_suite, "key_size", None),
+                    }
+                    for cs in (accepted or [])
+                ]
+                if accepted:
+                    result["tls_versions_supported"].append(version_name)
+                    for cs in accepted:
+                        cipher_name = cs.cipher_suite.name
+                        result["cipher_suites"].append({
+                            "name": cipher_name,
+                            "tls_version": version_name,
+                            "key_size": getattr(cs.cipher_suite, 'key_size', None),
+                        })
+            except Exception:
+                result["raw_sslyze"]["errors"].append(f"cipher_enum_failed:{version_name}")
+                continue
+
+        # Certificate chain
+        try:
+            cert_result = scan_result.scan_result.scan_commands_results.get(
+                ScanCommand.CERTIFICATE_INFO
+            )
+            if cert_result:
+                for deployment in cert_result.certificate_deployments:
+                    for cert in deployment.received_certificate_chain:
+                        pem = cert.public_bytes(serialization.Encoding.PEM)
+                        result["certificate_chain_pem"].append(pem)
+                        result["raw_sslyze"]["certificate_chain_subjects"].append(_get_cn(cert))
+
+                    # Negotiated cipher from the leaf
+                    if deployment.received_certificate_chain:
+                        leaf = deployment.received_certificate_chain[0]
+                        result["server_name"] = _get_cn(leaf)
+        except Exception:
+            result["raw_sslyze"]["errors"].append("certificate_info_parse_failed")
+
+        # Determine negotiated cipher and forward secrecy from best TLS version
+        if result["cipher_suites"]:
+            # Pick the first cipher from the highest TLS version
+            best = result["cipher_suites"][-1]  # last added = highest version
+            result["negotiated_cipher"] = best["name"]
+            result["negotiated_protocol"] = best["tls_version"]
+
+            # Check forward secrecy
+            fs_prefixes = ("TLS_", "ECDHE_", "DHE_")
+            result["forward_secrecy"] = any(
+                cs["name"].startswith(p) for p in fs_prefixes
+                for cs in result["cipher_suites"]
+                if cs["tls_version"] in ("TLSv1.2", "TLSv1.3")
+            )
+
+            # Key exchange
+            # TLS 1.3 ciphers (TLS_*) do NOT embed the KEX name in the cipher string;
+            # they always use ephemeral KEX (X25519 by default), never RSA key-encipherment.
+            for cs in result["cipher_suites"]:
+                name = cs["name"]
+                if "ECDHE" in name:
+                    result["key_exchange"] = "ECDHE"
+                    break
+                elif "DHE" in name:
+                    result["key_exchange"] = "DHE"
+                    break
+                elif name.startswith("TLS_"):
+                    # TLS 1.3 — ephemeral KEX (X25519 is the standard default)
+                    result["key_exchange"] = "X25519"
+                    break
+                elif "RSA" in name and not name.startswith("TLS_"):
+                    # Only set RSA for pre-TLS-1.3 RSA key-encipherment suites
+                    result["key_exchange"] = "RSA"
+
+    logger.info(
+        f"TLS scan complete for {hostname}:{port}",
+        extra={
+            "hostname": hostname,
+            "tls_versions": result["tls_versions_supported"],
+            "cipher_count": len(result["cipher_suites"]),
+            "negotiated": result["negotiated_cipher"],
+            "forward_secrecy": result["forward_secrecy"],
+        },
+    )
 
     return result
 
@@ -1349,13 +1511,7 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None, 
             tls_result = scan_tls(hostname, selected_port)
             if (not tls_result.get("negotiated_protocol") or tls_result.get("error")) and discovered_ip:
                 # Retry direct IP (keeping SNI hostname) when DNS edge is flaky.
-                try:
-                    tls_result = _scan_with_stdlib(hostname, selected_port, timeout=15, connect_host=discovered_ip)
-                except Exception as ip_retry_err:
-                    logger.warning(
-                        f"Direct-IP stdlib retry failed for {hostname}:{selected_port}: {ip_retry_err}",
-                        extra={"hostname": hostname, "port": selected_port, "connect_host": discovered_ip},
-                    )
+                tls_result = _scan_with_stdlib(hostname, selected_port, timeout=15, connect_host=discovered_ip)
             if (
                 (not tls_result.get("negotiated_protocol"))
                 or tls_result.get("error")
@@ -1623,10 +1779,7 @@ def save_crypto_results(
         Asset.id == (uuid.UUID(asset_id) if isinstance(asset_id, str) else asset_id)
     ).first()
     if asset:
-        negotiated_protocol = tls_data.get("negotiated_protocol")
-        # Preserve discovery-phase HTTP TLS version if crypto scan couldn't negotiate one.
-        if negotiated_protocol:
-            asset.tls_version = negotiated_protocol
+        asset.tls_version = tls_data.get("negotiated_protocol")
 
         # Infrastructure enrichment
         infra = fingerprint.get("infrastructure") or {}
