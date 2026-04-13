@@ -19,6 +19,8 @@ from app.config import PROJECT_ROOT, get_settings
 logger = logging.getLogger(__name__)
 
 
+from app.core.utils import check_binary_format
+
 def resolve_pqcscan_binary() -> Path | None:
     """Return path to PQCscan executable, or None if missing."""
     settings = get_settings()
@@ -26,8 +28,16 @@ def resolve_pqcscan_binary() -> Path | None:
         p = Path(settings.PQCSCAN_BIN)
         return p if p.is_file() else None
     name = "pqcscan.exe" if sys.platform == "win32" else "pqcscan_bin"
-    p = PROJECT_ROOT / "bin" / name
-    return p if p.is_file() else None
+    # Search in backend/bin first, then root/bin
+    search_paths = [
+        PROJECT_ROOT / "bin" / name,
+        PROJECT_ROOT.parent / "bin" / name,
+    ]
+    for p in search_paths:
+        if p.is_file():
+            check_binary_format(p)
+            return p
+    return None
 
 
 def _validate_scan_target(hostname: str, port: int) -> None:

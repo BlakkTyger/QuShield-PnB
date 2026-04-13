@@ -35,6 +35,26 @@ def clean_domain(target: str) -> str:
         
     return clean_tgt.lower()
 
+import sys
+from pathlib import Path
+
 def is_valid_domain(domain: str) -> bool:
     """Check if the string follows a basic domain format."""
     return bool(DOMAIN_REGEX.match(domain))
+
+
+def check_binary_format(path: Path) -> None:
+    """Check if the binary is in ELF format while running on Windows (WinError 193 prevention)."""
+    if sys.platform != "win32" or not path.exists():
+        return
+    try:
+        with open(path, "rb") as f:
+            header = f.read(4)
+            if header == b"\x7fELF":
+                raise RuntimeError(
+                    f"Binary at {path} is a Linux (ELF) executable. "
+                    "Windows cannot run this. Please rebuild it for Windows. "
+                    "Refer to the implementation_plan for build instructions."
+                )
+    except (OSError, IOError):
+        pass
