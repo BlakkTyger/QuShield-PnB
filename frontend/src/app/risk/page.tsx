@@ -119,22 +119,22 @@ export default function RiskPage() {
           {heatmap ? (
             <ResponsiveContainer width="100%" height={350}>
               <ScatterChart margin={{ left: 10, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
                 <XAxis
                   dataKey="x"
                   name="Migration Time (years)"
                   type="number"
                   domain={[0, 6]}
-                  tick={{ fill: "#6b7280", fontSize: 11 }}
-                  label={{ value: "Migration Time (years)", position: "bottom", fill: "#6b7280", fontSize: 11 }}
+                  tick={{ fill: "var(--chart-tick)", fontSize: 11 }}
+                  label={{ value: "Migration Time (years)", position: "bottom", fill: "var(--chart-tick)", fontSize: 11 }}
                 />
                 <YAxis
                   dataKey="y"
                   name="Data Shelf Life (years)"
                   type="number"
                   domain={[0, 20]}
-                  tick={{ fill: "#6b7280", fontSize: 11 }}
-                  label={{ value: "Data Shelf Life (years)", angle: -90, position: "left", fill: "#6b7280", fontSize: 11 }}
+                  tick={{ fill: "var(--chart-tick)", fontSize: 11 }}
+                  label={{ value: "Data Shelf Life (years)", angle: -90, position: "left", fill: "var(--chart-tick)", fontSize: 11 }}
                 />
                 <ZAxis dataKey="score" range={[40, 200]} name="Risk Score" />
                 {/* Mosca threshold line: X + Y = 6 (pessimistic CRQC) */}
@@ -146,12 +146,14 @@ export default function RiskPage() {
                 />
                 <RTooltip
                   contentStyle={{
-                    background: "#111118",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--tooltip-bg)",
+                    border: "1px solid var(--tooltip-border)",
                     borderRadius: 8,
                     fontSize: 12,
-                    color: "#f0f0f5",
+                    color: "var(--tooltip-text)",
                   }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
                   formatter={(value, name) => [String(value), String(name)]}
                   labelFormatter={(label) => `${label}`}
                 />

@@ -28,12 +28,17 @@ def compute_fingerprint(
     tls_version: str,
     negotiated_cipher: str,
     cert_fingerprint: str,
+    key_exchange: str = "",
+    has_pqc: bool = False,
 ) -> str:
     """
     Compute a sha256 fingerprint hash from TLS and cert data.
     Used to detect whether an asset's crypto posture has changed.
     """
-    raw = f"{ip or ''}|{tls_version or ''}|{negotiated_cipher or ''}|{cert_fingerprint or ''}"
+    raw = (
+        f"{ip or ''}|{tls_version or ''}|{negotiated_cipher or ''}|"
+        f"{cert_fingerprint or ''}|{key_exchange or ''}|{int(bool(has_pqc))}"
+    )
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
@@ -41,13 +46,17 @@ def compute_asset_fingerprint(asset: Asset, crypto_fingerprint: dict) -> str:
     """Compute fingerprint from an Asset model + its crypto inspection result."""
     tls = crypto_fingerprint.get("tls", {})
     certs = crypto_fingerprint.get("certificates", [])
-    cert_fp = certs[0].get("fingerprint", "") if certs else ""
+    cert_fp = certs[0].get("sha256_fingerprint", "") if certs else ""
+    key_exchange = tls.get("key_exchange", "") or ""
+    has_pqc = (crypto_fingerprint.get("quantum_summary") or {}).get("has_pqc", False)
 
     return compute_fingerprint(
         ip=asset.ip_v4 or asset.ip_v6 or "",
         tls_version=tls.get("negotiated_protocol", ""),
         negotiated_cipher=tls.get("negotiated_cipher", ""),
         cert_fingerprint=cert_fp,
+        key_exchange=key_exchange,
+        has_pqc=has_pqc,
     )
 
 

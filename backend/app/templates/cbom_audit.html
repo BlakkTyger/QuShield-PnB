@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CBOM Audit Package</title>
+    <style>
+        @page { size: A4; margin: 18mm; }
+        body { font-family: Inter, Arial, sans-serif; color: #0f172a; font-size: 11px; }
+        h1 { margin: 0; color: #7d002c; }
+        h2 { margin: 16px 0 8px; font-size: 13px; color: #1e293b; }
+        .meta { color: #64748b; margin: 6px 0 12px; }
+        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; }
+        .label { font-size: 9px; color: #64748b; text-transform: uppercase; }
+        .value { font-size: 16px; font-weight: 700; margin-top: 3px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { border: 1px solid #e2e8f0; padding: 7px; text-align: left; }
+        th { background: #f8fafc; font-size: 10px; color: #64748b; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <h1>CBOM Audit Package</h1>
+    <div class="meta">Scan {{ scan_id }} | Targets: {{ targets | join(", ") }} | Generated {{ generation_date }}</div>
+
+    <div class="summary">
+        <div class="box"><div class="label">Total Components</div><div class="value">{{ stats.total_cbom_components }}</div></div>
+        <div class="box"><div class="label">Vulnerable Components</div><div class="value">{{ stats.vulnerable_cbom_components }}</div></div>
+        <div class="box"><div class="label">Assets With CBOM</div><div class="value">{{ assets | selectattr("cbom_components") | list | length }}</div></div>
+        <div class="box"><div class="label">Top Algorithms</div><div class="value">{{ top_algorithms | length }}</div></div>
+    </div>
+
+    <h2>Top Algorithms</h2>
+    <table>
+        <thead><tr><th>Algorithm</th><th>Occurrences</th></tr></thead>
+        <tbody>
+            {% for algo in top_algorithms %}
+            <tr><td>{{ algo.name }}</td><td>{{ algo.count }}</td></tr>
+            {% else %}
+            <tr><td colspan="2">No CBOM components found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Asset CBOM Readiness</h2>
+    <table>
+        <thead><tr><th>Asset</th><th>Type</th><th>Components</th><th>Quantum-Ready %</th><th>Risk</th></tr></thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                <td>{{ asset.hostname }}</td>
+                <td>{{ asset.asset_type }}</td>
+                <td>{{ asset.cbom_components }}</td>
+                <td>{{ asset.cbom_ready_pct }}</td>
+                <td>{{ asset.risk_classification }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

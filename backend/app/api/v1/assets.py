@@ -3,10 +3,14 @@ Assets API Router — paginated asset inventory, search, shadow detection.
 """
 from typing import Optional
 from uuid import UUID
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+import threading
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, case
 
 from app.core.database import get_db
 from app.models.asset import Asset, AssetPort
@@ -16,6 +20,95 @@ from app.models.compliance import ComplianceResult
 from app.models.cbom import CBOMRecord, CBOMComponent
 
 router = APIRouter()
+_ASSET_TRACE_DIR = Path("backend/data/asset_table_traces")
+_ASSET_TRACE_LOCK = threading.Lock()
+
+
+def _write_asset_table_trace(scan_id: Optional[UUID], endpoint: str, asset_payload: dict) -> None:
+    """Append one JSONL trace row for asset-table value lineage."""
+    scan_key = str(scan_id) if scan_id else "unscoped"
+    trace_path = _ASSET_TRACE_DIR / f"{scan_key}.txt"
+    _ASSET_TRACE_DIR.mkdir(parents=True, exist_ok=True)
+    with _ASSET_TRACE_LOCK:
+        with trace_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(asset_payload, default=str))
+            f.write("\n")
+
+def _derive_key_exchange_from_cipher(negotiated_cipher: str | None) -> str | None:
+    if not negotiated_cipher:
+        return None
+    name = negotiated_cipher.upper()
+    if "ECDHE" in name:
+        return "ECDHE"
+    if "DHE" in name:
+        return "DHE"
+    if name.startswith("TLS_"):
+        return "X25519"
+    if "RSA" in name:
+        return "RSA"
+    return negotiated_cipher
+
+
+def _derive_crypto_transition_state(
+    cert_key_type: str | None,
+    tls_key_exchange: str | None,
+    compliance: ComplianceResult | None,
+) -> dict:
+    """Expose cert-plane vs KEX-plane posture for frontend clarity."""
+    cert_upper = (cert_key_type or "").upper()
+    kex_upper = (tls_key_exchange or "").upper()
+    classical_markers = ("RSA", "ECDSA", "ECDHE", "DHE", "EC-")
+    pqc_markers = ("ML-KEM", "MLKEM", "KYBER", "ML-DSA", "SLH-DSA", "FALCON", "FN-DSA")
+
+    cert_plane = "unknown"
+    if cert_upper:
+        cert_plane = "pqc" if any(m in cert_upper for m in pqc_markers) else "classical"
+
+    if compliance and compliance.hybrid_mode_active:
+        kex_plane = "hybrid_pqc"
+    elif kex_upper and any(m in kex_upper for m in ("ML-KEM", "MLKEM", "KYBER")):
+        kex_plane = "hybrid_pqc" if any(m in kex_upper for m in ("X25519", "ECDHE", "DHE")) else "pqc"
+    elif kex_upper and any(m in kex_upper for m in classical_markers):
+        kex_plane = "classical"
+    else:
+        kex_plane = "unknown"
+
+    if cert_plane == "pqc" and kex_plane in ("pqc", "hybrid_pqc"):
+        transition_state = "full_pqc_transition"
+    elif cert_plane == "classical" and kex_plane == "hybrid_pqc":
+        transition_state = "partial_pqc_transition"
+    elif cert_plane == "classical" and kex_plane in ("classical", "unknown"):
+        transition_state = "classical_only"
+    else:
+        transition_state = "unknown"
+
+    return {
+        "cert_crypto_plane": cert_plane,
+        "kex_crypto_plane": kex_plane,
+        "crypto_transition_state": transition_state,
+    }
+
+
+def _resolve_tls_key_exchange(
+    db: Session,
+    asset_id: UUID,
+    cert: Certificate | None,
+    compliance: ComplianceResult | None,
+) -> str | None:
+    """Prefer CBOM key_exchange evidence; fallback to cert-cipher-derived display."""
+    cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset_id).order_by(CBOMRecord.id.desc()).first()
+    if cbom_rec:
+        kex_comp = db.query(CBOMComponent).filter(
+            CBOMComponent.cbom_id == cbom_rec.id,
+            CBOMComponent.component_type == "key_exchange",
+        ).first()
+        if kex_comp and kex_comp.name and kex_comp.name.strip():
+            return kex_comp.name
+
+    kex = _derive_key_exchange_from_cipher(cert.negotiated_cipher if cert else None)
+    if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
+        return "X25519MLKEM768 (Hybrid)" if compliance.hybrid_mode_active else "ML-KEM Key Exchange"
+    return kex
 
 
 @router.get("")
@@ -61,6 +154,12 @@ def list_assets(
             RiskScore.risk_classification == risk_class
         )
 
+    # Prioritize assets with non-empty CBOM records first (for CBOM Explorer UX).
+    has_populated_cbom = db.query(CBOMRecord.id).filter(
+        and_(CBOMRecord.asset_id == Asset.id, CBOMRecord.total_components > 0)
+    ).exists()
+    query = query.order_by(case((has_populated_cbom, 0), else_=1).asc())
+
     # Sorting
     sort_col = getattr(Asset, sort_by, Asset.hostname)
     if sort_dir == "desc":
@@ -71,7 +170,6 @@ def list_assets(
     total = query.count()
     assets = query.offset(offset).limit(limit).all()
 
-    from datetime import datetime, timezone
     items = []
     for a in assets:
         ports = db.query(AssetPort).filter(AssetPort.asset_id == a.id).all()
@@ -84,23 +182,86 @@ def list_assets(
             cert_expiry_days = max(0, delta.days)
 
         compliance = db.query(ComplianceResult).filter(ComplianceResult.asset_id == a.id).order_by(ComplianceResult.computed_at.desc()).first()
-        kex = cert.key_type if cert else None
-        
-        # Extract exact PQC info from CBOM if compliance says it is PQC
-        if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
-            # Fetch CBOM Record directly
-            cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == a.id).order_by(CBOMRecord.id.desc()).first()
-            if cbom_rec:
-                kex_comp = db.query(CBOMComponent).filter(
-                    CBOMComponent.cbom_id == cbom_rec.id, 
-                    CBOMComponent.component_type == "key_exchange"
-                ).first()
-                if kex_comp and kex_comp.name and kex_comp.name.strip():
-                    kex = kex_comp.name
-                else:
-                    kex = "X25519MLKEM768 (Hybrid)" if compliance.hybrid_mode_active else "ML-KEM Key Exchange"
-            else:
-                kex = "Classical + Hybrid PQC supported" if compliance.hybrid_mode_active else "PQC Key Exchange"
+        kex = _resolve_tls_key_exchange(db, a.id, cert, compliance)
+        posture = _derive_crypto_transition_state(cert.key_type if cert else None, kex, compliance)
+
+        table_trace = {
+            "trace_type": "asset_table_columns",
+            "endpoint": "list_assets",
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "scan_id": str(a.scan_id),
+            "asset_id": str(a.id),
+            "hostname": a.hostname,
+            "fields": {
+                "tls_version": {
+                    "skipped": True,
+                    "reason": "Comes from Asset.tls_version populated by crypto_inspector.save_crypto_results",
+                    "source": "assets.tls_version",
+                },
+                "tls_key_exchange": {
+                    "raw": {
+                        "compliance_flags": {
+                            "hybrid_mode_active": compliance.hybrid_mode_active if compliance else None,
+                            "fips_203_deployed": compliance.fips_203_deployed if compliance else None,
+                        },
+                        "cbom_key_exchange_component": kex if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed) else None,
+                    },
+                    "parsed": kex if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed) else None,
+                    "source": (
+                        "cbom_components.name (component_type=key_exchange) with compliance override"
+                        if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed)
+                        else "SKIPPED: fallback from Certificate.negotiated_cipher comes from crypto_inspector"
+                    ),
+                    "skipped": False if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed) else True,
+                },
+                "cert_key_type": {
+                    "skipped": True,
+                    "reason": "Comes from Certificate.key_type populated by crypto_inspector.save_crypto_results",
+                    "source": "certificates.key_type",
+                },
+                "cert_expiry": {
+                    "skipped": True,
+                    "reason": "Comes from Certificate.valid_to populated by crypto_inspector.save_crypto_results",
+                    "source": "certificates.valid_to",
+                },
+                "fips_203_ml_kem": {
+                    "raw": compliance.fips_203_deployed if compliance else None,
+                    "parsed": bool(compliance.fips_203_deployed) if compliance else None,
+                    "source": "compliance_results.fips_203_deployed",
+                },
+                "fips_204_ml_dsa": {
+                    "raw": compliance.fips_204_deployed if compliance else None,
+                    "parsed": bool(compliance.fips_204_deployed) if compliance else None,
+                    "source": "compliance_results.fips_204_deployed",
+                },
+                "fips_205_slh_dsa": {
+                    "raw": compliance.fips_205_deployed if compliance else None,
+                    "parsed": bool(compliance.fips_205_deployed) if compliance else None,
+                    "source": "compliance_results.fips_205_deployed",
+                },
+                "hybrid_mode": {
+                    "raw": compliance.hybrid_mode_active if compliance else None,
+                    "parsed": bool(compliance.hybrid_mode_active) if compliance else None,
+                    "source": "compliance_results.hybrid_mode_active",
+                },
+                "classical_deprecation": {
+                    "raw": compliance.classical_deprecated if compliance else None,
+                    "parsed": bool(compliance.classical_deprecated) if compliance else None,
+                    "source": "compliance_results.classical_deprecated",
+                },
+                "tls_1_3": {
+                    "raw": compliance.tls_13_enforced if compliance else None,
+                    "parsed": bool(compliance.tls_13_enforced) if compliance else None,
+                    "source": "compliance_results.tls_13_enforced",
+                },
+                "forward_secrecy": {
+                    "raw": compliance.forward_secrecy if compliance else None,
+                    "parsed": bool(compliance.forward_secrecy) if compliance else None,
+                    "source": "compliance_results.forward_secrecy",
+                },
+            },
+        }
+        _write_asset_table_trace(a.scan_id, "list_assets", table_trace)
 
         items.append({
             "id": str(a.id),
@@ -120,7 +281,12 @@ def list_assets(
             "waf_detected": a.waf_detected,
             "web_server": a.web_server,
             "tls_version": a.tls_version,
-            "key_exchange": kex,
+            "key_exchange": kex,  # backward-compat alias
+            "tls_key_exchange": kex,
+            "cert_key_type": cert.key_type if cert else None,
+            "cert_crypto_plane": posture["cert_crypto_plane"],
+            "kex_crypto_plane": posture["kex_crypto_plane"],
+            "crypto_transition_state": posture["crypto_transition_state"],
             "cert_expiry": str(cert.valid_to) if cert and cert.valid_to else None,
             "cert_expiry_days": cert_expiry_days,
             "confidence_score": a.confidence_score,
@@ -220,20 +386,8 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
 
     # Calculate key exchange to display based on cert + compliance
     first_cert = certs[0] if certs else None
-    kex = first_cert.key_type if first_cert else None
-    if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
-        cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset_id).order_by(CBOMRecord.id.desc()).first()
-        if cbom_rec:
-            kex_comp = db.query(CBOMComponent).filter(
-                CBOMComponent.cbom_id == cbom_rec.id, 
-                CBOMComponent.component_type == "key_exchange"
-            ).first()
-            if kex_comp and kex_comp.name and kex_comp.name.strip():
-                kex = kex_comp.name
-            else:
-                kex = "X25519MLKEM768 (Hybrid)" if compliance.hybrid_mode_active else "ML-KEM Key Exchange"
-        else:
-            kex = "Classical + Hybrid PQC supported" if compliance.hybrid_mode_active else "PQC Key Exchange"
+    kex = _resolve_tls_key_exchange(db, asset_id, first_cert, compliance)
+    posture = _derive_crypto_transition_state(first_cert.key_type if first_cert else None, kex, compliance)
 
     return {
         "id": str(asset.id),
@@ -252,7 +406,12 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
         "waf_detected": asset.waf_detected,
         "web_server": asset.web_server,
         "tls_version": asset.tls_version,
-        "key_exchange": kex,
+        "key_exchange": kex,  # backward-compat alias
+        "tls_key_exchange": kex,
+        "cert_key_type": first_cert.key_type if first_cert else None,
+        "cert_crypto_plane": posture["cert_crypto_plane"],
+        "kex_crypto_plane": posture["kex_crypto_plane"],
+        "crypto_transition_state": posture["crypto_transition_state"],
         "auth_mechanisms": asset.auth_mechanisms,
         "jwt_algorithm": asset.jwt_algorithm,
         "confidence_score": asset.confidence_score,

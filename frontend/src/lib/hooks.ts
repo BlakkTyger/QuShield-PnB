@@ -372,10 +372,14 @@ export function useAIMigrationRoadmap() {
 /* ─── Reports ────────────────────────────────────────── */
 export function useGenerateReport() {
   return useMutation({
-    mutationFn: async (scanId: string) => {
-      const { data } = await api.post(`/reports/generate/${scanId}`, {}, {
+    mutationFn: async (params: { scanId: string; reportType: string }) => {
+      const { data } = await api.post(
+        `/reports/generate/${params.scanId}`,
+        { report_type: params.reportType },
+        {
         responseType: "blob",
-      });
+        }
+      );
       return data;
     },
   });

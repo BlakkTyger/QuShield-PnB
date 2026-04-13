@@ -102,20 +102,22 @@ export default function CBOMPage() {
           {algoData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={algoData.slice(0, 10)} margin={{ left: 10, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
                 <XAxis
                   dataKey="name"
-                  tick={{ fill: "#9ca3af", fontSize: 9 }}
+                  tick={{ fill: "var(--chart-tick)", fontSize: 9 }}
                   angle={-30}
                   textAnchor="end"
                   height={60}
                 />
-                <YAxis tick={{ fill: "#6b7280", fontSize: 11 }} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} />
                 <Tooltip
                   contentStyle={{
-                    background: "#111118", border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8, fontSize: 12, color: "#f0f0f5",
+                    background: "var(--tooltip-bg)", border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8, fontSize: 12, color: "var(--tooltip-text)",
                   }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {algoData.slice(0, 10).map((_, i) => (
@@ -157,12 +159,14 @@ export default function CBOMPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: "#111118", border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8, fontSize: 12, color: "#f0f0f5",
+                    background: "var(--tooltip-bg)", border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8, fontSize: 12, color: "var(--tooltip-text)",
                   }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
                 />
                 <Legend
-                  formatter={(value) => <span style={{ color: "#9ca3af", fontSize: 10 }}>{value}</span>}
+                  formatter={(value) => <span style={{ color: "var(--chart-tick)", fontSize: 10 }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -193,7 +197,7 @@ export default function CBOMPage() {
               placeholder="Search asset…"
               className="w-full py-2 pl-8 pr-3 text-xs rounded-lg"
               style={{
-                background: "rgba(255,255,255,0.03)",
+                background: "var(--input-bg)",
                 border: "1px solid var(--border-subtle)",
                 color: "var(--text-primary)",
                 outline: "none",

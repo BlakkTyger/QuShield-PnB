@@ -2,79 +2,70 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>QuShield-PnB Executive Summary</title>
+    <title>QuShield Executive Summary</title>
     <style>
-        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
-        .header { text-align: center; border-bottom: 2px solid #0056b3; padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { color: #0056b3; margin: 0; }
-        .summary-stats { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 30px; }
-        .stat-box { background: #f8f9fa; border: 1px solid #dee2e6; border-left: 4px solid #0056b3; padding: 15px; width: 30%; margin-bottom: 15px; box-sizing: border-box; }
-        .stat-box.critical { border-left-color: #dc3545; }
-        .stat-box h3 { margin-top: 0; font-size: 14px; text-transform: uppercase; color: #6c757d; }
-        .stat-box p { margin: 0; font-size: 24px; font-weight: bold; }
-        .narrative { background: #e9ecef; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
-        .narrative h2 { margin-top: 0; color: #495057; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
-        th { background: #f8f9fa; }
-        .footer { text-align: center; font-size: 12px; color: #6c757d; border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; }
+        @page { size: A4; margin: 20mm; }
+        body { font-family: Inter, Arial, sans-serif; color: #0f172a; font-size: 12px; }
+        .header { border-bottom: 2px solid #7d002c; padding-bottom: 12px; margin-bottom: 18px; }
+        .title { font-size: 22px; font-weight: 800; color: #7d002c; margin: 0; }
+        .subtitle { color: #475569; margin-top: 4px; }
+        .meta { color: #64748b; font-size: 11px; margin-top: 6px; }
+        .grid { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 16px; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
+        .card h4 { margin: 0; color: #64748b; font-size: 10px; text-transform: uppercase; }
+        .card p { margin: 6px 0 0; font-size: 20px; font-weight: 700; color: #0f172a; }
+        .section-title { font-size: 14px; margin: 18px 0 8px; color: #1e293b; font-weight: 700; }
+        .panel { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px; line-height: 1.5; white-space: pre-wrap; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
+        th { background: #f8fafc; text-align: left; font-size: 10px; text-transform: uppercase; color: #64748b; }
+        .critical { color: #b91c1c; font-weight: 700; }
+        .footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 10px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>QuShield-PnB</h1>
-        <h2>Post-Quantum Risk Executive Summary</h2>
-        <p>Scan ID: {{ scan_id }} | Date: {{ generation_date }}</p>
+        <h1 class="title">QuShield-PnB Executive Summary</h1>
+        <div class="subtitle">Board-level quantum risk and migration overview</div>
+        <div class="meta">Scan {{ scan_id }} | Targets: {{ targets | join(", ") }} | Generated: {{ generation_date }}</div>
     </div>
 
-    <div class="summary-stats">
-        <div class="stat-box">
-            <h3>Total Assets Scanned</h3>
-            <p>{{ total_assets }}</p>
-        </div>
-        <div class="stat-box critical">
-            <h3>Critical / High Quantum Risks</h3>
-            <p>{{ high_risks_count }}</p>
-        </div>
-        <div class="stat-box">
-            <h3>Avg Quantum Readiness</h3>
-            <p>{{ avg_readiness }}/10</p>
-        </div>
-    </div>
+    <table class="grid">
+        <tr>
+            <td class="card"><h4>Total Assets</h4><p>{{ stats.total }}</p></td>
+            <td class="card"><h4>Critical + Vulnerable</h4><p>{{ stats.high_count }}</p></td>
+            <td class="card"><h4>Avg Readiness</h4><p>{{ stats.avg_readiness }}/10</p></td>
+            <td class="card"><h4>Compliance</h4><p>{{ stats.avg_compliance_pct }}%</p></td>
+        </tr>
+    </table>
 
-    <div class="narrative">
-        <h2>AI Executive Narrative</h2>
-        <div style="white-space: pre-wrap;">{{ ai_narrative }}</div>
-    </div>
+    <div class="section-title">AI Executive Narrative</div>
+    <div class="panel">{{ ai_narrative }}</div>
 
-    <h2>High-Risk Cryptographic Assets</h2>
+    <div class="section-title">Top High-Risk Assets</div>
     <table>
         <thead>
             <tr>
-                <th>Hostname / IP</th>
+                <th>Hostname/IP</th>
                 <th>Type</th>
-                <th>Risk Score</th>
-                <th>Algorithm Weakness</th>
+                <th>Risk</th>
+                <th>Finding</th>
             </tr>
         </thead>
         <tbody>
-            {% for asset in critical_assets %}
+            {% for asset in critical_assets[:20] %}
             <tr>
                 <td>{{ asset.hostname }}<br><small>{{ asset.ip_address }}</small></td>
                 <td>{{ asset.asset_type }}</td>
-                <td style="color: #dc3545; font-weight: bold;">{{ asset.risk_score }} ({{ asset.classification }})</td>
+                <td class="critical">{{ asset.risk_score }} ({{ asset.classification }})</td>
                 <td>{{ asset.weakness }}</td>
             </tr>
             {% else %}
-            <tr>
-                <td colspan="4" style="text-align: center;">No high or critical risks found.</td>
-            </tr>
+            <tr><td colspan="4">No critical or vulnerable assets were identified.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <div class="footer">
-        Generated securely by QuShield-PnB | Confidential Internal Report
-    </div>
+    <div class="footer">Confidential internal report generated by QuShield-PnB.</div>
 </body>
 </html>

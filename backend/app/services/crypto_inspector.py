@@ -116,6 +116,13 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
         "certificate_chain_pem": [],
         "server_name": None,
         "error": None,
+        "engine": "sslyze",
+        "raw_sslyze": {
+            "target": {"hostname": hostname, "port": port},
+            "accepted_cipher_suites_by_tls": {},
+            "certificate_chain_subjects": [],
+            "errors": [],
+        },
     }
 
     location = ServerNetworkLocation(hostname=hostname, port=port)
@@ -123,8 +130,8 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
         server_location=location,
         scan_commands={
             ScanCommand.CERTIFICATE_INFO,
-            ScanCommand.TLS_1_0_CIPHER_SUITES,
-            ScanCommand.TLS_1_1_CIPHER_SUITES,
+            # ScanCommand.TLS_1_0_CIPHER_SUITES,
+            # ScanCommand.TLS_1_1_CIPHER_SUITES,
             ScanCommand.TLS_1_2_CIPHER_SUITES,
             ScanCommand.TLS_1_3_CIPHER_SUITES,
         },
@@ -153,6 +160,13 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
                 if cmd_result is None:
                     continue
                 accepted = cmd_result.accepted_cipher_suites
+                result["raw_sslyze"]["accepted_cipher_suites_by_tls"][version_name] = [
+                    {
+                        "name": cs.cipher_suite.name,
+                        "key_size": getattr(cs.cipher_suite, "key_size", None),
+                    }
+                    for cs in (accepted or [])
+                ]
                 if accepted:
                     result["tls_versions_supported"].append(version_name)
                     for cs in accepted:
@@ -163,6 +177,7 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
                             "key_size": getattr(cs.cipher_suite, 'key_size', None),
                         })
             except Exception:
+                result["raw_sslyze"]["errors"].append(f"cipher_enum_failed:{version_name}")
                 continue
 
         # Certificate chain
@@ -175,13 +190,14 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
                     for cert in deployment.received_certificate_chain:
                         pem = cert.public_bytes(serialization.Encoding.PEM)
                         result["certificate_chain_pem"].append(pem)
+                        result["raw_sslyze"]["certificate_chain_subjects"].append(_get_cn(cert))
 
                     # Negotiated cipher from the leaf
                     if deployment.received_certificate_chain:
                         leaf = deployment.received_certificate_chain[0]
                         result["server_name"] = _get_cn(leaf)
         except Exception:
-            pass
+            result["raw_sslyze"]["errors"].append("certificate_info_parse_failed")
 
         # Determine negotiated cipher and forward secrecy from best TLS version
         if result["cipher_suites"]:
@@ -231,7 +247,7 @@ def _scan_with_sslyze(hostname: str, port: int, timeout: int) -> dict:
     return result
 
 
-def _scan_with_stdlib(hostname: str, port: int, timeout: int) -> dict:
+def _scan_with_stdlib(hostname: str, port: int, timeout: int, connect_host: str | None = None) -> dict:
     """Fallback TLS scan using Python's ssl module."""
     result = {
         "hostname": hostname,
@@ -245,13 +261,15 @@ def _scan_with_stdlib(hostname: str, port: int, timeout: int) -> dict:
         "certificate_chain_pem": [],
         "server_name": None,
         "error": None,
+        "engine": "stdlib",                 
     }
 
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
 
-    with socket.create_connection((hostname, port), timeout=timeout) as sock:
+    dial_host = connect_host or hostname
+    with socket.create_connection((dial_host, port), timeout=timeout) as sock:
         with ctx.wrap_socket(sock, server_hostname=hostname) as ssock:
             # Get negotiated cipher
             cipher_info = ssock.cipher()
@@ -599,7 +617,7 @@ def _normalize_algorithm_name(name: str) -> str:
 
 
 @timed(service="crypto_inspector")
-def detect_pqc(hostname: str, port: int = 443) -> dict:
+def detect_pqc(hostname: str, port: int = 443, discovered_ip: str | None = None) -> dict:
     """
     Detect Post-Quantum Cryptography deployment on a host.
 
@@ -627,7 +645,8 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
 
-        with socket.create_connection((hostname, port), timeout=10) as sock:
+        dial_host = discovered_ip or hostname
+        with socket.create_connection((dial_host, port), timeout=10) as sock:
             with ctx.wrap_socket(sock, server_hostname=hostname) as ssock:
                 cert_bin = ssock.getpeercert(binary_form=True)
                 if cert_bin:
@@ -665,6 +684,10 @@ def detect_pqc(hostname: str, port: int = 443) -> dict:
 
     # Layer 3b: PQCscan TLS probe (hybrid ML-KEM groups not visible in Python cipher names)
     pq = maybe_run_pqcscan_tls(hostname, port, for_quick_scan=False)
+    if pq and pq.get("tls_error") and discovered_ip:
+        pq_ip = maybe_run_pqcscan_tls(discovered_ip, port, for_quick_scan=False)
+        if pq_ip and (pq_ip.get("ok") or pq_ip.get("pqc_supported") or not pq_ip.get("tls_error")):
+            pq = pq_ip
     result["hybrid_tls_algorithms"] = []
     result["pure_pqc_tls_algorithms"] = []
     if pq is None:
@@ -1358,7 +1381,7 @@ def classify_asset_type(hostname: str, ports: list | None = None) -> str:
 
 
 @timed(service="crypto_inspector")
-def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) -> dict:
+def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None, discovered_ip: str | None = None) -> dict:
     """
     Full cryptographic inspection of a single asset.
 
@@ -1388,11 +1411,39 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
 
     # Step 1: TLS scan
     tls_result = {}  # ensure tls_result is always defined
+    selected_port = port
+
+    def _tls_prefetch_usable(candidate: dict | None) -> bool:
+        """Use prefetched TLS only when it contains an actual successful handshake."""
+        if not isinstance(candidate, dict):
+            return False
+        if candidate.get("error"):
+            return False
+        # Require at least one strong signal of successful TLS negotiation.
+        if candidate.get("negotiated_protocol") or candidate.get("negotiated_cipher"):
+            return True
+        if candidate.get("certificate_chain_pem"):
+            return True
+        return False
+
     try:
-        if pre_fetched_tls:
+        if _tls_prefetch_usable(pre_fetched_tls):
             tls_result = pre_fetched_tls
         else:
-            tls_result = scan_tls(hostname, port)
+            tls_result = scan_tls(hostname, selected_port)
+            if (not tls_result.get("negotiated_protocol") or tls_result.get("error")) and discovered_ip:
+                # Retry direct IP (keeping SNI hostname) when DNS edge is flaky.
+                tls_result = _scan_with_stdlib(hostname, selected_port, timeout=15, connect_host=discovered_ip)
+            if (
+                (not tls_result.get("negotiated_protocol"))
+                or tls_result.get("error")
+            ) and selected_port == 443:
+                for candidate in (8443, 9443, 4443):
+                    candidate_tls = scan_tls(hostname, candidate)
+                    if candidate_tls.get("negotiated_protocol") and not candidate_tls.get("error"):
+                        tls_result = candidate_tls
+                        selected_port = candidate
+                        break
         fingerprint["tls"] = {
             "versions_supported": tls_result.get("tls_versions_supported", []),
             "cipher_suites": tls_result.get("cipher_suites", []),
@@ -1400,7 +1451,9 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
             "negotiated_protocol": tls_result.get("negotiated_protocol"),
             "key_exchange": tls_result.get("key_exchange"),
             "forward_secrecy": tls_result.get("forward_secrecy", False),
+            "engine": tls_result.get("engine"),
         }
+        fingerprint["port"] = selected_port
     except Exception as e:
         fingerprint["error"] = f"TLS scan failed: {e}"
         logger.error(f"TLS scan failed for {hostname}: {e}")
@@ -1445,7 +1498,7 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
 
     # Step 4: PQC detection
     try:
-        pqc_result = detect_pqc(hostname, port)
+        pqc_result = detect_pqc(hostname, selected_port, discovered_ip=discovered_ip)
         fingerprint["pqc"] = pqc_result
         fingerprint["quantum_summary"]["has_pqc"] = pqc_result["pqc_signature"] or pqc_result["pqc_key_exchange"]
 
@@ -1492,13 +1545,13 @@ def inspect_asset(hostname: str, port: int = 443, pre_fetched_tls: dict = None) 
 
     # Step 7: Certificate pinning detection
     try:
-        fingerprint["pinning"] = detect_certificate_pinning(hostname, port)
+        fingerprint["pinning"] = detect_certificate_pinning(hostname, selected_port)
     except Exception as e:
         logger.debug(f"Pinning detection skipped for {hostname}: {e}")
 
     # Step 8: Infrastructure fingerprinting (hosting, CDN, WAF)
     try:
-        fingerprint["infrastructure"] = detect_hosting_and_cdn(hostname, port)
+        fingerprint["infrastructure"] = detect_hosting_and_cdn(hostname, selected_port)
     except Exception as e:
         logger.debug(f"Infrastructure detection skipped for {hostname}: {e}")
 
@@ -1675,3 +1728,23 @@ def save_crypto_results(
     )
 
     return saved_certs
+
+if __name__ == "__main__":
+    import sys
+    import json
+    
+    # Grab the domain from the terminal command, default to google.com
+    target_domain = sys.argv[1] if len(sys.argv) > 1 else "google.com"
+    
+    print(f"Testing {target_domain}...")
+    result = scan_tls(target_domain)
+    
+    # Print only the TLS version stuff we care about right now
+    summary = {
+        "engine_used": result.get("engine"),
+        "negotiated_protocol": result.get("negotiated_protocol"),
+        "tls_versions_supported": result.get("tls_versions_supported"),
+        "error": result.get("error")
+    }
+    
+    print(json.dumps(summary, indent=2))
