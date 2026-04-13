@@ -1,0 +1,1093 @@
+{
+  "hostname": "digirenewal.pnb.bank.in",
+  "asset_id": "3029c495-eeda-4968-9fe8-71d5c8e8deef",
+  "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T20:05:24.534843Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "3029c495-eeda-4968-9fe8-71d5c8e8deef",
+        "hostname": "digirenewal.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "digirenewal.pnb.bank.in",
+          "ip_v4": "103.109.225.8",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "title": "Easy Renwal | Customer Login",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIGvTCCBaWgAwIBAgIMKWbTPuivOLe1k4X6MA0GCSqGSIb3DQEBCwUAMFMxCzAJ\nBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSkwJwYDVQQDEyBH\nbG9iYWxTaWduIEdDQyBSMyBFViBUTFMgQ0EgMjAyNTAeFw0yNTA5MjUwNzQxMzBa\nFw0yNjEwMjcwNzQxMjlaMIHBMRowGAYDVQQPDBFHb3Zlcm5tZW50IEVudGl0eTEc\nMBoGA1UEBRMTR292ZXJubWVudCBFbnRpdGllczETMBEGCysGAQQBgjc8AgEDEwJJ\nTjELMAkGA1UEBhMCSU4xDjAMBgNVBAgTBURlbGhpMRIwEAYDVQQHEwlOZXcgRGVs\naGkxHTAbBgNVBAoTFFB1bmphYiBOYXRpb25hbCBCYW5rMSAwHgYDVQQDExdkaWdp\ncmVuZXdhbC5wbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\nggEBALQfCVFUZu/SfSLLjWxZs9dmcAi90WtxnGc1Y2/YWlsCrBnjZKdhA5VOA1r8\nD1YHT+wkgIfShYPV4fseWtkgz91q7/1SqsZmgjQ3o3rVF6aimedIs9F2M4uNFERN\nIOIC2MzqTayEjRzQmEr54IiamkDE4PGST8v8JJ+jNvAg+A6T+73LvKNdBczUnWcN\nV4Pdr6poJEN3wXsyVc1lsMiksJF1cKffJdPLIPQexDt1gTIMqj+qKJ8n3sKYMFI0\nB4TflJ2LZSra+6fdHtOZvmnJbNFZsiATS3ATEqjsgbIwkH95b3zCaXX8Tv4pSfU+\nUXkyfZjwbT/ZKsMJlRN8RjRQMf0CAwEAAaOCAyAwggMcMA4GA1UdDwEB/wQEAwIF\noDAMBgNVHRMBAf8EAjAAMIGTBggrBgEFBQcBAQSBhjCBgzBGBggrBgEFBQcwAoY6\naHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM2V2dGxz\nY2EyMDI1LmNydDA5BggrBgEFBQcwAYYtaHR0cDovL29jc3AuZ2xvYmFsc2lnbi5j\nb20vZ3NnY2NyM2V2dGxzY2EyMDI1MGMGA1UdIARcMFowBwYFZ4EMAQEwQgYKKwYB\nBAGgMgoBATA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNv\nbS9yZXBvc2l0b3J5LzALBgkrBgEEAaAyAQEwIgYDVR0RBBswGYIXZGlnaXJlbmV3\nYWwucG5iLmJhbmsuaW4wHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB8G\nA1UdIwQYMBaAFGMQf+QoM5r4R2BZUn5XEMdN+BcWMB0GA1UdDgQWBBSSzPLVBWUp\nHNtJp4SBtWNPRrlqvDCCAXwGCisGAQQB1nkCBAIEggFsBIIBaAFmAHUArKswcGzr\n7IQx9BPS9JFfER5CJEOx8qaMTzwrO6ceAsMAAAGZf9IFggAABAMARjBEAiAqbL0K\nmr13lRHnxhCxcZvMxqv2zXkNi1uiWg5FM1KCugIgWAw0LkBqArIzCB0QC3JUsNcY\n/aRbmhqZwIxBaMv0QgAAdgDLOPcViXyEoURfW8Hd+8lu8ppZzUcKaQWFsMsUwxRY\n5wAAAZl/0gV9AAAEAwBHMEUCIQCaEMNpyjsoKo98W3PFjMpBh8Jnexu0GP6z31Yi\nsH11WQIgMzX9GfRTS0eL4iQK0mu0yQXLVraoru9bbcpWjBX32SkAdQDXbX0Q0af1\nd8LH6V/XAL/5gskzWmXh0LMBcxfAyMVpdwAAAZl/0gVSAAAEAwBGMEQCIDEC1Ebc\nVc5bh0YrnRxRB0buTFGn2zToX6/IhvQKk3ncAiAyFoVGuqn8lp9OeQqQM2jmFeGm\npIGzlu+UeUhQ/m/75TANBgkqhkiG9w0BAQsFAAOCAQEAdc44PqrAD0/KKAD+WXNH\nxpnZUdv07qXBF4qsf0kp4TO1SKK+tyiFBPSjsTgjuvYelJutGZqWxiDwd3F40Ph2\nhhllQbmvUubFqh3GRaRSi/atXCg/3mt2O5JzTnMtgvFX49V41BDZaIYboTgTwxo0\nc/6oT1hVoMXTeiOjTKLrGLMZ7PbcAdEGlen2gAS+wUzVIjHqTj5oFgj1/4KNcCkt\nr+cGFPQm9R1gsjZhMsg/JQIpAJ9677MeROMZMr5tE5j7e2v2fyvM9+nQTayRN5XZ\nX6s3JLebj7HfdPcEMcPhrxV4jxCZGxWZPHAb91PuZS8TXDkxXlGOrCMhiZCY9M3x\nvA==\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIElzCCA3+gAwIBAgIRAIPahmyfUtUakxi40OfAMWkwDQYJKoZIhvcNAQELBQAw\nTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjMxEzARBgNVBAoTCkds\nb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMjUwNzE2MDMwNTQ2WhcN\nMjcwNzE2MDAwMDAwWjBTMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2ln\nbiBudi1zYTEpMCcGA1UEAxMgR2xvYmFsU2lnbiBHQ0MgUjMgRVYgVExTIENBIDIw\nMjUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDEG4l4CpUk556CyXIA\nB3ihV2b8sWMNGwnW0wCpuaHHA5rlXpSWE1AD6r9hyGhQOrc45nPOj6Fvsqw8dFZw\nFpAJzlk6FxhYP1ve8KPJvIpt6f5v28jOlzfs8c7dJ8ZmqKHB0Zj6RbAvA9vAl2A3\nj0mu+ooXN3/QaFvVihDV/SRyOfFBlhPAsRk8y97tLPWx7/4YzfE6NSLKsU1yF+tf\nBTttbaXTH/cWY/KQE3ZHTFRo6XouemjPBP9CDXeTR11tm37Bgn3QOj93FHdi1JJp\neNBGEOGvM8qhTV/77kDiUyOvsp4jZOhas6kIRn8nWK7fCPNdFJYi1Ctvd7gnQ1gB\nlW71AgMBAAGjggFrMIIBZzAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFGMQ\nf+QoM5r4R2BZUn5XEMdN+BcWMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i\n3Ru8MHsGCCsGAQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmds\nb2JhbHNpZ24uY29tL3Jvb3RyMzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5n\nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1yMy5jcnQwNgYDVR0fBC8wLTAroCmg\nJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIzLmNybDAtBgNVHSAE\nJjAkMAcGBWeBDAEBMAwGCisGAQQBoDIKAQEwCwYJKwYBBAGgMgEBMA0GCSqGSIb3\nDQEBCwUAA4IBAQCtcTjIgw+tiW7E+sCTJ36nrC0IOxMpwE+nTaUG1xQJb+QE18vF\ncPvEiqv8OonEBkQJFQ1N5YdDu9kydDYXBmIheYD9Z//TlUBnLL7HBje1ugplB0xE\njpU52q0XLxe6nHfeEKnslZ/Q/eDEsjZKxwF51SlGO6ap+09hfdbfMXDkTsfa+yXg\ndIxZRCud0QEBTZAow0iCs3rf5wVALhhh2ePEwqxEm1LkUhvkJMLSCobYcJ+vXprK\nJijbpPM602H1kqxNcD/nE7aCNm7g5GTaT04SCGYiQJ32r9mhx34peuYz05pY+AA3\naVB22PDvfoNyGZyClRtNt4KKg8dGJlYEhc3D\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIDXzCCAkegAwIBAgILBAAAAAABIVhTCKIwDQYJKoZIhvcNAQELBQAwTDEgMB4G\nA1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjMxEzARBgNVBAoTCkdsb2JhbFNp\nZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMDkwMzE4MTAwMDAwWhcNMjkwMzE4\nMTAwMDAwWjBMMSAwHgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEG\nA1UEChMKR2xvYmFsU2lnbjETMBEGA1UEAxMKR2xvYmFsU2lnbjCCASIwDQYJKoZI\nhvcNAQEBBQADggEPADCCAQoCggEBAMwldpB5BngiFvXAg7aEyiie/QV2EcWtiHL8\nRgJDx7KKnQRfJMsuS+FggkbhUqsMgUdwbN1k0ev1LKMPgj0MK66X17YUhhB5uzsT\ngHeMCOFJ0mpiLx9e+pZo34knlTifBtc+ycsmWQ1z3rDI6SYOgxXG71uL0gRgykmm\nKPZpO/bLyCiR5Z2KYVc3rHQU3HTgOu5yLy6c+9C7v/U9AOEGM+iCK65TpjoWc4zd\nQQ4gOsC0p6Hpsk+QLjJg6VfLuQSSaGjlOCZgdbKfd/+RFO+uIEn8rUAVSNECMWEZ\nXriX7613t2Saer9fwRPvm2L7DWzgVGkWqQPabumDk3F2xmmFghcCAwEAAaNCMEAw\nDgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFI/wS3+o\nLkUkrk1Q+mOai97i3Ru8MA0GCSqGSIb3DQEBCwUAA4IBAQBLQNvAUKr+yAzv95ZU\nRUm7lgAJQayzE4aGKAczymvmdLm6AC2upArT9fHxD4q/c2dKg8dEe3jgr25sbwMp\njjM5RcOO5LlXbKr8EpbsU8Yt5CRsuZRj+9xTaGdWPoO4zzUhw8lo/s7awlOqzJCK\n6fBdRoyV3XpYKBovHd7NADdBj+1EbddTKJd+82cEHhXXipa0095MJ6RMG3NzdvQX\nmcIfeg7jLQitChws/zyrVQ4PkX4268NXSb7hLi18YIvDQVETI53O9zJrlAGomecs\nMx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7rkpeDMdmztcpH\nWD9f\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "digirenewal.pnb.bank.in"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 1
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "digirenewal.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "digirenewal.pnb.bank.in",
+              "san_list": [
+                "digirenewal.pnb.bank.in"
+              ],
+              "issuer": "GlobalSign GCC R3 EV TLS CA 2025",
+              "ca_name": "GlobalSign nv-sa",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-25T07:41:30+00:00",
+              "valid_to": "2026-10-27T07:41:29+00:00",
+              "sha256_fingerprint": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 196,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GlobalSign GCC R3 EV TLS CA 2025",
+              "san_list": [],
+              "issuer": "GlobalSign",
+              "ca_name": "GlobalSign",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-07-16T03:05:46+00:00",
+              "valid_to": "2027-07-16T00:00:00+00:00",
+              "sha256_fingerprint": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+              "is_ct_logged": false,
+              "is_self_signed": false,
+              "days_until_expiry": 458,
+              "chain_depth": 1,
+              "chain_position": "intermediate",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GlobalSign",
+              "san_list": [],
+              "issuer": "GlobalSign",
+              "ca_name": "GlobalSign",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2009-03-18T10:00:00+00:00",
+              "valid_to": "2029-03-18T10:00:00+00:00",
+              "sha256_fingerprint": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+              "is_ct_logged": false,
+              "is_self_signed": true,
+              "days_until_expiry": 1069,
+              "chain_depth": 2,
+              "chain_position": "root",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.225.8:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.8:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-10-27T07:41:29+00:00",
+                "calendar_expiry": "2026-10-27T07:41:29+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 196,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "GlobalSign nv-sa",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": false,
+                "pqc_target_date": "2025-H2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44"
+                ],
+                "hybrid_mode_available": false,
+                "notes": "GlobalSign has published PQC readiness roadmap."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2027-07-16T00:00:00+00:00",
+                "calendar_expiry": "2027-07-16T00:00:00+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 458,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "GlobalSign nv-sa",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": false,
+                "pqc_target_date": "2025-H2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44"
+                ],
+                "hybrid_mode_available": false,
+                "notes": "GlobalSign has published PQC readiness roadmap."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2029-03-18T10:00:00+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 993,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "GlobalSign nv-sa",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": false,
+                "pqc_target_date": "2025-H2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44"
+                ],
+                "hybrid_mode_available": false,
+                "notes": "GlobalSign has published PQC readiness roadmap."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {
+              "x-content-type-options": "nosniff",
+              "x-frame-options": "SAMEORIGIN, SAMEORIGIN",
+              "x-xss-protection": "1; mode=block",
+              "set-cookie": "__RequestVerificationToken=GYE1arbe5pwzBrf6T8g9MMXypgEJer53GlZVAiApTvdxKbzjGwbxsAJvJQSkt8O50UqeAcPkS13iZkC1Xmx3L7KrwE-U7ybBg1eJN-d5pb41; path=/; HttpOnly;HttpOnly;Secure;SameSite=Strict, TS0190ec3a=0101d8dfe53457275cf1ecef8ff85de0d8a018f8e6412e6db9fe35358886e5fa409a4333c5284c6a02ad9f8ed0571d2038d6a173fc7f8c75fbed2aab9ae709911228ed628e; Path=/; Secure; HttpOnly; SameSite=strict"
+            }
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 3
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.225.8:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.8:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:14:52.320434Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "3029c495-eeda-4968-9fe8-71d5c8e8deef",
+        "hostname": "digirenewal.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:14:52.568671Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "3029c495-eeda-4968-9fe8-71d5c8e8deef",
+        "hostname": "digirenewal.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign\", \"notValidAfter\": \"2029-03-18T10:00:00+00:00\", \"notValidBefore\": \"2009-03-18T10:00:00+00:00\", \"subjectName\": \"GlobalSign\"}}, \"description\": \"X.509 certificate: GlobalSign | RSA-2048 | Issuer: GlobalSign\", \"name\": \"GlobalSign (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign\", \"notValidAfter\": \"2027-07-16T00:00:00+00:00\", \"notValidBefore\": \"2025-07-16T03:05:46+00:00\", \"subjectName\": \"GlobalSign GCC R3 EV TLS CA 2025\"}}, \"description\": \"X.509 certificate: GlobalSign GCC R3 EV TLS CA 2025 | RSA-2048 | Issuer: GlobalSign\", \"name\": \"GlobalSign GCC R3 EV TLS CA 2025 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-3029c495\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for digirenewal.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (digirenewal.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign GCC R3 EV TLS CA 2025\", \"notValidAfter\": \"2026-10-27T07:41:29+00:00\", \"notValidBefore\": \"2025-09-25T07:41:30+00:00\", \"subjectName\": \"digirenewal.pnb.bank.in\"}}, \"description\": \"X.509 certificate: digirenewal.pnb.bank.in | RSA-2048 | Issuer: GlobalSign GCC R3 EV TLS CA 2025\", \"name\": \"digirenewal.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"}, {\"ref\": \"crypto-cert-0-3029c495\"}, {\"ref\": \"crypto-cert-1-3029c495\"}, {\"ref\": \"crypto-cert-2-3029c495\"}, {\"ref\": \"crypto-protocol-tls-3029c495\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:14:52.091374+00:00\"}, \"serialNumber\": \"urn:uuid:09c29d9c-3889-4d7c-b6d9-2cbdefb1fbfc\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-3029c495",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-3029c495"
+            },
+            {
+              "name": "GlobalSign GCC R3 EV TLS CA 2025",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 458,
+              "bom_ref": "crypto-cert-1-3029c495"
+            },
+            {
+              "name": "GlobalSign",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1069,
+              "bom_ref": "crypto-cert-2-3029c495"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-3029c495"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2795
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign\", \"notValidAfter\": \"2029-03-18T10:00:00+00:00\", \"notValidBefore\": \"2009-03-18T10:00:00+00:00\", \"subjectName\": \"GlobalSign\"}}, \"description\": \"X.509 certificate: GlobalSign | RSA-2048 | Issuer: GlobalSign\", \"name\": \"GlobalSign (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign\", \"notValidAfter\": \"2027-07-16T00:00:00+00:00\", \"notValidBefore\": \"2025-07-16T03:05:46+00:00\", \"subjectName\": \"GlobalSign GCC R3 EV TLS CA 2025\"}}, \"description\": \"X.509 certificate: GlobalSign GCC R3 EV TLS CA 2025 | RSA-2048 | Issuer: GlobalSign\", \"name\": \"GlobalSign GCC R3 EV TLS CA 2025 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-3029c495\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for digirenewal.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (digirenewal.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-3029c495\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign GCC R3 EV TLS CA 2025\", \"notValidAfter\": \"2026-10-27T07:41:29+00:00\", \"notValidBefore\": \"2025-09-25T07:41:30+00:00\", \"subjectName\": \"digirenewal.pnb.bank.in\"}}, \"description\": \"X.509 certificate: digirenewal.pnb.bank.in | RSA-2048 | Issuer: GlobalSign GCC R3 EV TLS CA 2025\", \"name\": \"digirenewal.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-3029c495\"}, {\"ref\": \"crypto-cert-0-3029c495\"}, {\"ref\": \"crypto-cert-1-3029c495\"}, {\"ref\": \"crypto-cert-2-3029c495\"}, {\"ref\": \"crypto-protocol-tls-3029c495\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:14:52.091374+00:00\"}, \"serialNumber\": \"urn:uuid:09c29d9c-3889-4d7c-b6d9-2cbdefb1fbfc\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\02f57401-0e69-424a-b9f5-6d551cc7bc83\\3029c495-eeda-4968-9fe8-71d5c8e8deef.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+            "asset_id": "3029c495-eeda-4968-9fe8-71d5c8e8deef",
+            "total_components": 5,
+            "vulnerable_components": 3,
+            "quantum_ready_pct": 25.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\02f57401-0e69-424a-b9f5-6d551cc7bc83\\3029c495-eeda-4968-9fe8-71d5c8e8deef.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-3029c495",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-3029c495"
+            },
+            {
+              "name": "GlobalSign GCC R3 EV TLS CA 2025",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 458,
+              "bom_ref": "crypto-cert-1-3029c495"
+            },
+            {
+              "name": "GlobalSign",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1069,
+              "bom_ref": "crypto-cert-2-3029c495"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-3029c495"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-3029c495",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-3029c495"
+            },
+            {
+              "name": "GlobalSign GCC R3 EV TLS CA 2025",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 458,
+              "bom_ref": "crypto-cert-1-3029c495"
+            },
+            {
+              "name": "GlobalSign",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1069,
+              "bom_ref": "crypto-cert-2-3029c495"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-3029c495"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2795
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:48:17.899882Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "90bbd29a-0beb-4e91-b32e-84357ae971a3",
+        "hostname": "digirenewal.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "digirenewal.pnb.bank.in",
+          "ip_v4": "103.109.224.8",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "title": "Easy Renwal | Customer Login",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 103.109.225.8:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "digirenewal.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "digirenewal.pnb.bank.in",
+              "san_list": [
+                "digirenewal.pnb.bank.in"
+              ],
+              "issuer": "GlobalSign GCC R3 EV TLS CA 2025",
+              "ca_name": "GlobalSign nv-sa",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-25T07:41:30+00:00",
+              "valid_to": "2026-10-27T07:41:29+00:00",
+              "sha256_fingerprint": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 196,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.224.8:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.8:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-10-27T07:41:29+00:00",
+                "calendar_expiry": "2026-10-27T07:41:29+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 196,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "GlobalSign nv-sa",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": false,
+                "pqc_target_date": "2025-H2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44"
+                ],
+                "hybrid_mode_available": false,
+                "notes": "GlobalSign has published PQC readiness roadmap."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.224.8:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.8:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:56:45.593866Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "90bbd29a-0beb-4e91-b32e-84357ae971a3",
+        "hostname": "digirenewal.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:56:45.750203Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "90bbd29a-0beb-4e91-b32e-84357ae971a3",
+        "hostname": "digirenewal.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-90bbd29a\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-90bbd29a\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\", \"crypto-kex-X25519-90bbd29a\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for digirenewal.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (digirenewal.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-90bbd29a\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-90bbd29a\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign GCC R3 EV TLS CA 2025\", \"notValidAfter\": \"2026-10-27T07:41:29+00:00\", \"notValidBefore\": \"2025-09-25T07:41:30+00:00\", \"subjectName\": \"digirenewal.pnb.bank.in\"}}, \"description\": \"X.509 certificate: digirenewal.pnb.bank.in | RSA-2048 | Issuer: GlobalSign GCC R3 EV TLS CA 2025\", \"name\": \"digirenewal.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\"}, {\"ref\": \"crypto-cert-0-90bbd29a\"}, {\"ref\": \"crypto-kex-X25519-90bbd29a\"}, {\"ref\": \"crypto-protocol-tls-90bbd29a\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:56:45.275228+00:00\"}, \"serialNumber\": \"urn:uuid:2dd1db30-6ee1-4941-9029-ca0c3bc32fd6\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-90bbd29a"
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-90bbd29a"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-90bbd29a"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2231
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-90bbd29a\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-90bbd29a\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\", \"crypto-kex-X25519-90bbd29a\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for digirenewal.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (digirenewal.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-90bbd29a\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-90bbd29a\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GlobalSign GCC R3 EV TLS CA 2025\", \"notValidAfter\": \"2026-10-27T07:41:29+00:00\", \"notValidBefore\": \"2025-09-25T07:41:30+00:00\", \"subjectName\": \"digirenewal.pnb.bank.in\"}}, \"description\": \"X.509 certificate: digirenewal.pnb.bank.in | RSA-2048 | Issuer: GlobalSign GCC R3 EV TLS CA 2025\", \"name\": \"digirenewal.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a\"}, {\"ref\": \"crypto-cert-0-90bbd29a\"}, {\"ref\": \"crypto-kex-X25519-90bbd29a\"}, {\"ref\": \"crypto-protocol-tls-90bbd29a\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:56:45.275228+00:00\"}, \"serialNumber\": \"urn:uuid:2dd1db30-6ee1-4941-9029-ca0c3bc32fd6\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\9d676d35-ccb2-4abf-a4b6-3d39f941cbe7\\90bbd29a-0beb-4e91-b32e-84357ae971a3.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+            "asset_id": "90bbd29a-0beb-4e91-b32e-84357ae971a3",
+            "total_components": 4,
+            "vulnerable_components": 2,
+            "quantum_ready_pct": 33.3,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\9d676d35-ccb2-4abf-a4b6-3d39f941cbe7\\90bbd29a-0beb-4e91-b32e-84357ae971a3.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-90bbd29a"
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-90bbd29a"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-90bbd29a"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-90bbd29a",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-90bbd29a"
+            },
+            {
+              "name": "digirenewal.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 196,
+              "bom_ref": "crypto-cert-0-90bbd29a"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-90bbd29a"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2231
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

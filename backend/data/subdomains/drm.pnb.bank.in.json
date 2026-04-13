@@ -1,0 +1,918 @@
+{
+  "hostname": "drm.pnb.bank.in",
+  "asset_id": "9ec282f0-afe3-4e14-bc96-81210e187985",
+  "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T20:10:01.812807Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "9ec282f0-afe3-4e14-bc96-81210e187985",
+        "hostname": "drm.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "drm.pnb.bank.in",
+          "ip_v4": "103.109.224.97",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "title": "Policy Server Portal",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html;charset=UTF-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 103.109.224.97:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": "CONNECTED(00000190)\n---\nCertificate chain\n 0 s:CN=drm.pnb.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Sep 12 00:00:00 2025 GMT; NotAfter: Sep 11 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIGKDCCBRCgAwIBAgIQAeuV/vKS0ME/JphekNZ+fjANBgkqhkiG9w0BAQsFADBe\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR0wGwYDVQQDExRUaGF3dGUgVExTIFJTQSBDQSBHMTAe\nFw0yNTA5MTIwMDAwMDBaFw0yNjA5MTEyMzU5NTlaMBoxGDAWBgNVBAMTD2RybS5w\nbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOBPdyS0\nSKZ1AnAoMJeAlwazXxuizlqmtJw9RLb0n38fGiPSX09UNuWPQlSAmlL+cOUu/Qnm\nUZeOr541J9vHZtiu/cEkaut72F/KzuolhvwNqM6DCytPWfaUh+psC4QE9YHkXZov\nqDP2BEmQ1uBX6Ltj9m+VEkd4I1sEKgD8T0hz/ZyzoS/gdmZAEzAqJ4IWNdvbGYUf\nT3djbNpC8rzHjYg2Wh8QQnirC4trYh+q4CvtIYJhIqJ0AmskRT+06Ycfv2EFN+fK\nYWgO7wtWBPs6MRZyxmYfUn/iuImCYlTYuLQ+lf5Vlghaf5GtTrQk1m5jIdS8md2l\n2z4KQAF/9k3ODPMCAwEAAaOCAyQwggMgMB8GA1UdIwQYMBaAFKWM/jLM6w8s1BnG\nCLgAJIhdw8W3MB0GA1UdDgQWBBQd0dzQ5l/QNMDsnjp12pAkCeLdyzAvBgNVHREE\nKDAmgg9kcm0ucG5iLmJhbmsuaW6CE3d3dy5kcm0ucG5iLmJhbmsuaW4wPgYDVR0g\nBDcwNTAzBgZngQwBAgEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2Vy\ndC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\nKwYBBQUHAwIwOwYDVR0fBDQwMjAwoC6gLIYqaHR0cDovL2NkcC50aGF3dGUuY29t\nL1RoYXd0ZVRMU1JTQUNBRzEuY3JsMHAGCCsGAQUFBwEBBGQwYjAkBggrBgEFBQcw\nAYYYaHR0cDovL3N0YXR1cy50aGF3dGUuY29tMDoGCCsGAQUFBzAChi5odHRwOi8v\nY2FjZXJ0cy50aGF3dGUuY29tL1RoYXd0ZVRMU1JTQUNBRzEuY3J0MAwGA1UdEwEB\n/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB3ANdtfRDRp/V3wsfpX9cA\nv/mCyTNaZeHQswFzF8DIxWl3AAABmTzuPrYAAAQDAEgwRgIhAJExQrrE22zX0jFZ\nCEcJLSMg4+sbWlrC4new5nJZZ3oMAiEAks/klBoJV+5Wa0biZoAsan/ZisWrg3Cm\nDXSOTw2bt4cAdgDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZk8\n7j7zAAAEAwBHMEUCIHquYPfCByqGTUt+KU3OOCMfuYQ13aUeVLpXpKfw4CETAiEA\n0W6vdd9bT7dbFRLh4Vwuj2E56jHiVFP5Fgs9OmvDmpoAdgCUTkOH+uzB74HzGSQm\nqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZk87j8EAAAEAwBHMEUCIEduznI626bz7O6M\nwNeKYqJGEpdyV7sg2VtGrSv3bUTeAiEAw9sWbFWfl+XNauQpAmX7StRMdDypCA+Y\nved9NXxJjDcwDQYJKoZIhvcNAQELBQADggEBAI89KVWqwDEFjektIsZn+SLt+cBS\n4tKHr1688phqc3c3JN4tZOTPlIx2pjiElp4YZcf8spER+GfX2Bt4hTT1/61qP38X\nZTM75QwK/kd8gG0cdLNnsnPSNsoScO+RF0iXwVWG0X9LV/+tYkorz4Sx40FYGjGP\n+Qt/nVDqH0jYxkn0lNJTN5+0uVEhBhAcYvRFEkJkW8iX60grUiKH0l5Cl0fbH3vG\ne4TUYMwoyZVwGn99yXNelQqPmJSzo6nErD6IMl6O15dV8RdDyW+c5A+lWn6llhjx\ng3xIK8ITcltSGoHE4einANyMF8pJJPZ6n3kzGLHwVRobVVpi5IKcal+muuE=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=CN=drm.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pss_rsae_sha256\nPeer Temp Key: X25519, 253 bits\n---\nSSL handshake has read 2120 bytes and written 1610 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.3, Cipher is TLS_AES_128_GCM_SHA256\nProtocol: TLSv1.3\nServer public key is 2048 bit\nThis TLS version forbids renegotiation.\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nEarly data was not sent\nVerify return code: 21 (unable to verify the first certificate)\n---\n\nConnecting to 103.109.224.97\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify return:1\nDONE\n",
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "drm.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(00000190)\n---\nCertificate chain\n 0 s:CN=drm.pnb.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Sep 12 00:00:00 2025 GMT; NotAfter: Sep 11 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIGKDCCBRCgAwIBAgIQAeuV/vKS0ME/JphekNZ+fjANBgkqhkiG9w0BAQsFADBe\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR0wGwYDVQQDExRUaGF3dGUgVExTIFJTQSBDQSBHMTAe\nFw0yNTA5MTIwMDAwMDBaFw0yNjA5MTEyMzU5NTlaMBoxGDAWBgNVBAMTD2RybS5w\nbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOBPdyS0\nSKZ1AnAoMJeAlwazXxuizlqmtJw9RLb0n38fGiPSX09UNuWPQlSAmlL+cOUu/Qnm\nUZeOr541J9vHZtiu/cEkaut72F/KzuolhvwNqM6DCytPWfaUh+psC4QE9YHkXZov\nqDP2BEmQ1uBX6Ltj9m+VEkd4I1sEKgD8T0hz/ZyzoS/gdmZAEzAqJ4IWNdvbGYUf\nT3djbNpC8rzHjYg2Wh8QQnirC4trYh+q4CvtIYJhIqJ0AmskRT+06Ycfv2EFN+fK\nYWgO7wtWBPs6MRZyxmYfUn/iuImCYlTYuLQ+lf5Vlghaf5GtTrQk1m5jIdS8md2l\n2z4KQAF/9k3ODPMCAwEAAaOCAyQwggMgMB8GA1UdIwQYMBaAFKWM/jLM6w8s1BnG\nCLgAJIhdw8W3MB0GA1UdDgQWBBQd0dzQ5l/QNMDsnjp12pAkCeLdyzAvBgNVHREE\nKDAmgg9kcm0ucG5iLmJhbmsuaW6CE3d3dy5kcm0ucG5iLmJhbmsuaW4wPgYDVR0g\nBDcwNTAzBgZngQwBAgEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2Vy\ndC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\nKwYBBQUHAwIwOwYDVR0fBDQwMjAwoC6gLIYqaHR0cDovL2NkcC50aGF3dGUuY29t\nL1RoYXd0ZVRMU1JTQUNBRzEuY3JsMHAGCCsGAQUFBwEBBGQwYjAkBggrBgEFBQcw\nAYYYaHR0cDovL3N0YXR1cy50aGF3dGUuY29tMDoGCCsGAQUFBzAChi5odHRwOi8v\nY2FjZXJ0cy50aGF3dGUuY29tL1RoYXd0ZVRMU1JTQUNBRzEuY3J0MAwGA1UdEwEB\n/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB3ANdtfRDRp/V3wsfpX9cA\nv/mCyTNaZeHQswFzF8DIxWl3AAABmTzuPrYAAAQDAEgwRgIhAJExQrrE22zX0jFZ\nCEcJLSMg4+sbWlrC4new5nJZZ3oMAiEAks/klBoJV+5Wa0biZoAsan/ZisWrg3Cm\nDXSOTw2bt4cAdgDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZk8\n7j7zAAAEAwBHMEUCIHquYPfCByqGTUt+KU3OOCMfuYQ13aUeVLpXpKfw4CETAiEA\n0W6vdd9bT7dbFRLh4Vwuj2E56jHiVFP5Fgs9OmvDmpoAdgCUTkOH+uzB74HzGSQm\nqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZk87j8EAAAEAwBHMEUCIEduznI626bz7O6M\nwNeKYqJGEpdyV7sg2VtGrSv3bUTeAiEAw9sWbFWfl+XNauQpAmX7StRMdDypCA+Y\nved9NXxJjDcwDQYJKoZIhvcNAQELBQADggEBAI89KVWqwDEFjektIsZn+SLt+cBS\n4tKHr1688phqc3c3JN4tZOTPlIx2pjiElp4YZcf8spER+GfX2Bt4hTT1/61qP38X\nZTM75QwK/kd8gG0cdLNnsnPSNsoScO+RF0iXwVWG0X9LV/+tYkorz4Sx40FYGjGP\n+Qt/nVDqH0jYxkn0lNJTN5+0uVEhBhAcYvRFEkJkW8iX60grUiKH0l5Cl0fbH3vG\ne4TUYMwoyZVwGn99yXNelQqPmJSzo6nErD6IMl6O15dV8RdDyW+c5A+lWn6llhjx\ng3xIK8ITcltSGoHE4einANyMF8pJJPZ6n3kzGLHwVRobVVpi5IKcal+muuE=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=CN=drm.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pss_rsae_sha256\nPeer Temp Key: X25519, 253 bits\n---\nSSL handshake has read 2120 bytes and written 1610 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.3, Cipher is TLS_AES_128_GCM_SHA256\nProtocol: TLSv1.3\nServer public key is 2048 bit\nThis TLS version forbids renegotiation.\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nEarly data was not sent\nVerify return code: 21 (unable to verify the first certificate)\n---\n\nConnecting to 103.109.224.97\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify return:1\nDONE\n"
+          },
+          "certificates": [
+            {
+              "common_name": "drm.pnb.bank.in",
+              "san_list": [
+                "drm.pnb.bank.in",
+                "www.drm.pnb.bank.in"
+              ],
+              "issuer": "Thawte TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-12T00:00:00+00:00",
+              "valid_to": "2026-09-11T23:59:59+00:00",
+              "sha256_fingerprint": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 151,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-09-11T23:59:59+00:00",
+                "calendar_expiry": "2026-09-11T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 151,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 2,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(00000190)\n---\nCertificate chain\n 0 s:CN=drm.pnb.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Sep 12 00:00:00 2025 GMT; NotAfter: Sep 11 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIGKDCCBRCgAwIBAgIQAeuV/vKS0ME/JphekNZ+fjANBgkqhkiG9w0BAQsFADBe\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR0wGwYDVQQDExRUaGF3dGUgVExTIFJTQSBDQSBHMTAe\nFw0yNTA5MTIwMDAwMDBaFw0yNjA5MTEyMzU5NTlaMBoxGDAWBgNVBAMTD2RybS5w\nbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOBPdyS0\nSKZ1AnAoMJeAlwazXxuizlqmtJw9RLb0n38fGiPSX09UNuWPQlSAmlL+cOUu/Qnm\nUZeOr541J9vHZtiu/cEkaut72F/KzuolhvwNqM6DCytPWfaUh+psC4QE9YHkXZov\nqDP2BEmQ1uBX6Ltj9m+VEkd4I1sEKgD8T0hz/ZyzoS/gdmZAEzAqJ4IWNdvbGYUf\nT3djbNpC8rzHjYg2Wh8QQnirC4trYh+q4CvtIYJhIqJ0AmskRT+06Ycfv2EFN+fK\nYWgO7wtWBPs6MRZyxmYfUn/iuImCYlTYuLQ+lf5Vlghaf5GtTrQk1m5jIdS8md2l\n2z4KQAF/9k3ODPMCAwEAAaOCAyQwggMgMB8GA1UdIwQYMBaAFKWM/jLM6w8s1BnG\nCLgAJIhdw8W3MB0GA1UdDgQWBBQd0dzQ5l/QNMDsnjp12pAkCeLdyzAvBgNVHREE\nKDAmgg9kcm0ucG5iLmJhbmsuaW6CE3d3dy5kcm0ucG5iLmJhbmsuaW4wPgYDVR0g\nBDcwNTAzBgZngQwBAgEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2Vy\ndC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\nKwYBBQUHAwIwOwYDVR0fBDQwMjAwoC6gLIYqaHR0cDovL2NkcC50aGF3dGUuY29t\nL1RoYXd0ZVRMU1JTQUNBRzEuY3JsMHAGCCsGAQUFBwEBBGQwYjAkBggrBgEFBQcw\nAYYYaHR0cDovL3N0YXR1cy50aGF3dGUuY29tMDoGCCsGAQUFBzAChi5odHRwOi8v\nY2FjZXJ0cy50aGF3dGUuY29tL1RoYXd0ZVRMU1JTQUNBRzEuY3J0MAwGA1UdEwEB\n/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB3ANdtfRDRp/V3wsfpX9cA\nv/mCyTNaZeHQswFzF8DIxWl3AAABmTzuPrYAAAQDAEgwRgIhAJExQrrE22zX0jFZ\nCEcJLSMg4+sbWlrC4new5nJZZ3oMAiEAks/klBoJV+5Wa0biZoAsan/ZisWrg3Cm\nDXSOTw2bt4cAdgDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZk8\n7j7zAAAEAwBHMEUCIHquYPfCByqGTUt+KU3OOCMfuYQ13aUeVLpXpKfw4CETAiEA\n0W6vdd9bT7dbFRLh4Vwuj2E56jHiVFP5Fgs9OmvDmpoAdgCUTkOH+uzB74HzGSQm\nqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZk87j8EAAAEAwBHMEUCIEduznI626bz7O6M\nwNeKYqJGEpdyV7sg2VtGrSv3bUTeAiEAw9sWbFWfl+XNauQpAmX7StRMdDypCA+Y\nved9NXxJjDcwDQYJKoZIhvcNAQELBQADggEBAI89KVWqwDEFjektIsZn+SLt+cBS\n4tKHr1688phqc3c3JN4tZOTPlIx2pjiElp4YZcf8spER+GfX2Bt4hTT1/61qP38X\nZTM75QwK/kd8gG0cdLNnsnPSNsoScO+RF0iXwVWG0X9LV/+tYkorz4Sx40FYGjGP\n+Qt/nVDqH0jYxkn0lNJTN5+0uVEhBhAcYvRFEkJkW8iX60grUiKH0l5Cl0fbH3vG\ne4TUYMwoyZVwGn99yXNelQqPmJSzo6nErD6IMl6O15dV8RdDyW+c5A+lWn6llhjx\ng3xIK8ITcltSGoHE4einANyMF8pJJPZ6n3kzGLHwVRobVVpi5IKcal+muuE=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=CN=drm.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=Thawte TLS RSA CA G1\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pss_rsae_sha256\nPeer Temp Key: X25519, 253 bits\n---\nSSL handshake has read 2120 bytes and written 1610 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.3, Cipher is TLS_AES_128_GCM_SHA256\nProtocol: TLSv1.3\nServer public key is 2048 bit\nThis TLS version forbids renegotiation.\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nEarly data was not sent\nVerify return code: 21 (unable to verify the first certificate)\n---\n\nConnecting to 103.109.224.97\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 CN=drm.pnb.bank.in\nverify return:1\nDONE\n"
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:14:54.693469Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "9ec282f0-afe3-4e14-bc96-81210e187985",
+        "hostname": "drm.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:14:54.890079Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+        "asset_id": "9ec282f0-afe3-4e14-bc96-81210e187985",
+        "hostname": "drm.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-9ec282f0\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-9ec282f0\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\", \"crypto-kex-X25519-9ec282f0\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for drm.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (drm.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-9ec282f0\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-9ec282f0\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"Thawte TLS RSA CA G1\", \"notValidAfter\": \"2026-09-11T23:59:59+00:00\", \"notValidBefore\": \"2025-09-12T00:00:00+00:00\", \"subjectName\": \"drm.pnb.bank.in\"}}, \"description\": \"X.509 certificate: drm.pnb.bank.in | RSA-2048 | Issuer: Thawte TLS RSA CA G1\", \"name\": \"drm.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\"}, {\"ref\": \"crypto-cert-0-9ec282f0\"}, {\"ref\": \"crypto-kex-X25519-9ec282f0\"}, {\"ref\": \"crypto-protocol-tls-9ec282f0\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:14:54.474778+00:00\"}, \"serialNumber\": \"urn:uuid:84593220-9f8b-4c4f-90ce-9cfec0251353\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-9ec282f0"
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9ec282f0"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-9ec282f0"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2167
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-9ec282f0\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-9ec282f0\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\", \"crypto-kex-X25519-9ec282f0\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for drm.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (drm.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-9ec282f0\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-9ec282f0\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"Thawte TLS RSA CA G1\", \"notValidAfter\": \"2026-09-11T23:59:59+00:00\", \"notValidBefore\": \"2025-09-12T00:00:00+00:00\", \"subjectName\": \"drm.pnb.bank.in\"}}, \"description\": \"X.509 certificate: drm.pnb.bank.in | RSA-2048 | Issuer: Thawte TLS RSA CA G1\", \"name\": \"drm.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0\"}, {\"ref\": \"crypto-cert-0-9ec282f0\"}, {\"ref\": \"crypto-kex-X25519-9ec282f0\"}, {\"ref\": \"crypto-protocol-tls-9ec282f0\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:14:54.474778+00:00\"}, \"serialNumber\": \"urn:uuid:84593220-9f8b-4c4f-90ce-9cfec0251353\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\02f57401-0e69-424a-b9f5-6d551cc7bc83\\9ec282f0-afe3-4e14-bc96-81210e187985.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+            "asset_id": "9ec282f0-afe3-4e14-bc96-81210e187985",
+            "total_components": 4,
+            "vulnerable_components": 2,
+            "quantum_ready_pct": 33.3,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\02f57401-0e69-424a-b9f5-6d551cc7bc83\\9ec282f0-afe3-4e14-bc96-81210e187985.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-9ec282f0"
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9ec282f0"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-9ec282f0"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9ec282f0",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-9ec282f0"
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9ec282f0"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-9ec282f0"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2167
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:50:40.445560Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "9c67c048-980b-42d1-a79e-6692e54edc92",
+        "hostname": "drm.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "drm.pnb.bank.in",
+          "ip_v4": "103.109.224.97",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "title": "Policy Server Portal",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html;charset=UTF-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIGKDCCBRCgAwIBAgIQAeuV/vKS0ME/JphekNZ+fjANBgkqhkiG9w0BAQsFADBe\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR0wGwYDVQQDExRUaGF3dGUgVExTIFJTQSBDQSBHMTAe\nFw0yNTA5MTIwMDAwMDBaFw0yNjA5MTEyMzU5NTlaMBoxGDAWBgNVBAMTD2RybS5w\nbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOBPdyS0\nSKZ1AnAoMJeAlwazXxuizlqmtJw9RLb0n38fGiPSX09UNuWPQlSAmlL+cOUu/Qnm\nUZeOr541J9vHZtiu/cEkaut72F/KzuolhvwNqM6DCytPWfaUh+psC4QE9YHkXZov\nqDP2BEmQ1uBX6Ltj9m+VEkd4I1sEKgD8T0hz/ZyzoS/gdmZAEzAqJ4IWNdvbGYUf\nT3djbNpC8rzHjYg2Wh8QQnirC4trYh+q4CvtIYJhIqJ0AmskRT+06Ycfv2EFN+fK\nYWgO7wtWBPs6MRZyxmYfUn/iuImCYlTYuLQ+lf5Vlghaf5GtTrQk1m5jIdS8md2l\n2z4KQAF/9k3ODPMCAwEAAaOCAyQwggMgMB8GA1UdIwQYMBaAFKWM/jLM6w8s1BnG\nCLgAJIhdw8W3MB0GA1UdDgQWBBQd0dzQ5l/QNMDsnjp12pAkCeLdyzAvBgNVHREE\nKDAmgg9kcm0ucG5iLmJhbmsuaW6CE3d3dy5kcm0ucG5iLmJhbmsuaW4wPgYDVR0g\nBDcwNTAzBgZngQwBAgEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2Vy\ndC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\nKwYBBQUHAwIwOwYDVR0fBDQwMjAwoC6gLIYqaHR0cDovL2NkcC50aGF3dGUuY29t\nL1RoYXd0ZVRMU1JTQUNBRzEuY3JsMHAGCCsGAQUFBwEBBGQwYjAkBggrBgEFBQcw\nAYYYaHR0cDovL3N0YXR1cy50aGF3dGUuY29tMDoGCCsGAQUFBzAChi5odHRwOi8v\nY2FjZXJ0cy50aGF3dGUuY29tL1RoYXd0ZVRMU1JTQUNBRzEuY3J0MAwGA1UdEwEB\n/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB3ANdtfRDRp/V3wsfpX9cA\nv/mCyTNaZeHQswFzF8DIxWl3AAABmTzuPrYAAAQDAEgwRgIhAJExQrrE22zX0jFZ\nCEcJLSMg4+sbWlrC4new5nJZZ3oMAiEAks/klBoJV+5Wa0biZoAsan/ZisWrg3Cm\nDXSOTw2bt4cAdgDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZk8\n7j7zAAAEAwBHMEUCIHquYPfCByqGTUt+KU3OOCMfuYQ13aUeVLpXpKfw4CETAiEA\n0W6vdd9bT7dbFRLh4Vwuj2E56jHiVFP5Fgs9OmvDmpoAdgCUTkOH+uzB74HzGSQm\nqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZk87j8EAAAEAwBHMEUCIEduznI626bz7O6M\nwNeKYqJGEpdyV7sg2VtGrSv3bUTeAiEAw9sWbFWfl+XNauQpAmX7StRMdDypCA+Y\nved9NXxJjDcwDQYJKoZIhvcNAQELBQADggEBAI89KVWqwDEFjektIsZn+SLt+cBS\n4tKHr1688phqc3c3JN4tZOTPlIx2pjiElp4YZcf8spER+GfX2Bt4hTT1/61qP38X\nZTM75QwK/kd8gG0cdLNnsnPSNsoScO+RF0iXwVWG0X9LV/+tYkorz4Sx40FYGjGP\n+Qt/nVDqH0jYxkn0lNJTN5+0uVEhBhAcYvRFEkJkW8iX60grUiKH0l5Cl0fbH3vG\ne4TUYMwoyZVwGn99yXNelQqPmJSzo6nErD6IMl6O15dV8RdDyW+c5A+lWn6llhjx\ng3xIK8ITcltSGoHE4einANyMF8pJJPZ6n3kzGLHwVRobVVpi5IKcal+muuE=\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "drm.pnb.bank.in"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 1
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "drm.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "drm.pnb.bank.in",
+              "san_list": [
+                "drm.pnb.bank.in",
+                "www.drm.pnb.bank.in"
+              ],
+              "issuer": "Thawte TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-12T00:00:00+00:00",
+              "valid_to": "2026-09-11T23:59:59+00:00",
+              "sha256_fingerprint": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 151,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-09-11T23:59:59+00:00",
+                "calendar_expiry": "2026-09-11T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 151,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 2,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:56:47.556421Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "9c67c048-980b-42d1-a79e-6692e54edc92",
+        "hostname": "drm.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T20:56:47.774099Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+        "asset_id": "9c67c048-980b-42d1-a79e-6692e54edc92",
+        "hostname": "drm.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-9c67c048\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for drm.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (drm.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-9c67c048\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"Thawte TLS RSA CA G1\", \"notValidAfter\": \"2026-09-11T23:59:59+00:00\", \"notValidBefore\": \"2025-09-12T00:00:00+00:00\", \"subjectName\": \"drm.pnb.bank.in\"}}, \"description\": \"X.509 certificate: drm.pnb.bank.in | RSA-2048 | Issuer: Thawte TLS RSA CA G1\", \"name\": \"drm.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"}, {\"ref\": \"crypto-cert-0-9c67c048\"}, {\"ref\": \"crypto-protocol-tls-9c67c048\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:56:47.333791+00:00\"}, \"serialNumber\": \"urn:uuid:949d866d-b18a-4d1c-94c3-d88cb2417c68\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9c67c048"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-9c67c048"
+            }
+          ],
+          "stats": {
+            "total_components": 3,
+            "algorithm_components": 1,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 1,
+            "safe_count": 1,
+            "quantum_ready_pct": 50.0,
+            "json_size_bytes": 1715
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-9c67c048\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for drm.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (drm.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-9c67c048\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"Thawte TLS RSA CA G1\", \"notValidAfter\": \"2026-09-11T23:59:59+00:00\", \"notValidBefore\": \"2025-09-12T00:00:00+00:00\", \"subjectName\": \"drm.pnb.bank.in\"}}, \"description\": \"X.509 certificate: drm.pnb.bank.in | RSA-2048 | Issuer: Thawte TLS RSA CA G1\", \"name\": \"drm.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048\"}, {\"ref\": \"crypto-cert-0-9c67c048\"}, {\"ref\": \"crypto-protocol-tls-9c67c048\"}], \"metadata\": {\"timestamp\": \"2026-04-13T20:56:47.333791+00:00\"}, \"serialNumber\": \"urn:uuid:949d866d-b18a-4d1c-94c3-d88cb2417c68\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\9d676d35-ccb2-4abf-a4b6-3d39f941cbe7\\9c67c048-980b-42d1-a79e-6692e54edc92.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "9d676d35-ccb2-4abf-a4b6-3d39f941cbe7",
+            "asset_id": "9c67c048-980b-42d1-a79e-6692e54edc92",
+            "total_components": 3,
+            "vulnerable_components": 1,
+            "quantum_ready_pct": 50.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\9d676d35-ccb2-4abf-a4b6-3d39f941cbe7\\9c67c048-980b-42d1-a79e-6692e54edc92.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9c67c048"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-9c67c048"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-9c67c048",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "drm.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 151,
+              "bom_ref": "crypto-cert-0-9c67c048"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-9c67c048"
+            }
+          ],
+          "stats": {
+            "total_components": 3,
+            "algorithm_components": 1,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 1,
+            "safe_count": 1,
+            "quantum_ready_pct": 50.0,
+            "json_size_bytes": 1715
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

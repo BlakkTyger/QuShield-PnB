@@ -1,0 +1,882 @@
+{
+  "scan_id": "02f57401-0e69-424a-b9f5-6d551cc7bc83",
+  "total_assets": 104,
+  "total_components_raw": 406,
+  "total_components_deduplicated": 96,
+  "vulnerable_components": 90,
+  "safe_components": 6,
+  "quantum_ready_pct": 6.2,
+  "nist_level_distribution": {
+    "1": 2,
+    "3": 1,
+    "0": 87,
+    "-1": 3,
+    "5": 3
+  },
+  "components": [
+    {
+      "name": "TLS_AES_128_GCM_SHA256",
+      "type": "algorithm",
+      "nist_level": 1,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 67
+    },
+    {
+      "name": "X25519MLKEM768",
+      "type": "key_exchange",
+      "nist_level": 3,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 10
+    },
+    {
+      "name": "ckycr-admin.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "TLS TLSv1.3",
+      "type": "protocol",
+      "nist_level": -1,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 77
+    },
+    {
+      "name": "upi.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "GeoTrust EV RSA CA G2",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 50
+    },
+    {
+      "name": "DigiCert Global Root G2",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 36
+    },
+    {
+      "name": "applications.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "X25519",
+      "type": "key_exchange",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 29
+    },
+    {
+      "name": "cbdcr.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "ECDHE-RSA-AES128-GCM-SHA256",
+      "type": "algorithm",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 1
+    },
+    {
+      "name": "ECDHE",
+      "type": "key_exchange",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 4
+    },
+    {
+      "name": "bbps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "TLS TLSv1.2",
+      "type": "protocol",
+      "nist_level": -1,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 14
+    },
+    {
+      "name": "aafiu.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "analytics.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "atmmonitoring.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "ECDHE-RSA-AES256-GCM-SHA384",
+      "type": "algorithm",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 3
+    },
+    {
+      "name": "pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "TLS_AES_256_GCM_SHA384",
+      "type": "algorithm",
+      "nist_level": 5,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 7
+    },
+    {
+      "name": "ns1.pnbindia.com",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "cgrms.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digirenewal.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "GlobalSign",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "digigoldloan.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "feepayment.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "creditcard.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "loanrepay.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digiel.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "weblens.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "giftretailbanking.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "eboard.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "type": "algorithm",
+      "nist_level": 1,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 5
+    },
+    {
+      "name": "slbcharyana.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digidairykcc.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "apim.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pfms.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "mobapps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pnbnet.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "webapi.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "epayment.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "p22cucm1-expwaye2.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 4096,
+      "asset_count": 4
+    },
+    {
+      "name": "egstxp.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "drm.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digikccreview.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "ibanking.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 3
+    },
+    {
+      "name": "digitallending.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digisuryaghar.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "(NONE)",
+      "type": "algorithm",
+      "nist_level": -1,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 3
+    },
+    {
+      "name": "RSA",
+      "type": "key_exchange",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 3
+    },
+    {
+      "name": "digi2wl.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digihome.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "udaan.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 4096,
+      "asset_count": 1
+    },
+    {
+      "name": "emandate.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "kc.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "payapps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "www.hrms.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 4096,
+      "asset_count": 2
+    },
+    {
+      "name": "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+      "type": "algorithm",
+      "nist_level": 5,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "retmbs.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "corpmbs.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digivishwakarma.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "apply.creditcard.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "rrbapps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pnbtfr.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digitalbanking.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digimsme.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digigodam.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "apps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "insurance.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pnbapps.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "lockeragreement.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pfmsrrb.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "slbcdataportal.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "images.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "giftcorpbanking.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "etender.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "aafip.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "tncorpmbs.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "digivl.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "mypnb.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "tnretmbs.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "type": "algorithm",
+      "nist_level": 5,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 3
+    },
+    {
+      "name": "slbcchandigarh.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "apptrk.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "slbcpunjab.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "tab.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "slbctripura.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pnbvkyc.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "lens.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "slbcbengal.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "icorpplus.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "instaloans.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "saral.creditcard.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pnbfirst.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "pabl.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    }
+  ]
+}

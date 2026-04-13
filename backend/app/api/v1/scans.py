@@ -195,16 +195,61 @@ def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(g
             db.commit()
             db.refresh(scan_job)
             
-            # Cache saving bypassed completely
-            # cache = ScanCache(
-            #     domain=request.domain,
-            #     scan_type="shallow",
-            #     scan_id=scan_job.id,
-            #     user_id=current_user.id,
-            #     expires_at=datetime.now(timezone.utc) + timedelta(hours=6)
-            # )
-            # db.add(cache)
-            # db.commit()
+            # --- MAP ASSETS FOR GEO AND TOPOLOGY ---
+            try:
+                from app.services.asset_manager import save_discovered_assets
+                from app.models.certificate import Certificate
+                from datetime import timezone
+
+                mapped_assets = []
+                for a in result.get("assets", []):
+                    mapped_assets.append({
+                        "hostname": a.get("hostname"),
+                        "ip_v4": a.get("ip"),
+                        "http": {
+                            "tls_version": a.get("tls", {}).get("negotiated_protocol") if a.get("tls") else None
+                        }
+                    })
+                
+                saved_assets = save_discovered_assets(str(scan_job.id), mapped_assets, db)
+                
+                # Assign certificates and risk scores
+                for ix, db_a in enumerate(saved_assets):
+                    orig_a = result["assets"][ix]
+                    
+                    # Persist Certificate if available
+                    cert_data = orig_a.get("certificate")
+                    if cert_data:
+                        cert_record = Certificate(
+                            scan_id=scan_job.id,
+                            asset_id=db_a.id,
+                            common_name=cert_data.get("common_name"),
+                            issuer=cert_data.get("issuer"),
+                            signature_algorithm=cert_data.get("signature_algorithm"),
+                            key_type=cert_data.get("key_type"),
+                            key_length=cert_data.get("key_length"),
+                            sha256_fingerprint=cert_data.get("sha256_fingerprint"),
+                            chain_valid=cert_data.get("chain_valid"),
+                            is_quantum_vulnerable=orig_a.get("quantum_assessment", {}).get("is_quantum_vulnerable", False)
+                        )
+                        db.add(cert_record)
+                        
+                    # Persist RiskScore if available
+                    r = orig_a.get("risk")
+                    if r:
+                        db_r = RiskScore(
+                            scan_id=scan_job.id,
+                            asset_id=db_a.id,
+                            quantum_risk_score=r.get("score", 0),
+                            risk_classification=r.get("classification"),
+                            hndl_exposed=r.get("mosca_exposed", False),
+                            computed_at=datetime.now(timezone.utc)
+                        )
+                        db.add(db_r)
+                        
+                db.commit()
+            except Exception as e:
+                logger.error(f"Failed to persist shallow scan entities to db: {e}")
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Shallow scan failed: {e}")
