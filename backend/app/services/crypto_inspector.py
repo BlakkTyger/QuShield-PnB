@@ -239,7 +239,14 @@ def _scan_with_openssl(hostname: str, port: int, timeout: int = 20, connect_host
         if not result["negotiated_protocol"] and not result["certificate_chain_pem"]:
             result["error"] = "OpenSSL probe returned no TLS data"
     except Exception as e:
-        result["error"] = f"OpenSSL probe failed: {e}"
+        err_msg = str(e)
+        if "WinError 2" in err_msg or "executable file not found" in err_msg.lower():
+            err_msg = ("OpenSSL not found in system PATH. "
+                       "Please install OpenSSL (e.g., via 'choco install openssl' or 'scoop install openssl') "
+                       "and ensure it is in your PATH.")
+        elif "WinError 193" in err_msg:
+            err_msg = "OpenSSL found but is not a valid Win32 application (WinError 193)."
+        result["error"] = f"OpenSSL probe failed: {err_msg}"
     return result
 
 

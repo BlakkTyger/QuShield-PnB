@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from pythonjsonlogger.json import JsonFormatter
+from pythonjsonlogger import jsonlogger
 from rich.console import Console
 from rich.logging import RichHandler
 
@@ -21,6 +21,7 @@ from app.config import settings
 _loggers: dict[str, logging.Logger] = {}
 _console = Console(stderr=True)
 
+JsonFormatter = jsonlogger.JsonFormatter
 
 class StructuredJsonFormatter(JsonFormatter):
     """Custom JSON formatter that adds service name and standardized fields."""

@@ -6,18 +6,21 @@ Calls the Go binary via subprocess and returns structured results.
 import json
 import os
 import subprocess
+import sys
 import uuid
 from pathlib import Path
 from typing import Optional
 
 from app.config import settings, PROJECT_ROOT
 from app.core.logging import get_logger
+from app.core.utils import check_binary_format
 from app.core.timing import timed
 
 logger = get_logger("discovery_runner")
 
 # Path to the Go binary
-DISCOVERY_BINARY = PROJECT_ROOT.parent / "discovery" / "bin" / "discovery-engine"
+_BIN_NAME = "discovery-engine.exe" if sys.platform == "win32" else "discovery-engine"
+DISCOVERY_BINARY = PROJECT_ROOT.parent / "discovery" / "bin" / _BIN_NAME
 
 
 @timed
@@ -45,10 +48,21 @@ def run_discovery(
         TimeoutError: If it exceeds timeout
     """
     if not DISCOVERY_BINARY.exists():
+        # Fallback: check if the non-exe version exists (e.g. they built it without extension)
+        alt_bin = DISCOVERY_BINARY.with_suffix("") if sys.platform == "win32" else DISCOVERY_BINARY.with_suffix(".exe")
+        if alt_bin.exists():
+            check_binary_format(alt_bin)
+            raise FileNotFoundError(
+                f"Discovery binary found without .exe extension at {alt_bin}. "
+                f"Please rename it to {DISCOVERY_BINARY.name} or rebuild it."
+            )
+
         raise FileNotFoundError(
             f"Discovery binary not found at {DISCOVERY_BINARY}. "
-            f"Build it: cd discovery && go build -o bin/discovery-engine ."
+            f"Build it for Windows: cd discovery && go build -o bin/discovery-engine.exe ."
         )
+
+    check_binary_format(DISCOVERY_BINARY)
 
     if scan_id is None:
         scan_id = f"sc_{uuid.uuid4().hex[:12]}"
