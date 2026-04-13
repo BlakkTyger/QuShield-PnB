@@ -1,0 +1,647 @@
+{
+  "hostname": "api-now.hdfcbank.com",
+  "asset_id": "67cc888f-3360-4b91-bd57-4138633efe0b",
+  "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T21:48:51.931942Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "67cc888f-3360-4b91-bd57-4138633efe0b",
+        "hostname": "api-now.hdfcbank.com",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "api-now.hdfcbank.com",
+          "ip_v4": "65.2.173.119",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 401,
+            "web_server": "nginx",
+            "tls_version": "TLSv1.3",
+            "content_type": "application/octet-stream"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIGnzCCBYegAwIBAgIQDSSNutySz5c9XwMWzzWqfDANBgkqhkiG9w0BAQsFADBg\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR8wHQYDVQQDExZHZW9UcnVzdCBUTFMgUlNBIENBIEcx\nMB4XDTI1MTAwODAwMDAwMFoXDTI2MTAwNzIzNTk1OVowbzELMAkGA1UEBhMCSU4x\nFDASBgNVBAgTC01haGFyYXNodHJhMQ8wDQYDVQQHEwZNdW1iYWkxGjAYBgNVBAoT\nEUhkZmMgQmFuayBMaW1pdGVkMR0wGwYDVQQDExRhcGktbm93LmhkZmMuYmFuay5p\nbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKErsmjuLuhQ0CYrEMiu\niS38xpeg/LjSEm6uDB0C5xXpFLaQJmpHr6ntIu2Vvuz1myXPu2cxdpujO9emuDa4\nr458WYnDVI8W0rHC+j31122VEJoujGd9zKU0Dn2aHGPWZOlhHO+CPMG0HRg+iIRP\n3yCfWFe/X1rJfT/U64wd0x/01yX8mPecUddy3YkMTyM1jIEd9Yj3Zq5z6xLTOqFb\n9arJ5B5DfmcbrmN67zxG7AUeJinDYYHZQArg80Og93ai4UNOjCsGVOtsv2kEIjVq\n17oixlOTJjaAOUDPvkJ4iLOoiggKazS+7lW0ht850G6d8NRYQ2QBn+y5wMhE7n/N\nuZECAwEAAaOCA0QwggNAMB8GA1UdIwQYMBaAFJRP1F2L5KTipoD+/dj5AO+jvgJX\nMB0GA1UdDgQWBBRnnESrAZXtl8HblImFHdz+447+yTBPBgNVHREESDBGghRhcGkt\nbm93LmhkZmMuYmFuay5pboIYd3d3LmFwaS1ub3cuaGRmYy5iYW5rLmlughRhcGkt\nbm93LmhkZmNiYW5rLmNvbTA+BgNVHSAENzA1MDMGBmeBDAECAjApMCcGCCsGAQUF\nBwIBFhtodHRwOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgWg\nMBMGA1UdJQQMMAoGCCsGAQUFBwMBMD8GA1UdHwQ4MDYwNKAyoDCGLmh0dHA6Ly9j\nZHAuZ2VvdHJ1c3QuY29tL0dlb1RydXN0VExTUlNBQ0FHMS5jcmwwdgYIKwYBBQUH\nAQEEajBoMCYGCCsGAQUFBzABhhpodHRwOi8vc3RhdHVzLmdlb3RydXN0LmNvbTA+\nBggrBgEFBQcwAoYyaHR0cDovL2NhY2VydHMuZ2VvdHJ1c3QuY29tL0dlb1RydXN0\nVExTUlNBQ0FHMS5jcnQwDAYDVR0TAQH/BAIwADCCAX8GCisGAQQB1nkCBAIEggFv\nBIIBawFpAHYA2AlVO5RPev/IFhlvlE+Fq7D4/F6HVSYPFdEucrtFSxQAAAGZwpXq\n8AAABAMARzBFAiEAkXmQdWf/+CWvuJWywe2nKjg8QapyuWsFW09aaU1H3/kCIBWr\n/1GnzkzkFOJX9keV8ywm6xPKb1yqn2jTaJkjG73QAHcAwjF+V0UZo0XufzjespBB\n68fCIVoiv3/Vta12mtkOUs0AAAGZwpXq8QAABAMASDBGAiEAmT3ZUKtMwbOEHcpf\n+hGkmQ5nxM/Fc55taq/ViEWf6/8CIQDzQA6u+8b8tsCeLZ1u0X/SPA0jkWlsS6uC\n+fRaLF5lvAB2AJROQ4f67MHvgfMZJCaoGGUBx9NfOAIBP3JnfVU3LhnYAAABmcKV\n6wYAAAQDAEcwRQIgQiuTpirG1chw5De54htJzeLscxqy9X7y41Co7yHhDQgCIQDh\nW04vDpL9gBbfOTe1aOn54w2ss2sXJlu1cqOUARUkxjANBgkqhkiG9w0BAQsFAAOC\nAQEAGP/iauWFw94NohsD6qQnwUuMSva+HfNlBoyOSHtcxzaQIEfGiUj7lUNnb8xr\nMdAHH2hYlTLnpfvmmEWfiCJMHWtQbxE/ihfx7RQ3jVnOPpOTUyVz2VT82aLJREkC\nWMebJOPptI5F/aeKWbqp/BbGn1sw9/OUHAxxlDrGlx0xI/wHrcSfmhUEAKd2hizB\nQOtxu8dM1a01hLaAdI0jfziWUoKs4v+ZG6SXQGDsnOzzWNahfTY1GFfE9/UkaNXW\nrdR+lEUSDSC3Y5WTL9rauW/No8DvKt7Z/ZMsUzceE47M3mY43VrZHEZel8zZo7/V\nqdLNo1VnhF8Jwv0duSCH/PLLfQ==\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIEjTCCA3WgAwIBAgIQDQd4KhM/xvmlcpbhMf/ReTANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xNzExMDIxMjIzMzdaFw0yNzExMDIxMjIzMzdaMGAxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xHzAdBgNVBAMTFkdlb1RydXN0IFRMUyBSU0EgQ0EgRzEwggEiMA0GCSqGSIb3\nDQEBAQUAA4IBDwAwggEKAoIBAQC+F+jsvikKy/65LWEx/TMkCDIuWegh1Ngwvm4Q\nyISgP7oU5d79eoySG3vOhC3w/3jEMuipoH1fBtp7m0tTpsYbAhch4XA7rfuD6whU\ngajeErLVxoiWMPkC/DnUvbgi74BJmdBiuGHQSd7LwsuXpTEGG9fYXcbTVN5SATYq\nDfbexbYxTMwVJWoVb6lrBEgM3gBBqiiAiy800xu1Nq07JdCIQkBsNpFtZbIZhsDS\nfzlGWP4wEmBQ3O67c+ZXkFr2DcrXBEtHam80Gp2SNhou2U5U7UesDL/xgLK6/0d7\n6TnEVMSUVJkZ8VeZr+IUIlvoLrtjLbqugb0T3OYXW+CQU0kBAgMBAAGjggFAMIIB\nPDAdBgNVHQ4EFgQUlE/UXYvkpOKmgP792PkA76O+AlcwHwYDVR0jBBgwFoAUTiJU\nIBiV5uNu5g/6+rkS7QYXjzkwDgYDVR0PAQH/BAQDAgGGMB0GA1UdJQQWMBQGCCsG\nAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/AgEAMDQGCCsGAQUFBwEB\nBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMEIGA1Ud\nHwQ7MDkwN6A1oDOGMWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEds\nb2JhbFJvb3RHMi5jcmwwPQYDVR0gBDYwNDAyBgRVHSAAMCowKAYIKwYBBQUHAgEW\nHGh0dHBzOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDQYJKoZIhvcNAQELBQADggEB\nAIIcBDqC6cWpyGUSXAjjAcYwsK4iiGF7KweG97i1RJz1kwZhRoo6orU1JtBYnjzB\nc4+/sXmnHJk3mlPyL1xuIAt9sMeC7+vreRIF5wFBC0MCN5sbHwhNN1JzKbifNeP5\nozpZdQFmkCo+neBiKR6HqIA+LMTMCMMuv2khGGuPHmtDze4GmEGZtYLyF8EQpa5Y\njPuV6k2Cr/N3XxFpT3hRpt/3usU/Zb9wfKPtWpoznZ4/44c1p9rzFcZYrWkj3A+7\nTNBJE0GmP2fhXhP1D/XVfIW/h0yCJGEiV9Glm/uGOa3DXHlmbAcxSyCRraG+ZBkA\n7h4SeM6Y8l/7MBRpPCz6l8Y=\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\nq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\ntCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\nvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\nBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\nNeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\nFdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\npLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\nMrY=\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "api-now.hdfcbank.com"
+          },
+          "asn": {
+            "number": "AS16509",
+            "org": "ASN-16509"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 1
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "api-now.hdfcbank.com",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "api-now.hdfc.bank.in",
+              "san_list": [
+                "api-now.hdfc.bank.in",
+                "www.api-now.hdfc.bank.in",
+                "api-now.hdfcbank.com"
+              ],
+              "issuer": "GeoTrust TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-10-08T00:00:00+00:00",
+              "valid_to": "2026-10-07T23:59:59+00:00",
+              "sha256_fingerprint": "f0668e23c55ba84e19828457f215fcce9342740c882e74d70a33724f262e9a44",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 177,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GeoTrust TLS RSA CA G1",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2017-11-02T12:23:37+00:00",
+              "valid_to": "2027-11-02T12:23:37+00:00",
+              "sha256_fingerprint": "c06e307f7cfc1d32fa72a4c033c87b90019af216f0775d64978a2eca6c8a230e",
+              "is_ct_logged": false,
+              "is_self_signed": false,
+              "days_until_expiry": 567,
+              "chain_depth": 1,
+              "chain_position": "intermediate",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "DigiCert Global Root G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2013-08-01T12:00:00+00:00",
+              "valid_to": "2038-01-15T12:00:00+00:00",
+              "sha256_fingerprint": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+              "is_ct_logged": false,
+              "is_self_signed": true,
+              "days_until_expiry": 4294,
+              "chain_depth": 2,
+              "chain_position": "root",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 65.2.173.119:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 65.2.173.119:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-10-07T23:59:59+00:00",
+                "calendar_expiry": "2026-10-07T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 177,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 3,
+                "unique_domains": 2,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in",
+                  "hdfcbank.com"
+                ]
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2027-11-02T12:23:37+00:00",
+                "calendar_expiry": "2027-11-02T12:23:37+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 567,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2038-01-15T12:00:00+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 993,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": "Self-hosted (nginx)",
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": "nginx",
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {
+              "set-cookie": "TS0180f149=012728afa5da8c2fde856bb6fbdec80e2e1ca2c2ec689e853c3efd03fc219e9301cbb20e7eaab22b614b2e5aeb99323667144cde044fdeef6e82d126d5642c64aedfcf2491; Path=/; Domain=.api-now.hdfcbank.com; Secure; HttpOnly",
+              "server": "nginx",
+              "x-frame-options": "DENY",
+              "x-xss-protection": "1; mode=block",
+              "x-content-type-options": "nosniff"
+            }
+          },
+          "asset_type": "api_gateway",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": "Self-hosted (nginx)",
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": "nginx",
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "api_gateway"
+          },
+          "certificate_count_to_db": 3
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 65.2.173.119:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 65.2.173.119:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:39.260611Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "67cc888f-3360-4b91-bd57-4138633efe0b",
+        "hostname": "api-now.hdfcbank.com"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:39.491794Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "67cc888f-3360-4b91-bd57-4138633efe0b",
+        "hostname": "api-now.hdfcbank.com",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2027-11-02T12:23:37+00:00\", \"notValidBefore\": \"2017-11-02T12:23:37+00:00\", \"subjectName\": \"GeoTrust TLS RSA CA G1\"}}, \"description\": \"X.509 certificate: GeoTrust TLS RSA CA G1 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust TLS RSA CA G1 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-67cc888f\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for api-now.hdfcbank.com:443\", \"name\": \"TLS TLSv1.3 (api-now.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2026-10-07T23:59:59+00:00\", \"notValidBefore\": \"2025-10-08T00:00:00+00:00\", \"subjectName\": \"api-now.hdfc.bank.in\"}}, \"description\": \"X.509 certificate: api-now.hdfc.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"api-now.hdfc.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"}, {\"ref\": \"crypto-cert-0-67cc888f\"}, {\"ref\": \"crypto-cert-1-67cc888f\"}, {\"ref\": \"crypto-cert-2-67cc888f\"}, {\"ref\": \"crypto-protocol-tls-67cc888f\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:39.014607+00:00\"}, \"serialNumber\": \"urn:uuid:a5e1fe6b-332f-4850-8cbf-caa8110e7473\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "api-now.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 177,
+              "bom_ref": "crypto-cert-0-67cc888f"
+            },
+            {
+              "name": "GeoTrust TLS RSA CA G1",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 567,
+              "bom_ref": "crypto-cert-1-67cc888f"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-67cc888f"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-67cc888f"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2821
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2027-11-02T12:23:37+00:00\", \"notValidBefore\": \"2017-11-02T12:23:37+00:00\", \"subjectName\": \"GeoTrust TLS RSA CA G1\"}}, \"description\": \"X.509 certificate: GeoTrust TLS RSA CA G1 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust TLS RSA CA G1 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-67cc888f\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for api-now.hdfcbank.com:443\", \"name\": \"TLS TLSv1.3 (api-now.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-67cc888f\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2026-10-07T23:59:59+00:00\", \"notValidBefore\": \"2025-10-08T00:00:00+00:00\", \"subjectName\": \"api-now.hdfc.bank.in\"}}, \"description\": \"X.509 certificate: api-now.hdfc.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"api-now.hdfc.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f\"}, {\"ref\": \"crypto-cert-0-67cc888f\"}, {\"ref\": \"crypto-cert-1-67cc888f\"}, {\"ref\": \"crypto-cert-2-67cc888f\"}, {\"ref\": \"crypto-protocol-tls-67cc888f\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:39.014607+00:00\"}, \"serialNumber\": \"urn:uuid:a5e1fe6b-332f-4850-8cbf-caa8110e7473\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\67cc888f-3360-4b91-bd57-4138633efe0b.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+            "asset_id": "67cc888f-3360-4b91-bd57-4138633efe0b",
+            "total_components": 5,
+            "vulnerable_components": 3,
+            "quantum_ready_pct": 25.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\67cc888f-3360-4b91-bd57-4138633efe0b.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "api-now.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 177,
+              "bom_ref": "crypto-cert-0-67cc888f"
+            },
+            {
+              "name": "GeoTrust TLS RSA CA G1",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 567,
+              "bom_ref": "crypto-cert-1-67cc888f"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-67cc888f"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-67cc888f"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-67cc888f",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "api-now.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 177,
+              "bom_ref": "crypto-cert-0-67cc888f"
+            },
+            {
+              "name": "GeoTrust TLS RSA CA G1",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 567,
+              "bom_ref": "crypto-cert-1-67cc888f"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-67cc888f"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-67cc888f"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2821
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

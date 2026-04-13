@@ -256,7 +256,6 @@ export default function CBOMPage() {
                     <tr>
                       <th>Component</th>
                       <th>Type</th>
-                      <th>Algorithm</th>
                       <th>Key Length</th>
                       <th>NIST Level</th>
                       <th>Status</th>
@@ -281,7 +280,6 @@ export default function CBOMPage() {
                             {comp.component_type || "—"}
                           </span>
                         </td>
-                        <td className="font-mono text-xs">{comp.algorithm_name || "—"}</td>
                         <td>{comp.key_length ? `${comp.key_length} bit` : "—"}</td>
                         <td>
                           <span
@@ -290,11 +288,11 @@ export default function CBOMPage() {
                               color: NIST_COLORS[comp.nist_quantum_level ?? -1] || "#6b7280",
                             }}
                           >
-                            L{comp.nist_quantum_level ?? "?"}
+                            {comp.nist_quantum_level === -1 || comp.nist_quantum_level == null ? "Unknown" : `L${comp.nist_quantum_level}`}
                           </span>
                         </td>
                         <td>
-                          {comp.quantum_vulnerable ? (
+                          {(comp as any).is_quantum_vulnerable ? (
                             <span className="badge badge-critical">Vulnerable</span>
                           ) : (
                             <span className="badge badge-ready">Safe</span>

@@ -1,0 +1,459 @@
+{
+  "hostname": "stpbrk.corporate.hdfcbank.com",
+  "asset_id": "4ec9d560-d087-4d83-8e0f-249f1dd0ff84",
+  "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T21:51:35.322629Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "4ec9d560-d087-4d83-8e0f-249f1dd0ff84",
+        "hostname": "stpbrk.corporate.hdfcbank.com",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "stpbrk.corporate.hdfcbank.com",
+          "ip_v4": "175.100.162.142",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "read tcp 172.23.22.128:51500->175.100.162.142:443: wsarecv: An existing connection was forcibly closed by the remote host."
+          },
+          "asn": {
+            "number": "AS131283",
+            "org": "ASN-131283"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan"
+          ],
+          "confidence_score": 0.5
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": "CONNECTED(000001E0)\n---\nCertificate chain\n 0 s:C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jan 13 00:00:00 2026 GMT; NotAfter: Jan 12 23:59:59 2027 GMT\n-----BEGIN CERTIFICATE-----\nMIIGzjCCBbagAwIBAgIQBFpK5zu+34O7tHqdgHpadzANBgkqhkiG9w0BAQsFADBg\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR8wHQYDVQQDExZHZW9UcnVzdCBUTFMgUlNBIENBIEcx\nMB4XDTI2MDExMzAwMDAwMFoXDTI3MDExMjIzNTk1OVoweDELMAkGA1UEBhMCSU4x\nFDASBgNVBAgTC01haGFyYXNodHJhMQ8wDQYDVQQHEwZNdW1iYWkxGjAYBgNVBAoT\nEUhkZmMgQmFuayBMaW1pdGVkMSYwJAYDVQQDEx1zdHBicmsuY29ycG9yYXRlLmhk\nZmMuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMPYgJYY\n/mfsd/eXETjeZEmhtxXCUDgVVKLpNTfbTacAU3VbIC2TRUwFsoSX/LfYjUuuKY3T\nBHhwGfQJyU5WrVMyE3QUvIPpf5zhxG/dZ4wMOD6nnJqxLJV2b1LQ8V+R5Yjch5OZ\non4pGnqcQ6YWGzwhyOKfYnJq8TTlQoIL8Ux/AJfvj7YwHOo4sNB3I8nnV2EFJsMz\nCy6u6ELhIEa5MR/9AOU68Jnu5BZYCobpxYm64ToYTbAEx/ltIclQAPt9BGFBz5DP\n6gaUgDyNt9hQQcBCa7lr6A+nMtkKOTPyzh5/101ZeJWUMhCBBFpHzbvK6P4OgkBa\neH2zf0elejOUxMcCAwEAAaOCA2owggNmMB8GA1UdIwQYMBaAFJRP1F2L5KTipoD+\n/dj5AO+jvgJXMB0GA1UdDgQWBBRysSGLE8k3C2f7hyDyvQJmlg++nzBqBgNVHREE\nYzBhgh1zdHBicmsuY29ycG9yYXRlLmhkZmMuYmFuay5pboIhd3d3LnN0cGJyay5j\nb3Jwb3JhdGUuaGRmYy5iYW5rLmlugh1zdHBicmsuY29ycG9yYXRlLmhkZmNiYW5r\nLmNvbTA+BgNVHSAENzA1MDMGBmeBDAECAjApMCcGCCsGAQUFBwIBFhtodHRwOi8v\nd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQG\nCCsGAQUFBwMBBggrBgEFBQcDAjA/BgNVHR8EODA2MDSgMqAwhi5odHRwOi8vY2Rw\nLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRMU1JTQUNBRzEuY3JsMHYGCCsGAQUFBwEB\nBGowaDAmBggrBgEFBQcwAYYaaHR0cDovL3N0YXR1cy5nZW90cnVzdC5jb20wPgYI\nKwYBBQUHMAKGMmh0dHA6Ly9jYWNlcnRzLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRM\nU1JTQUNBRzEuY3J0MAwGA1UdEwEB/wQCMAAwggGABgorBgEEAdZ5AgQCBIIBcASC\nAWwBagB3AExj3JjlnB2riPYeij3ero+rRKM3e1+blMP7oZz8wb4mAAABm7YNdwwA\nAAQDAEgwRgIhAPeqLXb7LG8cI1qObZVqvBY/W+fMX95pkdPqnh+tfCu+AiEAvusx\nRZBjeDrt/soLXFvq/lAUNCsZ+qAVHAo6XFiocSoAdgAcn2gs6frwRWlQ+BuWiofd\n2zIQ2EzmyLLjglJKxM9ZnwAAAZu2DXdRAAAEAwBHMEUCIQDqWo239tsnKCFjex5p\nf1nSGbbF3yh7q7AyaFp/OEmszAIgCFCzLGMz1aBOc/kzebb0gCTrQX23QPqqV4t2\nHadKwyAAdwBgTJqven93XwHUBvySDciZ6wscffjJUhv6+hd3O5eLyQAAAZu2DXfP\nAAAEAwBIMEYCIQCM21ZjJ6JXECTKYKELFZTUhq72ybVKQwAjwK6F+0sHZQIhAJ9g\nJm63hmXuynqy7PAoPGnp0ODZy+u1MNU1zLXtvvoOMA0GCSqGSIb3DQEBCwUAA4IB\nAQBwvt3kqa1FEqoUMmUMuv/sxXnIcmRtC0jhCCZsw1+rMeE3DM4Lmke9C4oXVM42\nkjGZ1gsg/kqBYGjz2v+hAyPK305BzH70rNhlXxttS5+Fxw6XT+I9qbZffRa6+xen\ngen/EuRjlx3gOPxegfMJgFhEaj6jJPru3IonGssS0qsC6peSe6EnhNyKdluQE9UO\nDRMzE/iZAT1G6P28dgwcP8dItdGEEBVTtSwBEQQD2m0aTWgcZ6xf5tXbon9mGIya\nltj5A3hOEn9GNOgPHmSogNxFO+7yrasNQjityaTfvN+fwZFFn1BNrHi7OVP/0/8i\n0FsGkmRsln1LvmSoitR2dIWn\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n---\nNo client certificate CA names sent\nClient Certificate Types: RSA sign, DSA sign\nRequested Signature Algorithms: RSA+SHA1:UNDEF:RSA+SHA256:ECDSA+SHA256\nShared Requested Signature Algorithms: RSA+SHA256:ECDSA+SHA256\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 2219 bytes and written 1698 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 430A290278701CBBD56D8868AB6157F08D3D2EC856D2B3891E7381DFE2346E9E\n    Session-ID-ctx: \n    Master-Key: 7BD4328529D92E57397D979ED7E89876A98312FE79AFB9C3B54791D5C2FA04D23471532F4481992372136D3A3D3D75CD\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    Start Time: 1776117047\n    Timeout   : 7200 (sec)\n    Verify return code: 21 (unable to verify the first certificate)\n    Extended master secret: no\n---\n\nConnecting to 175.100.162.142\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify return:1\nwrite:errno=10054\nE45A0000:error:0A000197:SSL routines:SSL_shutdown:shutdown while in init:ssl\\ssl_lib.c:2804:\n",
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "stpbrk.corporate.hdfcbank.com",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDH",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(000001E0)\n---\nCertificate chain\n 0 s:C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jan 13 00:00:00 2026 GMT; NotAfter: Jan 12 23:59:59 2027 GMT\n-----BEGIN CERTIFICATE-----\nMIIGzjCCBbagAwIBAgIQBFpK5zu+34O7tHqdgHpadzANBgkqhkiG9w0BAQsFADBg\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR8wHQYDVQQDExZHZW9UcnVzdCBUTFMgUlNBIENBIEcx\nMB4XDTI2MDExMzAwMDAwMFoXDTI3MDExMjIzNTk1OVoweDELMAkGA1UEBhMCSU4x\nFDASBgNVBAgTC01haGFyYXNodHJhMQ8wDQYDVQQHEwZNdW1iYWkxGjAYBgNVBAoT\nEUhkZmMgQmFuayBMaW1pdGVkMSYwJAYDVQQDEx1zdHBicmsuY29ycG9yYXRlLmhk\nZmMuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMPYgJYY\n/mfsd/eXETjeZEmhtxXCUDgVVKLpNTfbTacAU3VbIC2TRUwFsoSX/LfYjUuuKY3T\nBHhwGfQJyU5WrVMyE3QUvIPpf5zhxG/dZ4wMOD6nnJqxLJV2b1LQ8V+R5Yjch5OZ\non4pGnqcQ6YWGzwhyOKfYnJq8TTlQoIL8Ux/AJfvj7YwHOo4sNB3I8nnV2EFJsMz\nCy6u6ELhIEa5MR/9AOU68Jnu5BZYCobpxYm64ToYTbAEx/ltIclQAPt9BGFBz5DP\n6gaUgDyNt9hQQcBCa7lr6A+nMtkKOTPyzh5/101ZeJWUMhCBBFpHzbvK6P4OgkBa\neH2zf0elejOUxMcCAwEAAaOCA2owggNmMB8GA1UdIwQYMBaAFJRP1F2L5KTipoD+\n/dj5AO+jvgJXMB0GA1UdDgQWBBRysSGLE8k3C2f7hyDyvQJmlg++nzBqBgNVHREE\nYzBhgh1zdHBicmsuY29ycG9yYXRlLmhkZmMuYmFuay5pboIhd3d3LnN0cGJyay5j\nb3Jwb3JhdGUuaGRmYy5iYW5rLmlugh1zdHBicmsuY29ycG9yYXRlLmhkZmNiYW5r\nLmNvbTA+BgNVHSAENzA1MDMGBmeBDAECAjApMCcGCCsGAQUFBwIBFhtodHRwOi8v\nd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQG\nCCsGAQUFBwMBBggrBgEFBQcDAjA/BgNVHR8EODA2MDSgMqAwhi5odHRwOi8vY2Rw\nLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRMU1JTQUNBRzEuY3JsMHYGCCsGAQUFBwEB\nBGowaDAmBggrBgEFBQcwAYYaaHR0cDovL3N0YXR1cy5nZW90cnVzdC5jb20wPgYI\nKwYBBQUHMAKGMmh0dHA6Ly9jYWNlcnRzLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRM\nU1JTQUNBRzEuY3J0MAwGA1UdEwEB/wQCMAAwggGABgorBgEEAdZ5AgQCBIIBcASC\nAWwBagB3AExj3JjlnB2riPYeij3ero+rRKM3e1+blMP7oZz8wb4mAAABm7YNdwwA\nAAQDAEgwRgIhAPeqLXb7LG8cI1qObZVqvBY/W+fMX95pkdPqnh+tfCu+AiEAvusx\nRZBjeDrt/soLXFvq/lAUNCsZ+qAVHAo6XFiocSoAdgAcn2gs6frwRWlQ+BuWiofd\n2zIQ2EzmyLLjglJKxM9ZnwAAAZu2DXdRAAAEAwBHMEUCIQDqWo239tsnKCFjex5p\nf1nSGbbF3yh7q7AyaFp/OEmszAIgCFCzLGMz1aBOc/kzebb0gCTrQX23QPqqV4t2\nHadKwyAAdwBgTJqven93XwHUBvySDciZ6wscffjJUhv6+hd3O5eLyQAAAZu2DXfP\nAAAEAwBIMEYCIQCM21ZjJ6JXECTKYKELFZTUhq72ybVKQwAjwK6F+0sHZQIhAJ9g\nJm63hmXuynqy7PAoPGnp0ODZy+u1MNU1zLXtvvoOMA0GCSqGSIb3DQEBCwUAA4IB\nAQBwvt3kqa1FEqoUMmUMuv/sxXnIcmRtC0jhCCZsw1+rMeE3DM4Lmke9C4oXVM42\nkjGZ1gsg/kqBYGjz2v+hAyPK305BzH70rNhlXxttS5+Fxw6XT+I9qbZffRa6+xen\ngen/EuRjlx3gOPxegfMJgFhEaj6jJPru3IonGssS0qsC6peSe6EnhNyKdluQE9UO\nDRMzE/iZAT1G6P28dgwcP8dItdGEEBVTtSwBEQQD2m0aTWgcZ6xf5tXbon9mGIya\nltj5A3hOEn9GNOgPHmSogNxFO+7yrasNQjityaTfvN+fwZFFn1BNrHi7OVP/0/8i\n0FsGkmRsln1LvmSoitR2dIWn\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n---\nNo client certificate CA names sent\nClient Certificate Types: RSA sign, DSA sign\nRequested Signature Algorithms: RSA+SHA1:UNDEF:RSA+SHA256:ECDSA+SHA256\nShared Requested Signature Algorithms: RSA+SHA256:ECDSA+SHA256\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 2219 bytes and written 1698 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 430A290278701CBBD56D8868AB6157F08D3D2EC856D2B3891E7381DFE2346E9E\n    Session-ID-ctx: \n    Master-Key: 7BD4328529D92E57397D979ED7E89876A98312FE79AFB9C3B54791D5C2FA04D23471532F4481992372136D3A3D3D75CD\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    Start Time: 1776117047\n    Timeout   : 7200 (sec)\n    Verify return code: 21 (unable to verify the first certificate)\n    Extended master secret: no\n---\n\nConnecting to 175.100.162.142\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify return:1\nwrite:errno=10054\nE45A0000:error:0A000197:SSL routines:SSL_shutdown:shutdown while in init:ssl\\ssl_lib.c:2804:\n"
+          },
+          "certificates": [
+            {
+              "common_name": "stpbrk.corporate.hdfc.bank.in",
+              "san_list": [
+                "stpbrk.corporate.hdfc.bank.in",
+                "www.stpbrk.corporate.hdfc.bank.in",
+                "stpbrk.corporate.hdfcbank.com"
+              ],
+              "issuer": "GeoTrust TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2026-01-13T00:00:00+00:00",
+              "valid_to": "2027-01-12T23:59:59+00:00",
+              "sha256_fingerprint": "9959ba062510ae1b92e0d17e900794b1c6e7758193985bb8cd80c99afc996f36",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 274,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 175.100.162.142:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 175.100.162.142:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2027-01-12T23:59:59+00:00",
+                "calendar_expiry": "2027-01-12T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 274,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 3,
+                "unique_domains": 2,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in",
+                  "hdfcbank.com"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "swift_endpoint",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048",
+              "ECDHE-RSA-AES256-GCM-SHA384"
+            ],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.2",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "swift_endpoint"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDH",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(000001E0)\n---\nCertificate chain\n 0 s:C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jan 13 00:00:00 2026 GMT; NotAfter: Jan 12 23:59:59 2027 GMT\n-----BEGIN CERTIFICATE-----\nMIIGzjCCBbagAwIBAgIQBFpK5zu+34O7tHqdgHpadzANBgkqhkiG9w0BAQsFADBg\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR8wHQYDVQQDExZHZW9UcnVzdCBUTFMgUlNBIENBIEcx\nMB4XDTI2MDExMzAwMDAwMFoXDTI3MDExMjIzNTk1OVoweDELMAkGA1UEBhMCSU4x\nFDASBgNVBAgTC01haGFyYXNodHJhMQ8wDQYDVQQHEwZNdW1iYWkxGjAYBgNVBAoT\nEUhkZmMgQmFuayBMaW1pdGVkMSYwJAYDVQQDEx1zdHBicmsuY29ycG9yYXRlLmhk\nZmMuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMPYgJYY\n/mfsd/eXETjeZEmhtxXCUDgVVKLpNTfbTacAU3VbIC2TRUwFsoSX/LfYjUuuKY3T\nBHhwGfQJyU5WrVMyE3QUvIPpf5zhxG/dZ4wMOD6nnJqxLJV2b1LQ8V+R5Yjch5OZ\non4pGnqcQ6YWGzwhyOKfYnJq8TTlQoIL8Ux/AJfvj7YwHOo4sNB3I8nnV2EFJsMz\nCy6u6ELhIEa5MR/9AOU68Jnu5BZYCobpxYm64ToYTbAEx/ltIclQAPt9BGFBz5DP\n6gaUgDyNt9hQQcBCa7lr6A+nMtkKOTPyzh5/101ZeJWUMhCBBFpHzbvK6P4OgkBa\neH2zf0elejOUxMcCAwEAAaOCA2owggNmMB8GA1UdIwQYMBaAFJRP1F2L5KTipoD+\n/dj5AO+jvgJXMB0GA1UdDgQWBBRysSGLE8k3C2f7hyDyvQJmlg++nzBqBgNVHREE\nYzBhgh1zdHBicmsuY29ycG9yYXRlLmhkZmMuYmFuay5pboIhd3d3LnN0cGJyay5j\nb3Jwb3JhdGUuaGRmYy5iYW5rLmlugh1zdHBicmsuY29ycG9yYXRlLmhkZmNiYW5r\nLmNvbTA+BgNVHSAENzA1MDMGBmeBDAECAjApMCcGCCsGAQUFBwIBFhtodHRwOi8v\nd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQG\nCCsGAQUFBwMBBggrBgEFBQcDAjA/BgNVHR8EODA2MDSgMqAwhi5odHRwOi8vY2Rw\nLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRMU1JTQUNBRzEuY3JsMHYGCCsGAQUFBwEB\nBGowaDAmBggrBgEFBQcwAYYaaHR0cDovL3N0YXR1cy5nZW90cnVzdC5jb20wPgYI\nKwYBBQUHMAKGMmh0dHA6Ly9jYWNlcnRzLmdlb3RydXN0LmNvbS9HZW9UcnVzdFRM\nU1JTQUNBRzEuY3J0MAwGA1UdEwEB/wQCMAAwggGABgorBgEEAdZ5AgQCBIIBcASC\nAWwBagB3AExj3JjlnB2riPYeij3ero+rRKM3e1+blMP7oZz8wb4mAAABm7YNdwwA\nAAQDAEgwRgIhAPeqLXb7LG8cI1qObZVqvBY/W+fMX95pkdPqnh+tfCu+AiEAvusx\nRZBjeDrt/soLXFvq/lAUNCsZ+qAVHAo6XFiocSoAdgAcn2gs6frwRWlQ+BuWiofd\n2zIQ2EzmyLLjglJKxM9ZnwAAAZu2DXdRAAAEAwBHMEUCIQDqWo239tsnKCFjex5p\nf1nSGbbF3yh7q7AyaFp/OEmszAIgCFCzLGMz1aBOc/kzebb0gCTrQX23QPqqV4t2\nHadKwyAAdwBgTJqven93XwHUBvySDciZ6wscffjJUhv6+hd3O5eLyQAAAZu2DXfP\nAAAEAwBIMEYCIQCM21ZjJ6JXECTKYKELFZTUhq72ybVKQwAjwK6F+0sHZQIhAJ9g\nJm63hmXuynqy7PAoPGnp0ODZy+u1MNU1zLXtvvoOMA0GCSqGSIb3DQEBCwUAA4IB\nAQBwvt3kqa1FEqoUMmUMuv/sxXnIcmRtC0jhCCZsw1+rMeE3DM4Lmke9C4oXVM42\nkjGZ1gsg/kqBYGjz2v+hAyPK305BzH70rNhlXxttS5+Fxw6XT+I9qbZffRa6+xen\ngen/EuRjlx3gOPxegfMJgFhEaj6jJPru3IonGssS0qsC6peSe6EnhNyKdluQE9UO\nDRMzE/iZAT1G6P28dgwcP8dItdGEEBVTtSwBEQQD2m0aTWgcZ6xf5tXbon9mGIya\nltj5A3hOEn9GNOgPHmSogNxFO+7yrasNQjityaTfvN+fwZFFn1BNrHi7OVP/0/8i\n0FsGkmRsln1LvmSoitR2dIWn\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nissuer=C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1\n---\nNo client certificate CA names sent\nClient Certificate Types: RSA sign, DSA sign\nRequested Signature Algorithms: RSA+SHA1:UNDEF:RSA+SHA256:ECDSA+SHA256\nShared Requested Signature Algorithms: RSA+SHA256:ECDSA+SHA256\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 2219 bytes and written 1698 bytes\nVerification error: unable to verify the first certificate\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 430A290278701CBBD56D8868AB6157F08D3D2EC856D2B3891E7381DFE2346E9E\n    Session-ID-ctx: \n    Master-Key: 7BD4328529D92E57397D979ED7E89876A98312FE79AFB9C3B54791D5C2FA04D23471532F4481992372136D3A3D3D75CD\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    Start Time: 1776117047\n    Timeout   : 7200 (sec)\n    Verify return code: 21 (unable to verify the first certificate)\n    Extended master secret: no\n---\n\nConnecting to 175.100.162.142\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=20:unable to get local issuer certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify error:num=21:unable to verify the first certificate\nverify return:1\ndepth=0 C=IN, ST=Maharashtra, L=Mumbai, O=Hdfc Bank Limited, CN=stpbrk.corporate.hdfc.bank.in\nverify return:1\nwrite:errno=10054\nE45A0000:error:0A000197:SSL routines:SSL_shutdown:shutdown while in init:ssl\\ssl_lib.c:2804:\n"
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 175.100.162.142:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 175.100.162.142:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048",
+              "ECDHE-RSA-AES256-GCM-SHA384"
+            ],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:40.006188Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "4ec9d560-d087-4d83-8e0f-249f1dd0ff84",
+        "hostname": "stpbrk.corporate.hdfcbank.com"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:40.175296Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "4ec9d560-d087-4d83-8e0f-249f1dd0ff84",
+        "hostname": "stpbrk.corporate.hdfcbank.com",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-kex-ECDH-4ec9d560\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDH\", \"name\": \"ECDH Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-4ec9d560\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDH-4ec9d560\"], \"name\": \"ECDH\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\", \"crypto-kex-ECDH-4ec9d560\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for stpbrk.corporate.hdfcbank.com:443\", \"name\": \"TLS TLSv1.2 (stpbrk.corporate.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-4ec9d560\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2027-01-12T23:59:59+00:00\", \"notValidBefore\": \"2026-01-13T00:00:00+00:00\", \"subjectName\": \"stpbrk.corporate.hdfc.bank.in\"}}, \"description\": \"X.509 certificate: stpbrk.corporate.hdfc.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"stpbrk.corporate.hdfc.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\"}, {\"ref\": \"crypto-cert-0-4ec9d560\"}, {\"ref\": \"crypto-kex-ECDH-4ec9d560\"}, {\"ref\": \"crypto-protocol-tls-4ec9d560\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:39.680280+00:00\"}, \"serialNumber\": \"urn:uuid:a43e3fc4-1ffe-44ef-9230-f322aa010390\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-4ec9d560"
+            },
+            {
+              "name": "stpbrk.corporate.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 274,
+              "bom_ref": "crypto-cert-0-4ec9d560"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-4ec9d560"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 2290
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-kex-ECDH-4ec9d560\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDH\", \"name\": \"ECDH Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-4ec9d560\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDH-4ec9d560\"], \"name\": \"ECDH\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\", \"crypto-kex-ECDH-4ec9d560\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for stpbrk.corporate.hdfcbank.com:443\", \"name\": \"TLS TLSv1.2 (stpbrk.corporate.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-4ec9d560\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2027-01-12T23:59:59+00:00\", \"notValidBefore\": \"2026-01-13T00:00:00+00:00\", \"subjectName\": \"stpbrk.corporate.hdfc.bank.in\"}}, \"description\": \"X.509 certificate: stpbrk.corporate.hdfc.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"stpbrk.corporate.hdfc.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560\"}, {\"ref\": \"crypto-cert-0-4ec9d560\"}, {\"ref\": \"crypto-kex-ECDH-4ec9d560\"}, {\"ref\": \"crypto-protocol-tls-4ec9d560\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:39.680280+00:00\"}, \"serialNumber\": \"urn:uuid:a43e3fc4-1ffe-44ef-9230-f322aa010390\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\4ec9d560-d087-4d83-8e0f-249f1dd0ff84.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+            "asset_id": "4ec9d560-d087-4d83-8e0f-249f1dd0ff84",
+            "total_components": 4,
+            "vulnerable_components": 3,
+            "quantum_ready_pct": 0.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\4ec9d560-d087-4d83-8e0f-249f1dd0ff84.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-4ec9d560"
+            },
+            {
+              "name": "stpbrk.corporate.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 274,
+              "bom_ref": "crypto-cert-0-4ec9d560"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-4ec9d560"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-4ec9d560",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-4ec9d560"
+            },
+            {
+              "name": "stpbrk.corporate.hdfc.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 274,
+              "bom_ref": "crypto-cert-0-4ec9d560"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-4ec9d560"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 2290
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

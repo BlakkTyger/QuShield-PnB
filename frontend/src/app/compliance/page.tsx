@@ -132,14 +132,17 @@ export default function CompliancePage() {
                 className="text-lg font-black"
                 style={{
                   color:
-                    d.days_remaining < 0 ? "var(--risk-critical)"
-                      : d.days_remaining < 90 ? "var(--risk-vulnerable)"
-                        : "var(--text-primary)",
+                    d.days_remaining === null ? "var(--risk-aware)"
+                      : d.days_remaining < 0 ? "var(--risk-critical)"
+                        : d.days_remaining < 90 ? "var(--risk-vulnerable)"
+                          : "var(--text-primary)",
                 }}
               >
-                {d.days_remaining < 0
-                  ? `${Math.abs(d.days_remaining)}d overdue`
-                  : `${d.days_remaining} days`}
+                {d.days_remaining === null
+                  ? "Ongoing"
+                  : d.days_remaining < 0
+                    ? `${Math.abs(d.days_remaining)}d overdue`
+                    : `${d.days_remaining} days`}
               </span>
             </div>
           ))}

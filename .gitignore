@@ -5,6 +5,10 @@ logs/
 discovery/bin/
 node_modules/
 frontend/.next/
+*.db
+*.db-journal
+*.db-wal
+/Reports/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

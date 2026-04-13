@@ -1,0 +1,466 @@
+{
+  "hostname": "cbxcorpuat.hdfcbank.com",
+  "asset_id": "aa59db38-cadc-41b5-aa4e-65bbdb68ed5a",
+  "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T21:49:20.722609Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "aa59db38-cadc-41b5-aa4e-65bbdb68ed5a",
+        "hostname": "cbxcorpuat.hdfcbank.com",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "cbxcorpuat.hdfcbank.com",
+          "ip_v4": "103.120.106.143",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 404,
+            "title": "Error 404--Not Found",
+            "tls_version": "TLSv1.2",
+            "content_type": "text/html; charset=UTF-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 103.120.106.143:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS131283",
+            "org": "ASN-131283"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "cbxcorpuat.hdfcbank.com",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDHE",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "cbxcorpuat.hdfcuat.bank.in",
+              "san_list": [
+                "cbxcorpuat.hdfcuat.bank.in",
+                "www.cbxcorpuat.hdfcuat.bank.in",
+                "cbxcorpuat.hdfcbank.com"
+              ],
+              "issuer": "GeoTrust TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-17T00:00:00+00:00",
+              "valid_to": "2026-09-16T23:59:59+00:00",
+              "sha256_fingerprint": "cab2910738d6e1b26f1d7758e252fbe6426ea6b0a0c439994efe0eacdb905a46",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 156,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.120.106.143:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.120.106.143:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-09-16T23:59:59+00:00",
+                "calendar_expiry": "2026-09-16T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 156,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 3,
+                "unique_domains": 2,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in",
+                  "hdfcbank.com"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "corporate_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048",
+              "ECDHE-RSA-AES256-GCM-SHA384"
+            ],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.2",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "corporate_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDHE",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.120.106.143:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.120.106.143:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048",
+              "ECDHE-RSA-AES256-GCM-SHA384"
+            ],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:37.313811Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "aa59db38-cadc-41b5-aa4e-65bbdb68ed5a",
+        "hostname": "cbxcorpuat.hdfcbank.com"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:37.521995Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "aa59db38-cadc-41b5-aa4e-65bbdb68ed5a",
+        "hostname": "cbxcorpuat.hdfcbank.com",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-kex-ECDHE-aa59db38\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"key-agree\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDHE\", \"name\": \"ECDHE Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-aa59db38\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDHE-aa59db38\"], \"name\": \"ECDHE\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\", \"crypto-kex-ECDHE-aa59db38\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for cbxcorpuat.hdfcbank.com:443\", \"name\": \"TLS TLSv1.2 (cbxcorpuat.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-aa59db38\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2026-09-16T23:59:59+00:00\", \"notValidBefore\": \"2025-09-17T00:00:00+00:00\", \"subjectName\": \"cbxcorpuat.hdfcuat.bank.in\"}}, \"description\": \"X.509 certificate: cbxcorpuat.hdfcuat.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"cbxcorpuat.hdfcuat.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\"}, {\"ref\": \"crypto-cert-0-aa59db38\"}, {\"ref\": \"crypto-kex-ECDHE-aa59db38\"}, {\"ref\": \"crypto-protocol-tls-aa59db38\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:36.997920+00:00\"}, \"serialNumber\": \"urn:uuid:93d017e5-d2cd-4cc6-8b62-626200a80659\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDHE",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDHE-aa59db38"
+            },
+            {
+              "name": "cbxcorpuat.hdfcuat.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 156,
+              "bom_ref": "crypto-cert-0-aa59db38"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-aa59db38"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 2278
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-kex-ECDHE-aa59db38\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"key-agree\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDHE\", \"name\": \"ECDHE Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-aa59db38\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDHE-aa59db38\"], \"name\": \"ECDHE\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\", \"crypto-kex-ECDHE-aa59db38\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for cbxcorpuat.hdfcbank.com:443\", \"name\": \"TLS TLSv1.2 (cbxcorpuat.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-aa59db38\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust TLS RSA CA G1\", \"notValidAfter\": \"2026-09-16T23:59:59+00:00\", \"notValidBefore\": \"2025-09-17T00:00:00+00:00\", \"subjectName\": \"cbxcorpuat.hdfcuat.bank.in\"}}, \"description\": \"X.509 certificate: cbxcorpuat.hdfcuat.bank.in | RSA-2048 | Issuer: GeoTrust TLS RSA CA G1\", \"name\": \"cbxcorpuat.hdfcuat.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38\"}, {\"ref\": \"crypto-cert-0-aa59db38\"}, {\"ref\": \"crypto-kex-ECDHE-aa59db38\"}, {\"ref\": \"crypto-protocol-tls-aa59db38\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:36.997920+00:00\"}, \"serialNumber\": \"urn:uuid:93d017e5-d2cd-4cc6-8b62-626200a80659\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\aa59db38-cadc-41b5-aa4e-65bbdb68ed5a.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+            "asset_id": "aa59db38-cadc-41b5-aa4e-65bbdb68ed5a",
+            "total_components": 4,
+            "vulnerable_components": 3,
+            "quantum_ready_pct": 0.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\aa59db38-cadc-41b5-aa4e-65bbdb68ed5a.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDHE",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDHE-aa59db38"
+            },
+            {
+              "name": "cbxcorpuat.hdfcuat.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 156,
+              "bom_ref": "crypto-cert-0-aa59db38"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-aa59db38"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-aa59db38",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDHE",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDHE-aa59db38"
+            },
+            {
+              "name": "cbxcorpuat.hdfcuat.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 156,
+              "bom_ref": "crypto-cert-0-aa59db38"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-aa59db38"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 2278
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

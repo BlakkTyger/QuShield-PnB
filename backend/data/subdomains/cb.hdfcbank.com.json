@@ -1,0 +1,226 @@
+{
+  "hostname": "cb.hdfcbank.com",
+  "asset_id": "a0236b6b-c4d3-4c1d-a572-774451a36226",
+  "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T21:51:27.016945Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "a0236b6b-c4d3-4c1d-a572-774451a36226",
+        "hostname": "cb.hdfcbank.com",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "cb.hdfcbank.com",
+          "ip_v4": "175.100.163.165",
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 175.100.163.165:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS131283",
+            "org": "ASN-131283"
+          },
+          "discovery_methods": [
+            "dns"
+          ],
+          "confidence_score": 0.25
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": "\n24970000:error:8000274C:system library:BIO_connect:Unknown error:crypto\\bio\\bio_sock2.c:183:calling connect()\n24970000:error:10000067:BIO routines:BIO_connect:connect error:crypto\\bio\\bio_sock2.c:185:\nconnect:errno=0\n",
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "cb.hdfcbank.com",
+          "port": 443,
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": "\n24970000:error:8000274C:system library:BIO_connect:Unknown error:crypto\\bio\\bio_sock2.c:183:calling connect()\n24970000:error:10000067:BIO routines:BIO_connect:connect error:crypto\\bio\\bio_sock2.c:185:\nconnect:errno=0\n"
+          },
+          "certificates": [],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 175.100.163.165:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 175.100.163.165:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": null,
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 0
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": "\n24970000:error:8000274C:system library:BIO_connect:Unknown error:crypto\\bio\\bio_sock2.c:183:calling connect()\n24970000:error:10000067:BIO routines:BIO_connect:connect error:crypto\\bio\\bio_sock2.c:185:\nconnect:errno=0\n"
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 175.100.163.165:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 175.100.163.165:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:37.012571Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "a0236b6b-c4d3-4c1d-a572-774451a36226",
+        "hostname": "cb.hdfcbank.com"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:37.280851Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "a0236b6b-c4d3-4c1d-a572-774451a36226",
+        "hostname": "cb.hdfcbank.com",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"metadata\": {\"timestamp\": \"2026-04-13T21:55:36.786433+00:00\"}, \"serialNumber\": \"urn:uuid:27ef2dac-e84a-4f9d-b68a-956522bd6727\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [],
+          "stats": {
+            "total_components": 0,
+            "algorithm_components": 0,
+            "certificate_components": 0,
+            "protocol_components": 0,
+            "vulnerable_count": 0,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 252
+          }
+        },
+        "raw_cbom_json_written": "{\"metadata\": {\"timestamp\": \"2026-04-13T21:55:36.786433+00:00\"}, \"serialNumber\": \"urn:uuid:27ef2dac-e84a-4f9d-b68a-956522bd6727\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\a0236b6b-c4d3-4c1d-a572-774451a36226.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+            "asset_id": "a0236b6b-c4d3-4c1d-a572-774451a36226",
+            "total_components": 0,
+            "vulnerable_components": 0,
+            "quantum_ready_pct": 0.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\a0236b6b-c4d3-4c1d-a572-774451a36226.cdx.json"
+          },
+          "cbom_components": []
+        },
+        "frontend_payload_preview": {
+          "components": [],
+          "stats": {
+            "total_components": 0,
+            "algorithm_components": 0,
+            "certificate_components": 0,
+            "protocol_components": 0,
+            "vulnerable_count": 0,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 252
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

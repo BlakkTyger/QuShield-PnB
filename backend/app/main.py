@@ -14,6 +14,7 @@ from app.config import settings
 from app.core.database import check_connection, init_db
 from app.core.logging import get_logger
 from app.core.exceptions import QuShieldError, ScanError
+from app.services.scheduler import start_scheduler, stop_scheduler
 
 logger = get_logger("api")
 
@@ -26,9 +27,11 @@ async def lifespan(app: FastAPI):
     try:
         tables = init_db()
         logger.info(f"Database ready: {len(tables)} tables")
+        start_scheduler()
     except Exception as e:
         logger.error(f"Database init failed: {e}")
     yield
+    stop_scheduler()
     logger.info("QuShield-PnB shutting down...")
 
 

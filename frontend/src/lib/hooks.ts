@@ -372,10 +372,10 @@ export function useAIMigrationRoadmap() {
 /* ─── Reports ────────────────────────────────────────── */
 export function useGenerateReport() {
   return useMutation({
-    mutationFn: async (params: { scanId: string; reportType: string }) => {
+    mutationFn: async (params: { scanId: string; reportType: string; format?: string; password?: string }) => {
       const { data } = await api.post(
         `/reports/generate/${params.scanId}`,
-        { report_type: params.reportType },
+        { report_type: params.reportType, format: params.format || "pdf", password: params.password || null },
         {
         responseType: "blob",
         }

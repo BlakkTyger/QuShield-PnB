@@ -26,3 +26,6 @@ python-multipart>=0.0.9
 chromadb>=0.5.0
 pandas>=2.0.0
 requests>=2.32.0
+apscheduler==3.11.2
+PyPDF2==3.0.1
+python-dateutil==2.9.0

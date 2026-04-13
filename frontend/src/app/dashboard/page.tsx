@@ -19,13 +19,26 @@ export default function DashboardPage() {
   const { data: scans, isLoading: scansLoading } = useScans();
 
   useEffect(() => {
-    // Try localStorage first
-    const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-    if (stored) { setScanId(stored); return; }
-    // Otherwise use latest completed scan
     if (scans?.length) {
+      // Prioritize the latest completed deep scan
+      const latestDeep = scans.find((s) => s.status === "completed" && s.scan_type === "deep");
+      if (latestDeep) {
+        setScanId(latestDeep.scan_id);
+        return;
+      }
+
+      // Try localStorage next
+      const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
+      if (stored) { 
+        setScanId(stored); 
+        return; 
+      }
+
+      // Fallback to any completed scan
       const completed = scans.find((s) => s.status === "completed");
-      if (completed) setScanId(completed.scan_id);
+      if (completed) {
+        setScanId(completed.scan_id);
+      }
     }
   }, [scans]);
 
@@ -245,16 +258,20 @@ export default function DashboardPage() {
                   className="text-sm font-bold ml-3 whitespace-nowrap"
                   style={{
                     color:
-                      d.days_remaining < 0
-                        ? "var(--risk-critical)"
-                        : d.days_remaining < 90
-                          ? "var(--risk-vulnerable)"
-                          : "var(--text-secondary)",
+                      d.days_remaining === null
+                        ? "var(--risk-aware)"
+                        : d.days_remaining < 0
+                          ? "var(--risk-critical)"
+                          : d.days_remaining < 90
+                            ? "var(--risk-vulnerable)"
+                            : "var(--text-secondary)",
                   }}
                 >
-                  {d.days_remaining < 0
-                    ? `${Math.abs(d.days_remaining)}d overdue`
-                    : `${d.days_remaining}d`}
+                  {d.days_remaining === null
+                    ? "Ongoing"
+                    : d.days_remaining < 0
+                      ? `${Math.abs(d.days_remaining)}d overdue`
+                      : `${d.days_remaining}d`}
                 </span>
               </div>
             ))}

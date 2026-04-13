@@ -1,0 +1,495 @@
+{
+  "hostname": "bahrainnetbanking.hdfcbank.com",
+  "asset_id": "dc667238-c582-4a23-9353-3042929e685a",
+  "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+  "entries": [
+    {
+      "timestamp_utc": "2026-04-13T21:48:02.558245Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "dc667238-c582-4a23-9353-3042929e685a",
+        "hostname": "bahrainnetbanking.hdfcbank.com",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "bahrainnetbanking.hdfcbank.com",
+          "ip_v4": "103.120.106.22",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 103.120.106.22:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS131283",
+            "org": "ASN-131283"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "bahrainnetbanking.hdfcbank.com",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519MLKEM768",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "bahrainnetbanking.hdfcbank.com",
+              "san_list": [
+                "bahrainnetbanking.hdfcbank.com",
+                "www.bahrainnetbanking.hdfcbank.com"
+              ],
+              "issuer": "GeoTrust EV RSA CA G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-10-17T00:00:00+00:00",
+              "valid_to": "2026-11-17T23:59:59+00:00",
+              "sha256_fingerprint": "a0bb919a268fa67cb8536c3aa273fa4bbedabafe36151e0108e2ce91f53289e1",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 218,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": true,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [
+              "X25519MLKEM768"
+            ],
+            "detection_method": "oid_check+pqcscan",
+            "note": null,
+            "hybrid_tls_algorithms": [
+              "X25519MLKEM768"
+            ],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": true,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [
+              {
+                "name": "X25519MLKEM768",
+                "classical_component": "X25519",
+                "pqc_component": "ML-KEM-768",
+                "nist_level": 3,
+                "iana_id": "0x4588"
+              }
+            ],
+            "is_hybrid": true
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-11-17T23:59:59+00:00",
+                "calendar_expiry": "2026-11-17T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 218,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 2,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "hdfcbank.com"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": "Google Cloud",
+            "cdn_detected": "Google Cloud CDN",
+            "waf_detected": "F5 BIG-IP",
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": true,
+            "http2_supported": false,
+            "response_headers_raw": {
+              "x-content-type-options": "nosniff, nosniff",
+              "x-xss-protection": "1; mode=block, 1; mode=block",
+              "x-frame-options": "SAMEORIGIN, DENY",
+              "x-permitted-cross-domain-policies": "none",
+              "set-cookie": "TS0148d892=0142ad3beb94c9d192c6583f40868ad830f759181902fd52c694def296743616cd5ccd1f219f22386e14a9ae1c03fe6e1ef997ff56; Path=/; Domain=.bahrainnetbanking.hdfcbank.com; Secure; HttpOnly; ; SameSite=Strict"
+            }
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": true,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": "Google Cloud",
+            "cdn_detected": "Google Cloud CDN",
+            "waf_detected": "F5 BIG-IP",
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519MLKEM768",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": true,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [
+              "X25519MLKEM768"
+            ],
+            "detection_method": "oid_check+pqcscan",
+            "note": null,
+            "hybrid_tls_algorithms": [
+              "X25519MLKEM768"
+            ],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": true,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [
+              {
+                "name": "X25519MLKEM768",
+                "classical_component": "X25519",
+                "pqc_component": "ML-KEM-768",
+                "nist_level": 3,
+                "iana_id": "0x4588"
+              }
+            ],
+            "is_hybrid": true
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": true,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:39.122689Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "dc667238-c582-4a23-9353-3042929e685a",
+        "hostname": "bahrainnetbanking.hdfcbank.com"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:55:39.376994Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+        "asset_id": "dc667238-c582-4a23-9353-3042929e685a",
+        "hostname": "bahrainnetbanking.hdfcbank.com",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-dc667238\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519MLKEM768-dc667238\"], \"name\": \"X25519MLKEM768\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\", \"crypto-kex-X25519MLKEM768-dc667238\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for bahrainnetbanking.hdfcbank.com:443\", \"name\": \"TLS TLSv1.3 (bahrainnetbanking.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519MLKEM768-dc667238\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 3, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519MLKEM768\", \"name\": \"X25519MLKEM768 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-dc667238\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-11-17T23:59:59+00:00\", \"notValidBefore\": \"2025-10-17T00:00:00+00:00\", \"subjectName\": \"bahrainnetbanking.hdfcbank.com\"}}, \"description\": \"X.509 certificate: bahrainnetbanking.hdfcbank.com | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"bahrainnetbanking.hdfcbank.com (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\"}, {\"ref\": \"crypto-cert-0-dc667238\"}, {\"ref\": \"crypto-kex-X25519MLKEM768-dc667238\"}, {\"ref\": \"crypto-protocol-tls-dc667238\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:38.919474+00:00\"}, \"serialNumber\": \"urn:uuid:49d4da5d-2a81-4210-b637-8d5ca5b69daf\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-dc667238",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519MLKEM768",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519MLKEM768",
+              "type": "key_exchange",
+              "nist_level": 3,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-kex-X25519MLKEM768-dc667238"
+            },
+            {
+              "name": "bahrainnetbanking.hdfcbank.com",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 218,
+              "bom_ref": "crypto-cert-0-dc667238"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-dc667238"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 1,
+            "safe_count": 2,
+            "quantum_ready_pct": 66.7,
+            "json_size_bytes": 2300
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-dc667238\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519MLKEM768-dc667238\"], \"name\": \"X25519MLKEM768\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\", \"crypto-kex-X25519MLKEM768-dc667238\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for bahrainnetbanking.hdfcbank.com:443\", \"name\": \"TLS TLSv1.3 (bahrainnetbanking.hdfcbank.com)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519MLKEM768-dc667238\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 3, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519MLKEM768\", \"name\": \"X25519MLKEM768 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-dc667238\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-11-17T23:59:59+00:00\", \"notValidBefore\": \"2025-10-17T00:00:00+00:00\", \"subjectName\": \"bahrainnetbanking.hdfcbank.com\"}}, \"description\": \"X.509 certificate: bahrainnetbanking.hdfcbank.com | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"bahrainnetbanking.hdfcbank.com (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-dc667238\"}, {\"ref\": \"crypto-cert-0-dc667238\"}, {\"ref\": \"crypto-kex-X25519MLKEM768-dc667238\"}, {\"ref\": \"crypto-protocol-tls-dc667238\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:55:38.919474+00:00\"}, \"serialNumber\": \"urn:uuid:49d4da5d-2a81-4210-b637-8d5ca5b69daf\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\dc667238-c582-4a23-9353-3042929e685a.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5",
+            "asset_id": "dc667238-c582-4a23-9353-3042929e685a",
+            "total_components": 4,
+            "vulnerable_components": 1,
+            "quantum_ready_pct": 66.7,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\3c8e6473-cdc3-4e61-a9b5-c2377e2c8ce5\\dc667238-c582-4a23-9353-3042929e685a.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-dc667238",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519MLKEM768",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519MLKEM768",
+              "type": "key_exchange",
+              "nist_level": 3,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-kex-X25519MLKEM768-dc667238"
+            },
+            {
+              "name": "bahrainnetbanking.hdfcbank.com",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 218,
+              "bom_ref": "crypto-cert-0-dc667238"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-dc667238"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-dc667238",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519MLKEM768",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519MLKEM768",
+              "type": "key_exchange",
+              "nist_level": 3,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-kex-X25519MLKEM768-dc667238"
+            },
+            {
+              "name": "bahrainnetbanking.hdfcbank.com",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 218,
+              "bom_ref": "crypto-cert-0-dc667238"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-dc667238"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 1,
+            "safe_count": 2,
+            "quantum_ready_pct": 66.7,
+            "json_size_bytes": 2300
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    }
+  ]
+}

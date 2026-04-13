@@ -913,6 +913,289 @@
         },
         "raw_pqcscan_json_from_phase2": null
       }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:35:01.796455Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "cf4a6edc-ef67-44a1-8d39-df6999ba1dbe",
+        "hostname": "drm.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "drm.pnb.bank.in",
+          "ip_v4": "103.109.224.97",
+          "http": {
+            "status_code": 200,
+            "title": "Policy Server Portal",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html;charset=UTF-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIGKDCCBRCgAwIBAgIQAeuV/vKS0ME/JphekNZ+fjANBgkqhkiG9w0BAQsFADBe\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMR0wGwYDVQQDExRUaGF3dGUgVExTIFJTQSBDQSBHMTAe\nFw0yNTA5MTIwMDAwMDBaFw0yNjA5MTEyMzU5NTlaMBoxGDAWBgNVBAMTD2RybS5w\nbmIuYmFuay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOBPdyS0\nSKZ1AnAoMJeAlwazXxuizlqmtJw9RLb0n38fGiPSX09UNuWPQlSAmlL+cOUu/Qnm\nUZeOr541J9vHZtiu/cEkaut72F/KzuolhvwNqM6DCytPWfaUh+psC4QE9YHkXZov\nqDP2BEmQ1uBX6Ltj9m+VEkd4I1sEKgD8T0hz/ZyzoS/gdmZAEzAqJ4IWNdvbGYUf\nT3djbNpC8rzHjYg2Wh8QQnirC4trYh+q4CvtIYJhIqJ0AmskRT+06Ycfv2EFN+fK\nYWgO7wtWBPs6MRZyxmYfUn/iuImCYlTYuLQ+lf5Vlghaf5GtTrQk1m5jIdS8md2l\n2z4KQAF/9k3ODPMCAwEAAaOCAyQwggMgMB8GA1UdIwQYMBaAFKWM/jLM6w8s1BnG\nCLgAJIhdw8W3MB0GA1UdDgQWBBQd0dzQ5l/QNMDsnjp12pAkCeLdyzAvBgNVHREE\nKDAmgg9kcm0ucG5iLmJhbmsuaW6CE3d3dy5kcm0ucG5iLmJhbmsuaW4wPgYDVR0g\nBDcwNTAzBgZngQwBAgEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2Vy\ndC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\nKwYBBQUHAwIwOwYDVR0fBDQwMjAwoC6gLIYqaHR0cDovL2NkcC50aGF3dGUuY29t\nL1RoYXd0ZVRMU1JTQUNBRzEuY3JsMHAGCCsGAQUFBwEBBGQwYjAkBggrBgEFBQcw\nAYYYaHR0cDovL3N0YXR1cy50aGF3dGUuY29tMDoGCCsGAQUFBzAChi5odHRwOi8v\nY2FjZXJ0cy50aGF3dGUuY29tL1RoYXd0ZVRMU1JTQUNBRzEuY3J0MAwGA1UdEwEB\n/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB3ANdtfRDRp/V3wsfpX9cA\nv/mCyTNaZeHQswFzF8DIxWl3AAABmTzuPrYAAAQDAEgwRgIhAJExQrrE22zX0jFZ\nCEcJLSMg4+sbWlrC4new5nJZZ3oMAiEAks/klBoJV+5Wa0biZoAsan/ZisWrg3Cm\nDXSOTw2bt4cAdgDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZk8\n7j7zAAAEAwBHMEUCIHquYPfCByqGTUt+KU3OOCMfuYQ13aUeVLpXpKfw4CETAiEA\n0W6vdd9bT7dbFRLh4Vwuj2E56jHiVFP5Fgs9OmvDmpoAdgCUTkOH+uzB74HzGSQm\nqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZk87j8EAAAEAwBHMEUCIEduznI626bz7O6M\nwNeKYqJGEpdyV7sg2VtGrSv3bUTeAiEAw9sWbFWfl+XNauQpAmX7StRMdDypCA+Y\nved9NXxJjDcwDQYJKoZIhvcNAQELBQADggEBAI89KVWqwDEFjektIsZn+SLt+cBS\n4tKHr1688phqc3c3JN4tZOTPlIx2pjiElp4YZcf8spER+GfX2Bt4hTT1/61qP38X\nZTM75QwK/kd8gG0cdLNnsnPSNsoScO+RF0iXwVWG0X9LV/+tYkorz4Sx40FYGjGP\n+Qt/nVDqH0jYxkn0lNJTN5+0uVEhBhAcYvRFEkJkW8iX60grUiKH0l5Cl0fbH3vG\ne4TUYMwoyZVwGn99yXNelQqPmJSzo6nErD6IMl6O15dV8RdDyW+c5A+lWn6llhjx\ng3xIK8ITcltSGoHE4einANyMF8pJJPZ6n3kzGLHwVRobVVpi5IKcal+muuE=\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "drm.pnb.bank.in"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "drm.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "drm.pnb.bank.in",
+              "san_list": [
+                "drm.pnb.bank.in",
+                "www.drm.pnb.bank.in"
+              ],
+              "issuer": "Thawte TLS RSA CA G1",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-09-12T00:00:00+00:00",
+              "valid_to": "2026-09-11T23:59:59+00:00",
+              "sha256_fingerprint": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 151,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-09-11T23:59:59+00:00",
+                "calendar_expiry": "2026-09-11T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 151,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 2,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": "F5 BIG-IP",
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {
+              "x-seclore-response-from": "PolicyServer, Seclore PolicyServer",
+              "x-content-type-options": "nosniff",
+              "x-xss-protection": "1; mode=block",
+              "x-frame-options": "SAMEORIGIN",
+              "set-cookie": "JSESSIONID=CA33DF936A55B12C0F7AFCF53761FDF8.node1; Path=/policyserver; Secure; HttpOnly; SameSite=None, TS0196ac80=011aa98b99f3066d011a4fbba93df0127c930b5e2dfb82ed1c1a3e4e1943bd9fdb810fbdc081c47ebfe64878cbc852212aaee4fa87c06b2ed68115fd1097feb23f152e3fbb; Path=/; Secure; HttpOnly, TS0198cb07=011aa98b99dcf08997e4174d3b298ea8c5f1badd20fb82ed1c1a3e4e1943bd9fdb810fbdc081c47ebfe64878cbc852212aaee4fa878889ce38c348e7bcc225150870fc9565; path=/policyserver; HttpOnly; Secure"
+            }
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": "F5 BIG-IP",
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.224.97:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.224.97:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
     }
   ]
 }

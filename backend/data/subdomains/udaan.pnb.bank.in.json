@@ -1008,6 +1008,457 @@
         },
         "raw_pqcscan_json_from_phase2": null
       }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:33:58.919458Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27",
+        "hostname": "udaan.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "udaan.pnb.bank.in",
+          "ip_v4": "103.109.225.152",
+          "http": {
+            "status_code": 200,
+            "title": "Login | Punjab National Bank",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html; charset=UTF-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 103.109.225.152:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "httpx"
+          ],
+          "confidence_score": 0.5
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "udaan.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "udaan.pnb.bank.in",
+              "san_list": [
+                "udaan.pnb.bank.in"
+              ],
+              "issuer": "GeoTrust EV RSA CA G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 4096,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-08-14T00:00:00+00:00",
+              "valid_to": "2026-08-13T23:59:59+00:00",
+              "sha256_fingerprint": "e74635c9184ffa8da012a9b09eec2f97c1c18bd628054c6a6d6c43436a079b5d",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 122,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-4096"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.225.152:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.152:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-08-13T23:59:59+00:00",
+                "calendar_expiry": "2026-08-13T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 122,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-4096"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 1
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": "X25519",
+            "forward_secrecy": true,
+            "engine": "stdlib",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQCscan: Timed out after 5s connecting to 103.109.225.152:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.152:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-4096"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:39:20.762352Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27",
+        "hostname": "udaan.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:39:20.931119Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27",
+        "hostname": "udaan.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-6d4acb9c\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-6d4acb9c\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\", \"crypto-kex-X25519-6d4acb9c\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for udaan.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (udaan.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-6d4acb9c\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-6d4acb9c\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-13T23:59:59+00:00\", \"notValidBefore\": \"2025-08-14T00:00:00+00:00\", \"subjectName\": \"udaan.pnb.bank.in\"}}, \"description\": \"X.509 certificate: udaan.pnb.bank.in | RSA-4096 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"udaan.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\"}, {\"ref\": \"crypto-cert-0-6d4acb9c\"}, {\"ref\": \"crypto-kex-X25519-6d4acb9c\"}, {\"ref\": \"crypto-protocol-tls-6d4acb9c\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:39:20.469554+00:00\"}, \"serialNumber\": \"urn:uuid:c9ab2083-4d0f-4aa9-86bf-df25d9d7c0ab\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-6d4acb9c"
+            },
+            {
+              "name": "udaan.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 4096,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 122,
+              "bom_ref": "crypto-cert-0-6d4acb9c"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-6d4acb9c"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2179
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-protocol-tls-6d4acb9c\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}, {\"algorithms\": [\"crypto-kex-X25519-6d4acb9c\"], \"name\": \"X25519\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\", \"crypto-kex-X25519-6d4acb9c\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for udaan.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (udaan.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"None\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-X25519-6d4acb9c\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: X25519\", \"name\": \"X25519 Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-6d4acb9c\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-13T23:59:59+00:00\", \"notValidBefore\": \"2025-08-14T00:00:00+00:00\", \"subjectName\": \"udaan.pnb.bank.in\"}}, \"description\": \"X.509 certificate: udaan.pnb.bank.in | RSA-4096 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"udaan.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c\"}, {\"ref\": \"crypto-cert-0-6d4acb9c\"}, {\"ref\": \"crypto-kex-X25519-6d4acb9c\"}, {\"ref\": \"crypto-protocol-tls-6d4acb9c\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:39:20.469554+00:00\"}, \"serialNumber\": \"urn:uuid:c9ab2083-4d0f-4aa9-86bf-df25d9d7c0ab\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\10b449a6-12ed-4c8c-968a-23229e96d31f\\6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+            "asset_id": "6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27",
+            "total_components": 4,
+            "vulnerable_components": 2,
+            "quantum_ready_pct": 33.3,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\10b449a6-12ed-4c8c-968a-23229e96d31f\\6d4acb9c-4d0e-45eb-9d73-0cb4c3988a27.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-6d4acb9c"
+            },
+            {
+              "name": "udaan.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 4096,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 122,
+              "bom_ref": "crypto-cert-0-6d4acb9c"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-6d4acb9c"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-6d4acb9c",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "X25519",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "X25519",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-X25519-6d4acb9c"
+            },
+            {
+              "name": "udaan.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 4096,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 122,
+              "bom_ref": "crypto-cert-0-6d4acb9c"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-6d4acb9c"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 2,
+            "certificate_components": 1,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2179
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
     }
   ]
 }

@@ -12,6 +12,8 @@ from app.models.cbom import CBOMRecord, CBOMComponent
 from app.models.risk import RiskScore, RiskFactor
 from app.models.compliance import ComplianceResult
 from app.models.auth import User, EmailVerification, ScanCache
+from app.models.report import ReportSchedule
+
 __all__ = [
     "Base",
     "ScanJob", "ScanStatus",
@@ -20,5 +22,6 @@ __all__ = [
     "CBOMRecord", "CBOMComponent",
     "RiskScore", "RiskFactor",
     "ComplianceResult",
-    "User", "EmailVerification", "ScanCache"
+    "User", "EmailVerification", "ScanCache",
+    "ReportSchedule"
 ]

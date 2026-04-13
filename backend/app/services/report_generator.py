@@ -38,7 +38,7 @@ class ReportGenerator:
         template_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
 
-    def generate_report(self, scan_id: str, report_type: str) -> bytes:
+    def generate_report(self, scan_id: str, report_type: str, format: str = "pdf", password: str = None) -> bytes:
         if report_type not in self.TEMPLATE_BY_TYPE:
             raise ValueError("Unsupported report type")
 
@@ -47,12 +47,46 @@ class ReportGenerator:
             raise ValueError("Scan not found or unauthorized")
 
         dataset = self._build_dataset(scan_job)
-        if report_type == "executive":
+        if report_type == "executive" or report_type == "full_scan":
             dataset["ai_narrative"] = self._generate_ai_narrative(dataset["stats"], dataset["critical_assets"])
+
+        if format == "json":
+            import json
+            return json.dumps(dataset, default=str).encode("utf-8")
+        elif format == "csv":
+            import io
+            import csv
+            output = io.StringIO()
+            assets = dataset.get("assets", [])
+            if assets:
+                writer = csv.DictWriter(output, fieldnames=assets[0].keys())
+                writer.writeheader()
+                for a in assets:
+                    writer.writerow(a)
+            else:
+                output.write("No assets found in dataset.")
+            return output.getvalue().encode("utf-8")
 
         template = self.jinja_env.get_template(self.TEMPLATE_BY_TYPE[report_type])
         html_content = template.render(**dataset)
-        return self._to_pdf_or_html(html_content)
+        pdf_bytes = self._to_pdf_or_html(html_content)
+        
+        if format == "pdf" and password:
+            try:
+                from PyPDF2 import PdfReader, PdfWriter
+                import io
+                reader = PdfReader(io.BytesIO(pdf_bytes))
+                writer = PdfWriter()
+                for page in reader.pages:
+                    writer.add_page(page)
+                writer.encrypt(user_password=password, owner_password=password, use_128bit=True)
+                pwd_output = io.BytesIO()
+                writer.write(pwd_output)
+                return pwd_output.getvalue()
+            except ImportError:
+                logger.error("PyPDF2 not installed. Proceeding without encryption.")
+                
+        return pdf_bytes
 
     def _to_pdf_or_html(self, html_content: str) -> bytes:
         if HTML:

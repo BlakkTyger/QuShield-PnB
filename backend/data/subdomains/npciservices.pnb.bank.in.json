@@ -1089,6 +1089,547 @@
         },
         "raw_pqcscan_json_from_phase2": null
       }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:32:48.894345Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "207370cf-6530-41fa-b6da-444d98c7a9ca",
+        "hostname": "npciservices.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "npciservices.pnb.bank.in",
+          "ip_v4": "103.109.225.229",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 404,
+            "title": "Not Found",
+            "tls_version": "TLSv1.3",
+            "content_type": "text/html; charset=us-ascii"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIG6TCCBdGgAwIBAgIQAzTHHecA0Z3I8xpe7N6ZPTANBgkqhkiG9w0BAQsFADBE\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMR4wHAYDVQQDExVH\nZW9UcnVzdCBFViBSU0EgQ0EgRzIwHhcNMjUwNzIzMDAwMDAwWhcNMjYwNzIyMjM1\nOTU5WjCBvDETMBEGCysGAQQBgjc8AgEDEwJJTjEaMBgGA1UEDwwRR292ZXJubWVu\ndCBFbnRpdHkxGjAYBgNVBAUTEUdvdmVybm1lbnQgRW50aXR5MQswCQYDVQQGEwJJ\nTjEOMAwGA1UECBMFRGVsaGkxEjAQBgNVBAcTCU5ldyBEZWxoaTEdMBsGA1UEChMU\nUHVuamFiIE5hdGlvbmFsIEJhbmsxHTAbBgNVBAMTFGVtYW5kYXRlLnBuYi5iYW5r\nLmluMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw1FN+YR0HCxMh4AW\nw05AKq3qlACovm6JbwkvEHLlO4myK5u48IECOEBaSznr8k0PqhoOMGChw76mcsf9\nOvNP8GnzeMuoJvvvmKNsb1Uv6+l4Q8hxtSyLF+BZA2tCwFY2A4m7QYEJDmg2peVH\nE571eKSF8HqXG4kqFGpJOsVyP18g3d4xZX8czKsbg7Vl/zhVhYIWvD4XuMu2hk+T\nahmyuD+hzrZUp4+HQUFrJ4tAuGixpbo3KA3ldsEOVpJGhyNqEVh/G/tAM247FlIS\nRWGb4ikVmC43sS1flBnauPJzMHHD45Xk3aW486O295TlOdzgbT51OOtDSeMom49G\ngIBtVwIDAQABo4IDXDCCA1gwHwYDVR0jBBgwFoAUKNLP7gmEdd21srW/PNWgxnOI\nXR8wHQYDVR0OBBYEFBxapP+OnFn3/as4cYlLjv0RxRF8MB8GA1UdEQQYMBaCFGVt\nYW5kYXRlLnBuYi5iYW5rLmluMEoGA1UdIARDMEEwCwYJYIZIAYb9bAIBMDIGBWeB\nDAEBMCkwJwYIKwYBBQUHAgEWG2h0dHA6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAO\nBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMHUG\nA1UdHwRuMGwwNKAyoDCGLmh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9HZW9UcnVz\ndEVWUlNBQ0FHMi5jcmwwNKAyoDCGLmh0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9H\nZW9UcnVzdEVWUlNBQ0FHMi5jcmwwcwYIKwYBBQUHAQEEZzBlMCQGCCsGAQUFBzAB\nhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20wPQYIKwYBBQUHMAKGMWh0dHA6Ly9j\nYWNlcnRzLmRpZ2ljZXJ0LmNvbS9HZW9UcnVzdEVWUlNBQ0FHMi5jcnQwDAYDVR0T\nAQH/BAIwADCCAX4GCisGAQQB1nkCBAIEggFuBIIBagFoAHUA1219ENGn9XfCx+lf\n1wC/+YLJM1pl4dCzAXMXwMjFaXcAAAGYN3VtNQAABAMARjBEAiAMCjVqoKKlWtur\nVx/I5OM0NwFcME3uuyF7YGDbcfSR0QIgFcIyh92dN/c1FNV+OxY6bdAhRK1DXcgv\n/e3jff4I2skAdwDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAAAZg3\ndW1yAAAEAwBIMEYCIQDjd0iJjCbN4nm9NyuPECUm6Biqisf4u4PzlXr64YGmxgIh\nAO463unRZFnGkRkJ2dYfyIre0JZb6OmwiSu0zYGzk/ZGAHYAlE5Dh/rswe+B8xkk\nJqgYZQHH0184AgE/cmd9VTcuGdgAAAGYN3VthgAABAMARzBFAiEAz8Glxn+OjEkt\naqFNCXaspZuTQLu5bnTdZenN6IzV+ZICICDQj9N72j39UwOPWzq4W4csD4xY/qPf\njkNrnzyObxE0MA0GCSqGSIb3DQEBCwUAA4IBAQAVI9GYQE0Qsk4YRqpYhG3sC8AS\nt/f9BL4guj1kjCmYSUSPo0CT5ile5Jn9v2KfJA/uRSs0xz1xF6+JHKwqKxadeSvy\ngpZddybKPklg9Ujyu88RXjhmtNhBdJyCkTYQNg8AZgfL+mser0fWJW13yKXCJAQL\nq/CwiGq9YWylLffvxmXue2Zuv1/UJuTkgSOkwD+4yn1y31ZvBsPRB1lXf+vA5xLE\ne+2bPmRe6x/pYChuj1VJil549NQy80NHFglM5VO5g2EzGaKH27LbWgbd/vLbIxxg\nVomg2UBy8rilEqIfpoy0U88Jp7xkTGAR1MPV7tGbrRBPqGkZXfKq1rBtXtVA\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIFPDCCBCSgAwIBAgIQDWASYsinchpuqwNh5WGVgDANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0yMDA3MDIxMjQyNTdaFw0zMDA3MDIxMjQyNTdaMEQxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxHjAcBgNVBAMTFUdlb1RydXN0IEVWIFJT\nQSBDQSBHMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDSvFMMGIOI\nD2N+rpyaGTPfyItp3atCyimRJCPtAakU984EB19Zugrb82ui0iy0zLKMDrOuN+Ku\nH6jF4F4ZCoHjN7tFdMtSsCUAbrpFVO/5BLY+VTIg7YUN5LwRHUb2QVSGwKyIeYS+\nSqPV8mzTMkG9GnWjG1IQT0F1+Xu7+uAGRFVnIdYCSBgl7iG4qOWZjcPKnW+3OJRO\ndZtwGE39E7WoasoW8Nvpu5FFp2WIsvY6B/0whr3w+xKeBYb2WNKI1ZXvk4y+AmUa\nBdRTY0HPBZ4+6Ipcq2Rl+QLQXQuGXH95YujYNYpbnV7ASU5/dVmqVPY0LHnp2sNK\nIN65/n+DbcsCAwEAAaOCAgswggIHMB0GA1UdDgQWBBQo0s/uCYR13bWytb881aDG\nc4hdHzAfBgNVHSMEGDAWgBROIlQgGJXm427mD/r6uRLtBhePOTAOBgNVHQ8BAf8E\nBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQI\nMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\naWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDA3oDWgM4YxaHR0cDov\nL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDCBzgYD\nVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5k\naWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcCAjB+DHxBbnkgdXNlIG9mIHRoaXMg\nQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZSBvZiB0aGUgUmVseWlu\nZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBhdCBodHRwczovL3d3dy5kaWdpY2Vy\ndC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUAA4IBAQBVbQs8KD6qRnOf/dtOHNAy\nieoRcA1Zk3lGMLwqNfuLpTb9gDQFpvxGN/3X7i0mAEtRhN/r9fDv8oiVLn6gfpm0\nUUN47vFJCzf5dqkV/N7LkMTqlhDA0Ve/GBJ3A2E5yFT7TgAGN4wJ9cCZrKbqKHVU\nRatwJ+T58jmhbvtEM7t2ucB7u+Dmu4KoOTEx8LR8+qn8OyLh1VLq75vzDTsnhTN5\n3AgPdMVFk6F8sjT2P2xbvAb0kAlyAtldAtpGvBzXhacmRs7rTqz/oTDwYZLkrm+q\nEltdmGwUOWvFPjwucH6tS+gQgiUYiNJqijzI1jr8TZ01VGOSTW7rRUKgkN5WJqDA\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "npciservices.pnb.bank.in"
+          },
+          "asn": {
+            "number": "AS137130",
+            "org": "ASN-137130"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 1
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "npciservices.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "emandate.pnb.bank.in",
+              "san_list": [
+                "emandate.pnb.bank.in"
+              ],
+              "issuer": "GeoTrust EV RSA CA G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-07-23T00:00:00+00:00",
+              "valid_to": "2026-07-22T23:59:59+00:00",
+              "sha256_fingerprint": "8adc2c896a6487154d7d62ce7d5e69701fce3f98047d29e63984201b83675237",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 100,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GeoTrust EV RSA CA G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2020-07-02T12:42:57+00:00",
+              "valid_to": "2030-07-02T12:42:57+00:00",
+              "sha256_fingerprint": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+              "is_ct_logged": false,
+              "is_self_signed": false,
+              "days_until_expiry": 1540,
+              "chain_depth": 1,
+              "chain_position": "intermediate",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.225.229:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.229:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-07-22T23:59:59+00:00",
+                "calendar_expiry": "2026-07-22T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 100,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2030-07-02T12:42:57+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 993,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "upi_gateway",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.3",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "upi_gateway"
+          },
+          "certificate_count_to_db": 2
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.3"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.3",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.3",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 103.109.225.229:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 103.109.225.229:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:39:20.413690Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "207370cf-6530-41fa-b6da-444d98c7a9ca",
+        "hostname": "npciservices.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-13T21:39:20.596703Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+        "asset_id": "207370cf-6530-41fa-b6da-444d98c7a9ca",
+        "hostname": "npciservices.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-cert-1-207370cf\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-207370cf\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for npciservices.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (npciservices.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-207370cf\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-07-22T23:59:59+00:00\", \"notValidBefore\": \"2025-07-23T00:00:00+00:00\", \"subjectName\": \"emandate.pnb.bank.in\"}}, \"description\": \"X.509 certificate: emandate.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"emandate.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"}, {\"ref\": \"crypto-cert-0-207370cf\"}, {\"ref\": \"crypto-cert-1-207370cf\"}, {\"ref\": \"crypto-protocol-tls-207370cf\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:39:20.078973+00:00\"}, \"serialNumber\": \"urn:uuid:b76de5f2-25c3-40d1-812d-799eaaa3bd92\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-207370cf",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "emandate.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 100,
+              "bom_ref": "crypto-cert-0-207370cf"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-207370cf"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-207370cf"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 1,
+            "certificate_components": 2,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2288
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-cert-1-207370cf\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-207370cf\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"], \"name\": \"TLS_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"], \"type\": \"tls\", \"version\": \"TLSv1.3\"}}, \"description\": \"TLS protocol configuration for npciservices.pnb.bank.in:443\", \"name\": \"TLS TLSv1.3 (npciservices.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\", \"cryptoProperties\": {\"algorithmProperties\": {\"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_AES_128_GCM_SHA256 (TLSv1.3)\", \"name\": \"TLS_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-207370cf\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-07-22T23:59:59+00:00\", \"notValidBefore\": \"2025-07-23T00:00:00+00:00\", \"subjectName\": \"emandate.pnb.bank.in\"}}, \"description\": \"X.509 certificate: emandate.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"emandate.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_AES_128_GCM_SHA256-207370cf\"}, {\"ref\": \"crypto-cert-0-207370cf\"}, {\"ref\": \"crypto-cert-1-207370cf\"}, {\"ref\": \"crypto-protocol-tls-207370cf\"}], \"metadata\": {\"timestamp\": \"2026-04-13T21:39:20.078973+00:00\"}, \"serialNumber\": \"urn:uuid:b76de5f2-25c3-40d1-812d-799eaaa3bd92\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\10b449a6-12ed-4c8c-968a-23229e96d31f\\207370cf-6530-41fa-b6da-444d98c7a9ca.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "10b449a6-12ed-4c8c-968a-23229e96d31f",
+            "asset_id": "207370cf-6530-41fa-b6da-444d98c7a9ca",
+            "total_components": 4,
+            "vulnerable_components": 2,
+            "quantum_ready_pct": 33.3,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\10b449a6-12ed-4c8c-968a-23229e96d31f\\207370cf-6530-41fa-b6da-444d98c7a9ca.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-207370cf",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "emandate.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 100,
+              "bom_ref": "crypto-cert-0-207370cf"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-207370cf"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-207370cf"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.3",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_AES_128_GCM_SHA256-207370cf",
+              "decomposition": {
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "emandate.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 100,
+              "bom_ref": "crypto-cert-0-207370cf"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-207370cf"
+            },
+            {
+              "name": "TLS TLSv1.3",
+              "type": "protocol",
+              "tls_version": "TLSv1.3",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-207370cf"
+            }
+          ],
+          "stats": {
+            "total_components": 4,
+            "algorithm_components": 1,
+            "certificate_components": 2,
+            "protocol_components": 1,
+            "vulnerable_count": 2,
+            "safe_count": 1,
+            "quantum_ready_pct": 33.3,
+            "json_size_bytes": 2288
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
     }
   ]
 }
