@@ -1,0 +1,4362 @@
+{
+  "nodes": [
+    {
+      "id": "applications.pnb.bank.in",
+      "label": "applications.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.225.21"
+      }
+    },
+    {
+      "id": "103.109.225.21",
+      "label": "103.109.225.21",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c15ce581fa59c68f10be1fd2baa6a9317fa40b856b29ab40d53b52e7493d7628",
+      "label": "c15ce581fa59c68f10be1fd2baa6a9317fa40b856b29ab40d53b52e7493d7628",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "applications.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "GeoTrust EV RSA CA G2",
+      "label": "GeoTrust EV RSA CA G2",
+      "type": "issuer",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "label": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "GeoTrust EV RSA CA G2",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "DigiCert Global Root G2",
+      "label": "DigiCert Global Root G2",
+      "type": "issuer",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "mail.pnb.bank.in",
+      "label": "mail.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mail_server",
+      "metadata": {
+        "ip": "1.6.46.95"
+      }
+    },
+    {
+      "id": "1.6.46.95",
+      "label": "1.6.46.95",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "pnb.bank.in",
+      "label": "pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.72.184"
+      }
+    },
+    {
+      "id": "49.50.72.184",
+      "label": "49.50.72.184",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "325fa6e544a06549e857707296001124df50c4203d06563ebd6c850668af8a76",
+      "label": "325fa6e544a06549e857707296001124df50c4203d06563ebd6c850668af8a76",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "feepayment.pnb.bank.in",
+      "label": "feepayment.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "payment_gateway",
+      "metadata": {
+        "ip": "103.109.225.67"
+      }
+    },
+    {
+      "id": "103.109.225.67",
+      "label": "103.109.225.67",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "fb4d0a509eac96212a3b5df106d99b74e942ad836061422d3a037077b7ca33c5",
+      "label": "fb4d0a509eac96212a3b5df106d99b74e942ad836061422d3a037077b7ca33c5",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "feepayment.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "mobapps.pnb.bank.in",
+      "label": "mobapps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.225.153"
+      }
+    },
+    {
+      "id": "103.109.225.153",
+      "label": "103.109.225.153",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "80941de68c3ca16d5c1d59b611fd4fa35d35d49a8a969557ff90e911ba2b88ff",
+      "label": "80941de68c3ca16d5c1d59b611fd4fa35d35d49a8a969557ff90e911ba2b88ff",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "mobapps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "label": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "DigiCert Global Root G2",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digimsme.pnb.bank.in",
+      "label": "digimsme.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.246"
+      }
+    },
+    {
+      "id": "103.109.224.246",
+      "label": "103.109.224.246",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "9d3ccb24a75a5920413d533c384561cfcc8567539ee7440676033dee507774fb",
+      "label": "9d3ccb24a75a5920413d533c384561cfcc8567539ee7440676033dee507774fb",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digimsme.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digidairykcc.pnb.bank.in",
+      "label": "digidairykcc.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.237"
+      }
+    },
+    {
+      "id": "103.109.224.237",
+      "label": "103.109.224.237",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "829df5e5f19d7c8b540705c80a7e2b5d161252074bc73069f100689954b60581",
+      "label": "829df5e5f19d7c8b540705c80a7e2b5d161252074bc73069f100689954b60581",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digidairykcc.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digihome.pnb.bank.in",
+      "label": "digihome.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.246"
+      }
+    },
+    {
+      "id": "103.109.225.246",
+      "label": "103.109.225.246",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "e986485c6d1fee36b635cabb022ff08be4a6b626ff9ec78e08560a677e13d13e",
+      "label": "e986485c6d1fee36b635cabb022ff08be4a6b626ff9ec78e08560a677e13d13e",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digihome.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digivishwakarma.pnb.bank.in",
+      "label": "digivishwakarma.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.8"
+      }
+    },
+    {
+      "id": "103.109.225.8",
+      "label": "103.109.225.8",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "e16b77957ec420f7b6370fa8c4db1d12a29263571b8f7734bc7d08ca9498843f",
+      "label": "e16b77957ec420f7b6370fa8c4db1d12a29263571b8f7734bc7d08ca9498843f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digivishwakarma.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "mcaapi.pnb.bank.in",
+      "label": "mcaapi.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "api_gateway",
+      "metadata": {
+        "ip": "103.109.227.36"
+      }
+    },
+    {
+      "id": "103.109.227.36",
+      "label": "103.109.227.36",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "853cd91157902df283e3def556473fe5295b1ec4a736ff2789c4eda20f5cda0e",
+      "label": "853cd91157902df283e3def556473fe5295b1ec4a736ff2789c4eda20f5cda0e",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnbapps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digirenewal.pnb.bank.in",
+      "label": "digirenewal.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.8"
+      }
+    },
+    {
+      "id": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+      "label": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digirenewal.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "GlobalSign GCC R3 EV TLS CA 2025",
+      "label": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issuer",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "label": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "GlobalSign GCC R3 EV TLS CA 2025",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "GlobalSign",
+      "label": "GlobalSign",
+      "type": "issuer",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "label": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "GlobalSign",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "rrbapps.pnb.bank.in",
+      "label": "rrbapps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.225.247"
+      }
+    },
+    {
+      "id": "103.109.225.247",
+      "label": "103.109.225.247",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "4f3d3d99c598cdcb3d07ffa6791e5dc459bda2624a480899b715d10315dab3b3",
+      "label": "4f3d3d99c598cdcb3d07ffa6791e5dc459bda2624a480899b715d10315dab3b3",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "rrbapps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "egstxp.pnb.bank.in",
+      "label": "egstxp.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.246"
+      }
+    },
+    {
+      "id": "0a34edd8d8104edf646fe2f5e8143512ae84844646ea92f9af0b188182c5c393",
+      "label": "0a34edd8d8104edf646fe2f5e8143512ae84844646ea92f9af0b188182c5c393",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "egstxp.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "mypnb.pnb.bank.in",
+      "label": "mypnb.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.21"
+      }
+    },
+    {
+      "id": "689c88a401cee3abac2114b8b5117c9f687fb04740d61c8aa31599d85b5af854",
+      "label": "689c88a401cee3abac2114b8b5117c9f687fb04740d61c8aa31599d85b5af854",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "mypnb.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "loanrepay.pnb.bank.in",
+      "label": "loanrepay.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "payment_gateway",
+      "metadata": {
+        "ip": "103.109.225.21"
+      }
+    },
+    {
+      "id": "dd1f6ea616280565c8c81f4355d5a3dea831da585cdba89d1ba44cc5d90df499",
+      "label": "dd1f6ea616280565c8c81f4355d5a3dea831da585cdba89d1ba44cc5d90df499",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "loanrepay.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "www.pnb.bank.in",
+      "label": "www.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.72.184"
+      }
+    },
+    {
+      "id": "slbcharyana.pnb.bank.in",
+      "label": "slbcharyana.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.64.18"
+      }
+    },
+    {
+      "id": "49.50.64.18",
+      "label": "49.50.64.18",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c0c7fd32fb9471f911916eb92346496740af0f2bac6e8550f5dbb1829b646b07",
+      "label": "c0c7fd32fb9471f911916eb92346496740af0f2bac6e8550f5dbb1829b646b07",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcharyana.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "pnbnet.pnb.bank.in",
+      "label": "pnbnet.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.142"
+      }
+    },
+    {
+      "id": "103.109.225.142",
+      "label": "103.109.225.142",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "01c99d5d91e82879089d8b4bf6ddf4ab2a628ca31b81ac4ed07680402e07b2b7",
+      "label": "01c99d5d91e82879089d8b4bf6ddf4ab2a628ca31b81ac4ed07680402e07b2b7",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnbnet.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "ns2.pnb.bank.in",
+      "label": "ns2.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "dns_server",
+      "metadata": {
+        "ip": "49.50.79.113"
+      }
+    },
+    {
+      "id": "49.50.79.113",
+      "label": "49.50.79.113",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "pabl.pnb.bank.in",
+      "label": "pabl.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.246"
+      }
+    },
+    {
+      "id": "05925beab72862d949d750853faf75736c9f51d7fc4f346b73b62f046764e786",
+      "label": "05925beab72862d949d750853faf75736c9f51d7fc4f346b73b62f046764e786",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pabl.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "weblens.pnb.bank.in",
+      "label": "weblens.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.53"
+      }
+    },
+    {
+      "id": "103.109.224.53",
+      "label": "103.109.224.53",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "8f738f18f54aedee5656abd6f36e6155dc3386d9b3d8626fe87d2ba2f91808d4",
+      "label": "8f738f18f54aedee5656abd6f36e6155dc3386d9b3d8626fe87d2ba2f91808d4",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "weblens.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "npciservices.pnb.bank.in",
+      "label": "npciservices.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "upi_gateway",
+      "metadata": {
+        "ip": "103.109.225.229"
+      }
+    },
+    {
+      "id": "103.109.225.229",
+      "label": "103.109.225.229",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "ckycr-admin.pnb.bank.in",
+      "label": "ckycr-admin.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "admin_portal",
+      "metadata": {
+        "ip": "103.109.225.195"
+      }
+    },
+    {
+      "id": "103.109.225.195",
+      "label": "103.109.225.195",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "dbf6965080bd34138e37489d2188d2b57a4d4c47c025d048e9a1a2ef9f77a34d",
+      "label": "dbf6965080bd34138e37489d2188d2b57a4d4c47c025d048e9a1a2ef9f77a34d",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "ckycr-admin.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "p22cucm1-expwaye2.pnb.bank.in",
+      "label": "p22cucm1-expwaye2.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.122.156.66"
+      }
+    },
+    {
+      "id": "103.122.156.66",
+      "label": "103.122.156.66",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "label": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "p22cucm1-expwaye2.pnb.bank.in",
+        "key_length": 4096
+      }
+    },
+    {
+      "id": "apptrk.pnb.bank.in",
+      "label": "apptrk.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "1.7.178.30"
+      }
+    },
+    {
+      "id": "1.7.178.30",
+      "label": "1.7.178.30",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "6cfb3d2fee4e802e4bcdb948bd64cd5502e695effea0f55e1f7e82bd56881db1",
+      "label": "6cfb3d2fee4e802e4bcdb948bd64cd5502e695effea0f55e1f7e82bd56881db1",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "apptrk.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digi2wl.pnb.bank.in",
+      "label": "digi2wl.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.211"
+      }
+    },
+    {
+      "id": "103.109.224.211",
+      "label": "103.109.224.211",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "3b0f87af54601b83decc661e177b732032895f6b21cd97bc54de9c2346817678",
+      "label": "3b0f87af54601b83decc661e177b732032895f6b21cd97bc54de9c2346817678",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digi2wl.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "cbdcr.pnb.bank.in",
+      "label": "cbdcr.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.212"
+      }
+    },
+    {
+      "id": "103.109.225.212",
+      "label": "103.109.225.212",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c75423bd49ef7556dd71f6a4b23eafa75a360c24d7a5a228d6c8d44da5f64f6a",
+      "label": "c75423bd49ef7556dd71f6a4b23eafa75a360c24d7a5a228d6c8d44da5f64f6a",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "cbdcr.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digivl.pnb.bank.in",
+      "label": "digivl.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.211"
+      }
+    },
+    {
+      "id": "ed04fac19e5838b1ce344383660a5e81d44f048e9f7e6b2816bebb09fba9fb73",
+      "label": "ed04fac19e5838b1ce344383660a5e81d44f048e9f7e6b2816bebb09fba9fb73",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digivl.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "slbcchandigarh.pnb.bank.in",
+      "label": "slbcchandigarh.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.72.144"
+      }
+    },
+    {
+      "id": "49.50.72.144",
+      "label": "49.50.72.144",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "34315a136cdcdc81fd37193b4f30c679a431f0ec7ffafc00fe6babe29d4f95dd",
+      "label": "34315a136cdcdc81fd37193b4f30c679a431f0ec7ffafc00fe6babe29d4f95dd",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcchandigarh.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "kc.pnb.bank.in",
+      "label": "kc.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.154"
+      }
+    },
+    {
+      "id": "103.109.224.154",
+      "label": "103.109.224.154",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c1ba568cdb8f78066089b5da16e7c1c4fa7f85aa2ada6ce19de3f9f4b0372b95",
+      "label": "c1ba568cdb8f78066089b5da16e7c1c4fa7f85aa2ada6ce19de3f9f4b0372b95",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "kc.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "iretail.pnb.bank.in",
+      "label": "iretail.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.174"
+      }
+    },
+    {
+      "id": "103.109.224.174",
+      "label": "103.109.224.174",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "label": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "ibanking.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "hrms.pnb.bank.in",
+      "label": "hrms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.186"
+      }
+    },
+    {
+      "id": "103.109.225.186",
+      "label": "103.109.225.186",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "3ff22fc1cd2067d56c04954f8d4715b007e9495d0b8496b0472f5d6d909db513",
+      "label": "3ff22fc1cd2067d56c04954f8d4715b007e9495d0b8496b0472f5d6d909db513",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "www.hrms.pnb.bank.in",
+        "key_length": 4096
+      }
+    },
+    {
+      "id": "tncorpmbs.pnb.bank.in",
+      "label": "tncorpmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "corporate_banking",
+      "metadata": {
+        "ip": "103.109.225.75"
+      }
+    },
+    {
+      "id": "103.109.225.75",
+      "label": "103.109.225.75",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "1c223d6279b1223492a67d81134e180696fd7e293830633d6eac2fc043deaf00",
+      "label": "1c223d6279b1223492a67d81134e180696fd7e293830633d6eac2fc043deaf00",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "tncorpmbs.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "tab.pnb.bank.in",
+      "label": "tab.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.113"
+      }
+    },
+    {
+      "id": "103.109.224.113",
+      "label": "103.109.224.113",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "d979e59591a3da8a214d534bad5bf54091ec6378b62a895d1c977651dc7e4320",
+      "label": "d979e59591a3da8a214d534bad5bf54091ec6378b62a895d1c977651dc7e4320",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "tab.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "pnbapps.pnb.bank.in",
+      "label": "pnbapps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.224.236"
+      }
+    },
+    {
+      "id": "103.109.224.236",
+      "label": "103.109.224.236",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "pnbvkyc.pnb.bank.in",
+      "label": "pnbvkyc.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "4.187.129.133"
+      }
+    },
+    {
+      "id": "4.187.129.133",
+      "label": "4.187.129.133",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "ea09655e6fb1c136e8faebfd18386044b5e74a98335f05f4280a0737b36b78cd",
+      "label": "ea09655e6fb1c136e8faebfd18386044b5e74a98335f05f4280a0737b36b78cd",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnbvkyc.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "giftcorpbanking.pnb.bank.in",
+      "label": "giftcorpbanking.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "corporate_banking",
+      "metadata": {
+        "ip": "103.109.224.254"
+      }
+    },
+    {
+      "id": "103.109.224.254",
+      "label": "103.109.224.254",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "642b3a348b3056c1e4262889f3edbc376edc2c899c4e6b5be58f6e247d19a9c5",
+      "label": "642b3a348b3056c1e4262889f3edbc376edc2c899c4e6b5be58f6e247d19a9c5",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "giftcorpbanking.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "retmbs.pnb.bank.in",
+      "label": "retmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.171"
+      }
+    },
+    {
+      "id": "103.109.224.171",
+      "label": "103.109.224.171",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "fe76532951d2839028f2fe3877cd819aee4c8b9b1053858292d7b1c1fb856d61",
+      "label": "fe76532951d2839028f2fe3877cd819aee4c8b9b1053858292d7b1c1fb856d61",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "retmbs.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "drm.pnb.bank.in",
+      "label": "drm.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.97"
+      }
+    },
+    {
+      "id": "103.109.224.97",
+      "label": "103.109.224.97",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+      "label": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "drm.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "Thawte TLS RSA CA G1",
+      "label": "Thawte TLS RSA CA G1",
+      "type": "issuer",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "etender.pnb.bank.in",
+      "label": "etender.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.164"
+      }
+    },
+    {
+      "id": "103.109.225.164",
+      "label": "103.109.225.164",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "e8cc63b489f5784f934d6cb697544a0c0ab69f47a36c6969f64d5c2edc8b4305",
+      "label": "e8cc63b489f5784f934d6cb697544a0c0ab69f47a36c6969f64d5c2edc8b4305",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "etender.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "eboard.pnb.bank.in",
+      "label": "eboard.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.184"
+      }
+    },
+    {
+      "id": "103.109.224.184",
+      "label": "103.109.224.184",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "7b3464381fa4239cdfdab77fedc4f153d1c383f9e401fe80fa6754081e2e4e27",
+      "label": "7b3464381fa4239cdfdab77fedc4f153d1c383f9e401fe80fa6754081e2e4e27",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "eboard.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "ns3.pnb.bank.in",
+      "label": "ns3.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "dns_server",
+      "metadata": {
+        "ip": "49.50.91.195"
+      }
+    },
+    {
+      "id": "49.50.91.195",
+      "label": "49.50.91.195",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "aafiu.pnb.bank.in",
+      "label": "aafiu.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.188"
+      }
+    },
+    {
+      "id": "103.109.225.188",
+      "label": "103.109.225.188",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "4218a0258d21fcab8122017581c922bc8137e32329ff3f4f84dc5dc5b5c9b0f9",
+      "label": "4218a0258d21fcab8122017581c922bc8137e32329ff3f4f84dc5dc5b5c9b0f9",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "aafiu.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "drms.pnb.bank.in",
+      "label": "drms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "1.7.88.227"
+      }
+    },
+    {
+      "id": "1.7.88.227",
+      "label": "1.7.88.227",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "mtdrelmbs.pnb.bank.in",
+      "label": "mtdrelmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.62"
+      }
+    },
+    {
+      "id": "103.109.225.62",
+      "label": "103.109.225.62",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "digigodam.pnb.bank.in",
+      "label": "digigodam.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.237"
+      }
+    },
+    {
+      "id": "103.109.225.237",
+      "label": "103.109.225.237",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "2032d6bc6a7c3245503a68e23477628aae457e1d85fcca7b89f9b8f5dc6a3b90",
+      "label": "2032d6bc6a7c3245503a68e23477628aae457e1d85fcca7b89f9b8f5dc6a3b90",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digigodam.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "ns1.pnb.bank.in",
+      "label": "ns1.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "dns_server",
+      "metadata": {
+        "ip": "49.50.69.49"
+      }
+    },
+    {
+      "id": "49.50.69.49",
+      "label": "49.50.69.49",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "mtdstmbs.pnb.bank.in",
+      "label": "mtdstmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.70"
+      }
+    },
+    {
+      "id": "103.109.225.70",
+      "label": "103.109.225.70",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "bbps.pnb.bank.in",
+      "label": "bbps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.26.98.137"
+      }
+    },
+    {
+      "id": "103.26.98.137",
+      "label": "103.26.98.137",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c509eb065ac82e181ad9ce21de9e0864d9f6619d19c4e850152061021fb6710f",
+      "label": "c509eb065ac82e181ad9ce21de9e0864d9f6619d19c4e850152061021fb6710f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "bbps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "slbcbengal.pnb.bank.in",
+      "label": "slbcbengal.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.72.207"
+      }
+    },
+    {
+      "id": "49.50.72.207",
+      "label": "49.50.72.207",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "8c4ad6f1c23608d139227a8d5258eb199048c18da8db9cb98330f0efa29bf235",
+      "label": "8c4ad6f1c23608d139227a8d5258eb199048c18da8db9cb98330f0efa29bf235",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcbengal.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "slbctripura.pnb.bank.in",
+      "label": "slbctripura.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.72.143"
+      }
+    },
+    {
+      "id": "49.50.72.143",
+      "label": "49.50.72.143",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "cff142f75df922da5decbab81c1ad647b5af07fb31335cbea08c6c8236d12f52",
+      "label": "cff142f75df922da5decbab81c1ad647b5af07fb31335cbea08c6c8236d12f52",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbctripura.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "pnbfirst.pnb.bank.in",
+      "label": "pnbfirst.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "45.60.3.89"
+      }
+    },
+    {
+      "id": "45.60.3.89",
+      "label": "45.60.3.89",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c9658ab13bd4e25feecbb2b1cceda776473af20b4728192f11c1598685eabee8",
+      "label": "c9658ab13bd4e25feecbb2b1cceda776473af20b4728192f11c1598685eabee8",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnbfirst.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "dcms.pnb.bank.in",
+      "label": "dcms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "admin_portal",
+      "metadata": {
+        "ip": "1.7.88.227"
+      }
+    },
+    {
+      "id": "www.hrms.pnb.bank.in",
+      "label": "www.hrms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.186"
+      }
+    },
+    {
+      "id": "dpip.pnb.bank.in",
+      "label": "dpip.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.102"
+      }
+    },
+    {
+      "id": "103.109.225.102",
+      "label": "103.109.225.102",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "mtdapimbs.pnb.bank.in",
+      "label": "mtdapimbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "api_gateway",
+      "metadata": {
+        "ip": "103.109.224.63"
+      }
+    },
+    {
+      "id": "103.109.224.63",
+      "label": "103.109.224.63",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "data-agg.pnb.bank.in",
+      "label": "data-agg.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.106"
+      }
+    },
+    {
+      "id": "103.109.224.106",
+      "label": "103.109.224.106",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "soa.pnb.bank.in",
+      "label": "soa.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.95"
+      }
+    },
+    {
+      "id": "103.109.225.95",
+      "label": "103.109.225.95",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "digitallending.pnb.bank.in",
+      "label": "digitallending.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.236"
+      }
+    },
+    {
+      "id": "6160a85358e11c0c8033b5f16f78e06b23f0430969a40e758975bd1d9ef1420b",
+      "label": "6160a85358e11c0c8033b5f16f78e06b23f0430969a40e758975bd1d9ef1420b",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digitallending.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "cgps.pnb.bank.in",
+      "label": "cgps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.178"
+      }
+    },
+    {
+      "id": "103.109.224.178",
+      "label": "103.109.224.178",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "apps.pnb.bank.in",
+      "label": "apps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.224.126"
+      }
+    },
+    {
+      "id": "103.109.224.126",
+      "label": "103.109.224.126",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "27ac1a0d06a440b1240b3fe28b25555e223fa423a9a523a61d5f45ab01c48d3c",
+      "label": "27ac1a0d06a440b1240b3fe28b25555e223fa423a9a523a61d5f45ab01c48d3c",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "apps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "eots.pnb.bank.in",
+      "label": "eots.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.126"
+      }
+    },
+    {
+      "id": "icorpplus.pnb.bank.in",
+      "label": "icorpplus.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "corporate_banking",
+      "metadata": {
+        "ip": "103.109.224.65"
+      }
+    },
+    {
+      "id": "103.109.224.65",
+      "label": "103.109.224.65",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "1bfe05e64124aec75a5a084faf12142fe6e66f9a1d1c6e66a22bf498127e48c3",
+      "label": "1bfe05e64124aec75a5a084faf12142fe6e66f9a1d1c6e66a22bf498127e48c3",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "icorpplus.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digigoldloan.pnb.bank.in",
+      "label": "digigoldloan.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.84"
+      }
+    },
+    {
+      "id": "103.109.224.84",
+      "label": "103.109.224.84",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "eee5421efc17728ac7aca61fc14bf5cbfcd82359350b532b2b23254854675556",
+      "label": "eee5421efc17728ac7aca61fc14bf5cbfcd82359350b532b2b23254854675556",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digigoldloan.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digisuryaghar.pnb.bank.in",
+      "label": "digisuryaghar.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.89"
+      }
+    },
+    {
+      "id": "103.109.224.89",
+      "label": "103.109.224.89",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "423fab7011b675ea4f9457d5ce459ec8d7daf6e73d981c9318a458cbdac4756f",
+      "label": "423fab7011b675ea4f9457d5ce459ec8d7daf6e73d981c9318a458cbdac4756f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digisuryaghar.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "pfms.pnb.bank.in",
+      "label": "pfms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.178"
+      }
+    },
+    {
+      "id": "103.109.225.178",
+      "label": "103.109.225.178",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "edge.pnb.bank.in",
+      "label": "edge.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.122.156.66"
+      }
+    },
+    {
+      "id": "emandate.pnb.bank.in",
+      "label": "emandate.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.229"
+      }
+    },
+    {
+      "id": "8adc2c896a6487154d7d62ce7d5e69701fce3f98047d29e63984201b83675237",
+      "label": "8adc2c896a6487154d7d62ce7d5e69701fce3f98047d29e63984201b83675237",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "emandate.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "atmmonitoring.pnb.bank.in",
+      "label": "atmmonitoring.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.215"
+      }
+    },
+    {
+      "id": "103.109.225.215",
+      "label": "103.109.225.215",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "d8a6958226334d52ce5b686ff1404f12deb80b871dba1429c606d47a506f8ba2",
+      "label": "d8a6958226334d52ce5b686ff1404f12deb80b871dba1429c606d47a506f8ba2",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "atmmonitoring.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "epayment.pnb.bank.in",
+      "label": "epayment.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "payment_gateway",
+      "metadata": {
+        "ip": "103.109.225.239"
+      }
+    },
+    {
+      "id": "103.109.225.239",
+      "label": "103.109.225.239",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "687d7c935ec7ae3dcede7d4dd22a6fcff14ce2c1f5e3bd86c403de2d1a9862c9",
+      "label": "687d7c935ec7ae3dcede7d4dd22a6fcff14ce2c1f5e3bd86c403de2d1a9862c9",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "epayment.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "cgrms.pnb.bank.in",
+      "label": "cgrms.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.183"
+      }
+    },
+    {
+      "id": "103.109.224.183",
+      "label": "103.109.224.183",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "291835e5af44647c37b5b926bc5a09a76b2eb3b76bc114f7c2ca22602710d690",
+      "label": "291835e5af44647c37b5b926bc5a09a76b2eb3b76bc114f7c2ca22602710d690",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "cgrms.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "icorp.pnb.bank.in",
+      "label": "icorp.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "corporate_banking",
+      "metadata": {
+        "ip": "103.109.224.173"
+      }
+    },
+    {
+      "id": "103.109.224.173",
+      "label": "103.109.224.173",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "tnretmbs.pnb.bank.in",
+      "label": "tnretmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.91"
+      }
+    },
+    {
+      "id": "103.109.224.91",
+      "label": "103.109.224.91",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "6f6c4b350e1000afdd6fe63434963c4da6c757aab7513b38e81ac0f01981ba31",
+      "label": "6f6c4b350e1000afdd6fe63434963c4da6c757aab7513b38e81ac0f01981ba31",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "tnretmbs.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "ibanking.pnb.bank.in",
+      "label": "ibanking.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.175"
+      }
+    },
+    {
+      "id": "103.109.225.175",
+      "label": "103.109.225.175",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "images.pnb.bank.in",
+      "label": "images.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "1.7.178.31"
+      }
+    },
+    {
+      "id": "1.7.178.31",
+      "label": "1.7.178.31",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "fd024ebb341774888c4efa72d8d79527d02d08da385064bebca988084b35a103",
+      "label": "fd024ebb341774888c4efa72d8d79527d02d08da385064bebca988084b35a103",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "images.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "upi.pnb.bank.in",
+      "label": "upi.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "upi_gateway",
+      "metadata": {
+        "ip": "103.109.225.129"
+      }
+    },
+    {
+      "id": "103.109.225.129",
+      "label": "103.109.225.129",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "445c7a3c4efbadda3aef2f616851edd843012e03cc93e58911ecedeac8daaa80",
+      "label": "445c7a3c4efbadda3aef2f616851edd843012e03cc93e58911ecedeac8daaa80",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "upi.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "corpmbs.pnb.bank.in",
+      "label": "corpmbs.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "corporate_banking",
+      "metadata": {
+        "ip": "103.109.225.193"
+      }
+    },
+    {
+      "id": "103.109.225.193",
+      "label": "103.109.225.193",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "e7e325c0431b712cc3413396be26137c507e5a7fd2a8134bfe94cd65001d69e9",
+      "label": "e7e325c0431b712cc3413396be26137c507e5a7fd2a8134bfe94cd65001d69e9",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "corpmbs.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "apply.creditcard.pnb.bank.in",
+      "label": "apply.creditcard.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.225.168"
+      }
+    },
+    {
+      "id": "103.109.225.168",
+      "label": "103.109.225.168",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "c86d6beb4a9f375033918aada1dc994f307eb8f6a2eda1eecaf10fdfcdaf3a57",
+      "label": "c86d6beb4a9f375033918aada1dc994f307eb8f6a2eda1eecaf10fdfcdaf3a57",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "apply.creditcard.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "apim.pnb.bank.in",
+      "label": "apim.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "api_gateway",
+      "metadata": {
+        "ip": "103.109.225.51"
+      }
+    },
+    {
+      "id": "103.109.225.51",
+      "label": "103.109.225.51",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "aacbf8b2fd5ce198ca6b2d93673c92dc50acb2c2cce9ee16bf72df1882c5c5a4",
+      "label": "aacbf8b2fd5ce198ca6b2d93673c92dc50acb2c2cce9ee16bf72df1882c5c5a4",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "apim.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "p22cucm1-expwaye1.pnb.bank.in",
+      "label": "p22cucm1-expwaye1.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.122.156.69"
+      }
+    },
+    {
+      "id": "103.122.156.69",
+      "label": "103.122.156.69",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "ns4.pnb.bank.in",
+      "label": "ns4.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.122.27"
+      }
+    },
+    {
+      "id": "49.50.122.27",
+      "label": "49.50.122.27",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "7c2a4233b99353f8022967e50ae911e855e014708d6360a895a6c635594ccf72",
+      "label": "7c2a4233b99353f8022967e50ae911e855e014708d6360a895a6c635594ccf72",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "ns1.pnbindia.com",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "admin.pnb.bank.in",
+      "label": "admin.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "admin_portal",
+      "metadata": {
+        "ip": "1.7.178.30"
+      }
+    },
+    {
+      "id": "slbcdelhi.pnb.bank.in",
+      "label": "slbcdelhi.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.81.77"
+      }
+    },
+    {
+      "id": "49.50.81.77",
+      "label": "49.50.81.77",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+      "label": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcdelhi.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digiel.pnb.bank.in",
+      "label": "digiel.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.130"
+      }
+    },
+    {
+      "id": "103.109.225.130",
+      "label": "103.109.225.130",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "96baa79e45c6c1921d86013c529abcb25ba29a0fba65155ff889232274d5816c",
+      "label": "96baa79e45c6c1921d86013c529abcb25ba29a0fba65155ff889232274d5816c",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digiel.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "slbcpunjab.pnb.bank.in",
+      "label": "slbcpunjab.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.79.57"
+      }
+    },
+    {
+      "id": "49.50.79.57",
+      "label": "49.50.79.57",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "73253e767797ca833a58ab42bba43c28fdd34b0cfd22f0fe3d2ee5f81538319e",
+      "label": "73253e767797ca833a58ab42bba43c28fdd34b0cfd22f0fe3d2ee5f81538319e",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcpunjab.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "udaan.pnb.bank.in",
+      "label": "udaan.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.152"
+      }
+    },
+    {
+      "id": "103.109.224.152",
+      "label": "103.109.224.152",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "e74635c9184ffa8da012a9b09eec2f97c1c18bd628054c6a6d6c43436a079b5d",
+      "label": "e74635c9184ffa8da012a9b09eec2f97c1c18bd628054c6a6d6c43436a079b5d",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "udaan.pnb.bank.in",
+        "key_length": 4096
+      }
+    },
+    {
+      "id": "pfmsrrb.pnb.bank.in",
+      "label": "pfmsrrb.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.220"
+      }
+    },
+    {
+      "id": "103.109.225.220",
+      "label": "103.109.225.220",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "cfeadb86d9bf6f7c7bd97874afed8b99d739371a5118065f59f4da5670963e1f",
+      "label": "cfeadb86d9bf6f7c7bd97874afed8b99d739371a5118065f59f4da5670963e1f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pfmsrrb.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "payapps.pnb.bank.in",
+      "label": "payapps.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "mobile_banking",
+      "metadata": {
+        "ip": "103.109.225.15"
+      }
+    },
+    {
+      "id": "103.109.225.15",
+      "label": "103.109.225.15",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "19e7a007c912b0ff58d3e62621fc88b1c82cf96e3f93c2482685ab7d18aaac51",
+      "label": "19e7a007c912b0ff58d3e62621fc88b1c82cf96e3f93c2482685ab7d18aaac51",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "payapps.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "lockeragreement.pnb.bank.in",
+      "label": "lockeragreement.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.39"
+      }
+    },
+    {
+      "id": "103.109.225.39",
+      "label": "103.109.225.39",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "dd91bfea8c7569411fe1262151af38416e8b911f8d5ec73ad796616b06dab39f",
+      "label": "dd91bfea8c7569411fe1262151af38416e8b911f8d5ec73ad796616b06dab39f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "lockeragreement.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "pnbtfr.pnb.bank.in",
+      "label": "pnbtfr.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.177"
+      }
+    },
+    {
+      "id": "103.109.224.177",
+      "label": "103.109.224.177",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "a60354e1eaa83d23abb16a8fce9a005eada5d42def16499cd9bc2bc9feb2de60",
+      "label": "a60354e1eaa83d23abb16a8fce9a005eada5d42def16499cd9bc2bc9feb2de60",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "pnbtfr.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "webapi.pnb.bank.in",
+      "label": "webapi.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "api_gateway",
+      "metadata": {
+        "ip": "103.109.224.236"
+      }
+    },
+    {
+      "id": "e21b2e80dc366cc66fcb69baef6490cd4d353412b9842dce041523eeb3abf712",
+      "label": "e21b2e80dc366cc66fcb69baef6490cd4d353412b9842dce041523eeb3abf712",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "webapi.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "gstsahay.pnb.bank.in",
+      "label": "gstsahay.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.246"
+      }
+    },
+    {
+      "id": "99986eed5fd6703a8ab5778baa7ac881b81c9254b5c6075dbf642228368d192d",
+      "label": "99986eed5fd6703a8ab5778baa7ac881b81c9254b5c6075dbf642228368d192d",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "gstsahay.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "slbcdataportal.pnb.bank.in",
+      "label": "slbcdataportal.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "49.50.81.102"
+      }
+    },
+    {
+      "id": "49.50.81.102",
+      "label": "49.50.81.102",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "38532c7642e433448b99d94919cf9fc62f1983eb01a036b603d91831020041f1",
+      "label": "38532c7642e433448b99d94919cf9fc62f1983eb01a036b603d91831020041f1",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "slbcdataportal.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "aafip.pnb.bank.in",
+      "label": "aafip.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.159"
+      }
+    },
+    {
+      "id": "103.109.225.159",
+      "label": "103.109.225.159",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "205ffb5f22ce78c47a7eb748f06e18dc3d02c53fb91c3b59fb088d2f92037e56",
+      "label": "205ffb5f22ce78c47a7eb748f06e18dc3d02c53fb91c3b59fb088d2f92037e56",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "aafip.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "lens.pnb.bank.in",
+      "label": "lens.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.160"
+      }
+    },
+    {
+      "id": "103.109.224.160",
+      "label": "103.109.224.160",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "364d9a0a59d90d656f8234138162ad0250ecdd29c54c07437d5932be9b558c15",
+      "label": "364d9a0a59d90d656f8234138162ad0250ecdd29c54c07437d5932be9b558c15",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "lens.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "giftretailbanking.pnb.bank.in",
+      "label": "giftretailbanking.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.3"
+      }
+    },
+    {
+      "id": "103.109.224.3",
+      "label": "103.109.224.3",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "af813abc5df12b84af025d6208de1756f98818b83a0d42ebb0d952c338228507",
+      "label": "af813abc5df12b84af025d6208de1756f98818b83a0d42ebb0d952c338228507",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "giftretailbanking.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "analytics.pnb.bank.in",
+      "label": "analytics.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.105"
+      }
+    },
+    {
+      "id": "103.109.224.105",
+      "label": "103.109.224.105",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "7f514fe5db38c2ea26f14cc5b684dafb39e642c4f0c99094dd2401f8a4031ed4",
+      "label": "7f514fe5db38c2ea26f14cc5b684dafb39e642c4f0c99094dd2401f8a4031ed4",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "analytics.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "meet.pnb.bank.in",
+      "label": "meet.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.122.156.66"
+      }
+    },
+    {
+      "id": "digitalbanking.pnb.bank.in",
+      "label": "digitalbanking.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.57"
+      }
+    },
+    {
+      "id": "103.109.224.57",
+      "label": "103.109.224.57",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "84f29676a6627b041b668c0621dd35da1ea00737c4ef64938904c7b4f37021c5",
+      "label": "84f29676a6627b041b668c0621dd35da1ea00737c4ef64938904c7b4f37021c5",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digitalbanking.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "saral.creditcard.pnb.bank.in",
+      "label": "saral.creditcard.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.231"
+      }
+    },
+    {
+      "id": "103.109.225.231",
+      "label": "103.109.225.231",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "50d4d3b9aa112679b160da500d70b59588488d7e86801297fe892db16a0d9e1d",
+      "label": "50d4d3b9aa112679b160da500d70b59588488d7e86801297fe892db16a0d9e1d",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "saral.creditcard.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "creditcard.pnb.bank.in",
+      "label": "creditcard.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.169"
+      }
+    },
+    {
+      "id": "103.109.224.169",
+      "label": "103.109.224.169",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "0651fbd9c748521dd42cbe33988196652ef3c1d2b43e171d0e6a1abb228eab85",
+      "label": "0651fbd9c748521dd42cbe33988196652ef3c1d2b43e171d0e6a1abb228eab85",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "creditcard.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "instaloans.pnb.bank.in",
+      "label": "instaloans.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.158"
+      }
+    },
+    {
+      "id": "103.109.225.158",
+      "label": "103.109.225.158",
+      "type": "ip",
+      "risk_level": null,
+      "metadata": {}
+    },
+    {
+      "id": "0120b9a6370077923a0ba5d6b64a6272a9c8368c5f8b1485a1f2930c39853632",
+      "label": "0120b9a6370077923a0ba5d6b64a6272a9c8368c5f8b1485a1f2930c39853632",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "instaloans.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "digikccreview.pnb.bank.in",
+      "label": "digikccreview.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.224.237"
+      }
+    },
+    {
+      "id": "f28602e783781ca3224f74e70dfc51ec38eb49d82bf8d8cc63222730f7e947fa",
+      "label": "f28602e783781ca3224f74e70dfc51ec38eb49d82bf8d8cc63222730f7e947fa",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "digikccreview.pnb.bank.in",
+        "key_length": 2048
+      }
+    },
+    {
+      "id": "insurance.pnb.bank.in",
+      "label": "insurance.pnb.bank.in",
+      "type": "domain",
+      "risk_level": "internet_banking",
+      "metadata": {
+        "ip": "103.109.225.21"
+      }
+    },
+    {
+      "id": "002ee0b306eb59b396befa3e37e0af63c47223fb831d1f8ea0b673e54ba8502f",
+      "label": "002ee0b306eb59b396befa3e37e0af63c47223fb831d1f8ea0b673e54ba8502f",
+      "type": "certificate",
+      "risk_level": null,
+      "metadata": {
+        "cn": "insurance.pnb.bank.in",
+        "key_length": 2048
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "applications.pnb.bank.in",
+      "target": "103.109.225.21",
+      "type": "resolves_to"
+    },
+    {
+      "source": "applications.pnb.bank.in",
+      "target": "c15ce581fa59c68f10be1fd2baa6a9317fa40b856b29ab40d53b52e7493d7628",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "applications.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c15ce581fa59c68f10be1fd2baa6a9317fa40b856b29ab40d53b52e7493d7628",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "target": "DigiCert Global Root G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "mail.pnb.bank.in",
+      "target": "1.6.46.95",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnb.bank.in",
+      "target": "49.50.72.184",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnb.bank.in",
+      "target": "325fa6e544a06549e857707296001124df50c4203d06563ebd6c850668af8a76",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "325fa6e544a06549e857707296001124df50c4203d06563ebd6c850668af8a76",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "feepayment.pnb.bank.in",
+      "target": "103.109.225.67",
+      "type": "resolves_to"
+    },
+    {
+      "source": "feepayment.pnb.bank.in",
+      "target": "fb4d0a509eac96212a3b5df106d99b74e942ad836061422d3a037077b7ca33c5",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "feepayment.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "fb4d0a509eac96212a3b5df106d99b74e942ad836061422d3a037077b7ca33c5",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "mobapps.pnb.bank.in",
+      "target": "103.109.225.153",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mobapps.pnb.bank.in",
+      "target": "80941de68c3ca16d5c1d59b611fd4fa35d35d49a8a969557ff90e911ba2b88ff",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "mobapps.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "mobapps.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "80941de68c3ca16d5c1d59b611fd4fa35d35d49a8a969557ff90e911ba2b88ff",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "target": "DigiCert Global Root G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digimsme.pnb.bank.in",
+      "target": "103.109.224.246",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digimsme.pnb.bank.in",
+      "target": "9d3ccb24a75a5920413d533c384561cfcc8567539ee7440676033dee507774fb",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digimsme.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digimsme.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "9d3ccb24a75a5920413d533c384561cfcc8567539ee7440676033dee507774fb",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digidairykcc.pnb.bank.in",
+      "target": "103.109.224.237",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digidairykcc.pnb.bank.in",
+      "target": "829df5e5f19d7c8b540705c80a7e2b5d161252074bc73069f100689954b60581",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digidairykcc.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digidairykcc.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "829df5e5f19d7c8b540705c80a7e2b5d161252074bc73069f100689954b60581",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digihome.pnb.bank.in",
+      "target": "103.109.225.246",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digihome.pnb.bank.in",
+      "target": "e986485c6d1fee36b635cabb022ff08be4a6b626ff9ec78e08560a677e13d13e",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digihome.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digihome.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e986485c6d1fee36b635cabb022ff08be4a6b626ff9ec78e08560a677e13d13e",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digivishwakarma.pnb.bank.in",
+      "target": "103.109.225.8",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digivishwakarma.pnb.bank.in",
+      "target": "e16b77957ec420f7b6370fa8c4db1d12a29263571b8f7734bc7d08ca9498843f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digivishwakarma.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digivishwakarma.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e16b77957ec420f7b6370fa8c4db1d12a29263571b8f7734bc7d08ca9498843f",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "mcaapi.pnb.bank.in",
+      "target": "103.109.227.36",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mcaapi.pnb.bank.in",
+      "target": "853cd91157902df283e3def556473fe5295b1ec4a736ff2789c4eda20f5cda0e",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "853cd91157902df283e3def556473fe5295b1ec4a736ff2789c4eda20f5cda0e",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digirenewal.pnb.bank.in",
+      "target": "103.109.225.8",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digirenewal.pnb.bank.in",
+      "target": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digirenewal.pnb.bank.in",
+      "target": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digirenewal.pnb.bank.in",
+      "target": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "62b29b2216855cd975c3a1ca518e4c4645b1fe787207367e7f85bcca5a4eb15f",
+      "target": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issued_by"
+    },
+    {
+      "source": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "target": "GlobalSign",
+      "type": "issued_by"
+    },
+    {
+      "source": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "target": "GlobalSign",
+      "type": "issued_by"
+    },
+    {
+      "source": "rrbapps.pnb.bank.in",
+      "target": "103.109.225.247",
+      "type": "resolves_to"
+    },
+    {
+      "source": "rrbapps.pnb.bank.in",
+      "target": "4f3d3d99c598cdcb3d07ffa6791e5dc459bda2624a480899b715d10315dab3b3",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "rrbapps.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "rrbapps.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "4f3d3d99c598cdcb3d07ffa6791e5dc459bda2624a480899b715d10315dab3b3",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "egstxp.pnb.bank.in",
+      "target": "103.109.225.246",
+      "type": "resolves_to"
+    },
+    {
+      "source": "egstxp.pnb.bank.in",
+      "target": "0a34edd8d8104edf646fe2f5e8143512ae84844646ea92f9af0b188182c5c393",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "egstxp.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "egstxp.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "0a34edd8d8104edf646fe2f5e8143512ae84844646ea92f9af0b188182c5c393",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "mypnb.pnb.bank.in",
+      "target": "103.109.225.21",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mypnb.pnb.bank.in",
+      "target": "689c88a401cee3abac2114b8b5117c9f687fb04740d61c8aa31599d85b5af854",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "mypnb.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "689c88a401cee3abac2114b8b5117c9f687fb04740d61c8aa31599d85b5af854",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "loanrepay.pnb.bank.in",
+      "target": "103.109.225.21",
+      "type": "resolves_to"
+    },
+    {
+      "source": "loanrepay.pnb.bank.in",
+      "target": "dd1f6ea616280565c8c81f4355d5a3dea831da585cdba89d1ba44cc5d90df499",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "loanrepay.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "dd1f6ea616280565c8c81f4355d5a3dea831da585cdba89d1ba44cc5d90df499",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "www.pnb.bank.in",
+      "target": "49.50.72.184",
+      "type": "resolves_to"
+    },
+    {
+      "source": "www.pnb.bank.in",
+      "target": "325fa6e544a06549e857707296001124df50c4203d06563ebd6c850668af8a76",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "www.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcharyana.pnb.bank.in",
+      "target": "49.50.64.18",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcharyana.pnb.bank.in",
+      "target": "c0c7fd32fb9471f911916eb92346496740af0f2bac6e8550f5dbb1829b646b07",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcharyana.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcharyana.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c0c7fd32fb9471f911916eb92346496740af0f2bac6e8550f5dbb1829b646b07",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pnbnet.pnb.bank.in",
+      "target": "103.109.225.142",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnbnet.pnb.bank.in",
+      "target": "01c99d5d91e82879089d8b4bf6ddf4ab2a628ca31b81ac4ed07680402e07b2b7",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "01c99d5d91e82879089d8b4bf6ddf4ab2a628ca31b81ac4ed07680402e07b2b7",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "ns2.pnb.bank.in",
+      "target": "49.50.79.113",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pabl.pnb.bank.in",
+      "target": "103.109.225.246",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pabl.pnb.bank.in",
+      "target": "05925beab72862d949d750853faf75736c9f51d7fc4f346b73b62f046764e786",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pabl.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pabl.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "05925beab72862d949d750853faf75736c9f51d7fc4f346b73b62f046764e786",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "weblens.pnb.bank.in",
+      "target": "103.109.224.53",
+      "type": "resolves_to"
+    },
+    {
+      "source": "weblens.pnb.bank.in",
+      "target": "8f738f18f54aedee5656abd6f36e6155dc3386d9b3d8626fe87d2ba2f91808d4",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "weblens.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "8f738f18f54aedee5656abd6f36e6155dc3386d9b3d8626fe87d2ba2f91808d4",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "npciservices.pnb.bank.in",
+      "target": "103.109.225.229",
+      "type": "resolves_to"
+    },
+    {
+      "source": "ckycr-admin.pnb.bank.in",
+      "target": "103.109.225.195",
+      "type": "resolves_to"
+    },
+    {
+      "source": "ckycr-admin.pnb.bank.in",
+      "target": "dbf6965080bd34138e37489d2188d2b57a4d4c47c025d048e9a1a2ef9f77a34d",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ckycr-admin.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "dbf6965080bd34138e37489d2188d2b57a4d4c47c025d048e9a1a2ef9f77a34d",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "p22cucm1-expwaye2.pnb.bank.in",
+      "target": "103.122.156.66",
+      "type": "resolves_to"
+    },
+    {
+      "source": "p22cucm1-expwaye2.pnb.bank.in",
+      "target": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "p22cucm1-expwaye2.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "p22cucm1-expwaye2.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "apptrk.pnb.bank.in",
+      "target": "1.7.178.30",
+      "type": "resolves_to"
+    },
+    {
+      "source": "apptrk.pnb.bank.in",
+      "target": "6cfb3d2fee4e802e4bcdb948bd64cd5502e695effea0f55e1f7e82bd56881db1",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "apptrk.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "6cfb3d2fee4e802e4bcdb948bd64cd5502e695effea0f55e1f7e82bd56881db1",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digi2wl.pnb.bank.in",
+      "target": "103.109.224.211",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digi2wl.pnb.bank.in",
+      "target": "3b0f87af54601b83decc661e177b732032895f6b21cd97bc54de9c2346817678",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digi2wl.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "3b0f87af54601b83decc661e177b732032895f6b21cd97bc54de9c2346817678",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "cbdcr.pnb.bank.in",
+      "target": "103.109.225.212",
+      "type": "resolves_to"
+    },
+    {
+      "source": "cbdcr.pnb.bank.in",
+      "target": "c75423bd49ef7556dd71f6a4b23eafa75a360c24d7a5a228d6c8d44da5f64f6a",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c75423bd49ef7556dd71f6a4b23eafa75a360c24d7a5a228d6c8d44da5f64f6a",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digivl.pnb.bank.in",
+      "target": "103.109.224.211",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digivl.pnb.bank.in",
+      "target": "ed04fac19e5838b1ce344383660a5e81d44f048e9f7e6b2816bebb09fba9fb73",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digivl.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ed04fac19e5838b1ce344383660a5e81d44f048e9f7e6b2816bebb09fba9fb73",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "slbcchandigarh.pnb.bank.in",
+      "target": "49.50.72.144",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcchandigarh.pnb.bank.in",
+      "target": "34315a136cdcdc81fd37193b4f30c679a431f0ec7ffafc00fe6babe29d4f95dd",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcchandigarh.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcchandigarh.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "34315a136cdcdc81fd37193b4f30c679a431f0ec7ffafc00fe6babe29d4f95dd",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "kc.pnb.bank.in",
+      "target": "103.109.224.154",
+      "type": "resolves_to"
+    },
+    {
+      "source": "kc.pnb.bank.in",
+      "target": "c1ba568cdb8f78066089b5da16e7c1c4fa7f85aa2ada6ce19de3f9f4b0372b95",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "kc.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c1ba568cdb8f78066089b5da16e7c1c4fa7f85aa2ada6ce19de3f9f4b0372b95",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "iretail.pnb.bank.in",
+      "target": "103.109.224.174",
+      "type": "resolves_to"
+    },
+    {
+      "source": "iretail.pnb.bank.in",
+      "target": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "iretail.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "iretail.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "hrms.pnb.bank.in",
+      "target": "103.109.225.186",
+      "type": "resolves_to"
+    },
+    {
+      "source": "hrms.pnb.bank.in",
+      "target": "3ff22fc1cd2067d56c04954f8d4715b007e9495d0b8496b0472f5d6d909db513",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "3ff22fc1cd2067d56c04954f8d4715b007e9495d0b8496b0472f5d6d909db513",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "tncorpmbs.pnb.bank.in",
+      "target": "103.109.225.75",
+      "type": "resolves_to"
+    },
+    {
+      "source": "tncorpmbs.pnb.bank.in",
+      "target": "1c223d6279b1223492a67d81134e180696fd7e293830633d6eac2fc043deaf00",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tncorpmbs.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tncorpmbs.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "1c223d6279b1223492a67d81134e180696fd7e293830633d6eac2fc043deaf00",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "tab.pnb.bank.in",
+      "target": "103.109.224.113",
+      "type": "resolves_to"
+    },
+    {
+      "source": "tab.pnb.bank.in",
+      "target": "d979e59591a3da8a214d534bad5bf54091ec6378b62a895d1c977651dc7e4320",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tab.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tab.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "d979e59591a3da8a214d534bad5bf54091ec6378b62a895d1c977651dc7e4320",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pnbapps.pnb.bank.in",
+      "target": "103.109.224.236",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnbapps.pnb.bank.in",
+      "target": "853cd91157902df283e3def556473fe5295b1ec4a736ff2789c4eda20f5cda0e",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbapps.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbapps.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbvkyc.pnb.bank.in",
+      "target": "4.187.129.133",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnbvkyc.pnb.bank.in",
+      "target": "ea09655e6fb1c136e8faebfd18386044b5e74a98335f05f4280a0737b36b78cd",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ea09655e6fb1c136e8faebfd18386044b5e74a98335f05f4280a0737b36b78cd",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "giftcorpbanking.pnb.bank.in",
+      "target": "103.109.224.254",
+      "type": "resolves_to"
+    },
+    {
+      "source": "giftcorpbanking.pnb.bank.in",
+      "target": "642b3a348b3056c1e4262889f3edbc376edc2c899c4e6b5be58f6e247d19a9c5",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "giftcorpbanking.pnb.bank.in",
+      "target": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "giftcorpbanking.pnb.bank.in",
+      "target": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "642b3a348b3056c1e4262889f3edbc376edc2c899c4e6b5be58f6e247d19a9c5",
+      "target": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issued_by"
+    },
+    {
+      "source": "retmbs.pnb.bank.in",
+      "target": "103.109.224.171",
+      "type": "resolves_to"
+    },
+    {
+      "source": "retmbs.pnb.bank.in",
+      "target": "fe76532951d2839028f2fe3877cd819aee4c8b9b1053858292d7b1c1fb856d61",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "retmbs.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "retmbs.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "fe76532951d2839028f2fe3877cd819aee4c8b9b1053858292d7b1c1fb856d61",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "drm.pnb.bank.in",
+      "target": "103.109.224.97",
+      "type": "resolves_to"
+    },
+    {
+      "source": "drm.pnb.bank.in",
+      "target": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "9225e9837715283a4950a42cf0be00e7d310c6c8449275aa321d8b86527a53ee",
+      "target": "Thawte TLS RSA CA G1",
+      "type": "issued_by"
+    },
+    {
+      "source": "etender.pnb.bank.in",
+      "target": "103.109.225.164",
+      "type": "resolves_to"
+    },
+    {
+      "source": "etender.pnb.bank.in",
+      "target": "e8cc63b489f5784f934d6cb697544a0c0ab69f47a36c6969f64d5c2edc8b4305",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "etender.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e8cc63b489f5784f934d6cb697544a0c0ab69f47a36c6969f64d5c2edc8b4305",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "eboard.pnb.bank.in",
+      "target": "103.109.224.184",
+      "type": "resolves_to"
+    },
+    {
+      "source": "eboard.pnb.bank.in",
+      "target": "7b3464381fa4239cdfdab77fedc4f153d1c383f9e401fe80fa6754081e2e4e27",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "eboard.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "7b3464381fa4239cdfdab77fedc4f153d1c383f9e401fe80fa6754081e2e4e27",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "ns3.pnb.bank.in",
+      "target": "49.50.91.195",
+      "type": "resolves_to"
+    },
+    {
+      "source": "aafiu.pnb.bank.in",
+      "target": "103.109.225.188",
+      "type": "resolves_to"
+    },
+    {
+      "source": "aafiu.pnb.bank.in",
+      "target": "4218a0258d21fcab8122017581c922bc8137e32329ff3f4f84dc5dc5b5c9b0f9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "aafiu.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "4218a0258d21fcab8122017581c922bc8137e32329ff3f4f84dc5dc5b5c9b0f9",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "drms.pnb.bank.in",
+      "target": "1.7.88.227",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mtdrelmbs.pnb.bank.in",
+      "target": "103.109.225.62",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digigodam.pnb.bank.in",
+      "target": "103.109.225.237",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digigodam.pnb.bank.in",
+      "target": "2032d6bc6a7c3245503a68e23477628aae457e1d85fcca7b89f9b8f5dc6a3b90",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digigodam.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digigodam.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "2032d6bc6a7c3245503a68e23477628aae457e1d85fcca7b89f9b8f5dc6a3b90",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "ns1.pnb.bank.in",
+      "target": "49.50.69.49",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mtdstmbs.pnb.bank.in",
+      "target": "103.109.225.70",
+      "type": "resolves_to"
+    },
+    {
+      "source": "bbps.pnb.bank.in",
+      "target": "103.26.98.137",
+      "type": "resolves_to"
+    },
+    {
+      "source": "bbps.pnb.bank.in",
+      "target": "c509eb065ac82e181ad9ce21de9e0864d9f6619d19c4e850152061021fb6710f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "bbps.pnb.bank.in",
+      "target": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c509eb065ac82e181ad9ce21de9e0864d9f6619d19c4e850152061021fb6710f",
+      "target": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issued_by"
+    },
+    {
+      "source": "slbcbengal.pnb.bank.in",
+      "target": "49.50.72.207",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcbengal.pnb.bank.in",
+      "target": "8c4ad6f1c23608d139227a8d5258eb199048c18da8db9cb98330f0efa29bf235",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcbengal.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcbengal.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "8c4ad6f1c23608d139227a8d5258eb199048c18da8db9cb98330f0efa29bf235",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "slbctripura.pnb.bank.in",
+      "target": "49.50.72.143",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbctripura.pnb.bank.in",
+      "target": "cff142f75df922da5decbab81c1ad647b5af07fb31335cbea08c6c8236d12f52",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbctripura.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbctripura.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "cff142f75df922da5decbab81c1ad647b5af07fb31335cbea08c6c8236d12f52",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pnbfirst.pnb.bank.in",
+      "target": "45.60.3.89",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnbfirst.pnb.bank.in",
+      "target": "c9658ab13bd4e25feecbb2b1cceda776473af20b4728192f11c1598685eabee8",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbfirst.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbfirst.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c9658ab13bd4e25feecbb2b1cceda776473af20b4728192f11c1598685eabee8",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "dcms.pnb.bank.in",
+      "target": "1.7.88.227",
+      "type": "resolves_to"
+    },
+    {
+      "source": "www.hrms.pnb.bank.in",
+      "target": "103.109.225.186",
+      "type": "resolves_to"
+    },
+    {
+      "source": "www.hrms.pnb.bank.in",
+      "target": "3ff22fc1cd2067d56c04954f8d4715b007e9495d0b8496b0472f5d6d909db513",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "www.hrms.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "www.hrms.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "dpip.pnb.bank.in",
+      "target": "103.109.225.102",
+      "type": "resolves_to"
+    },
+    {
+      "source": "mtdapimbs.pnb.bank.in",
+      "target": "103.109.224.63",
+      "type": "resolves_to"
+    },
+    {
+      "source": "data-agg.pnb.bank.in",
+      "target": "103.109.224.106",
+      "type": "resolves_to"
+    },
+    {
+      "source": "soa.pnb.bank.in",
+      "target": "103.109.225.95",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digitallending.pnb.bank.in",
+      "target": "103.109.224.236",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digitallending.pnb.bank.in",
+      "target": "6160a85358e11c0c8033b5f16f78e06b23f0430969a40e758975bd1d9ef1420b",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "6160a85358e11c0c8033b5f16f78e06b23f0430969a40e758975bd1d9ef1420b",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "cgps.pnb.bank.in",
+      "target": "103.109.224.178",
+      "type": "resolves_to"
+    },
+    {
+      "source": "apps.pnb.bank.in",
+      "target": "103.109.224.126",
+      "type": "resolves_to"
+    },
+    {
+      "source": "apps.pnb.bank.in",
+      "target": "27ac1a0d06a440b1240b3fe28b25555e223fa423a9a523a61d5f45ab01c48d3c",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "apps.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "27ac1a0d06a440b1240b3fe28b25555e223fa423a9a523a61d5f45ab01c48d3c",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "eots.pnb.bank.in",
+      "target": "103.109.224.126",
+      "type": "resolves_to"
+    },
+    {
+      "source": "eots.pnb.bank.in",
+      "target": "27ac1a0d06a440b1240b3fe28b25555e223fa423a9a523a61d5f45ab01c48d3c",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "eots.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "icorpplus.pnb.bank.in",
+      "target": "103.109.224.65",
+      "type": "resolves_to"
+    },
+    {
+      "source": "icorpplus.pnb.bank.in",
+      "target": "1bfe05e64124aec75a5a084faf12142fe6e66f9a1d1c6e66a22bf498127e48c3",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "icorpplus.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "icorpplus.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "1bfe05e64124aec75a5a084faf12142fe6e66f9a1d1c6e66a22bf498127e48c3",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digigoldloan.pnb.bank.in",
+      "target": "103.109.224.84",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digigoldloan.pnb.bank.in",
+      "target": "eee5421efc17728ac7aca61fc14bf5cbfcd82359350b532b2b23254854675556",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digigoldloan.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digigoldloan.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "eee5421efc17728ac7aca61fc14bf5cbfcd82359350b532b2b23254854675556",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digisuryaghar.pnb.bank.in",
+      "target": "103.109.224.89",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digisuryaghar.pnb.bank.in",
+      "target": "423fab7011b675ea4f9457d5ce459ec8d7daf6e73d981c9318a458cbdac4756f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digisuryaghar.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digisuryaghar.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "423fab7011b675ea4f9457d5ce459ec8d7daf6e73d981c9318a458cbdac4756f",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pfms.pnb.bank.in",
+      "target": "103.109.225.178",
+      "type": "resolves_to"
+    },
+    {
+      "source": "edge.pnb.bank.in",
+      "target": "103.122.156.66",
+      "type": "resolves_to"
+    },
+    {
+      "source": "edge.pnb.bank.in",
+      "target": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "edge.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "edge.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "emandate.pnb.bank.in",
+      "target": "103.109.225.229",
+      "type": "resolves_to"
+    },
+    {
+      "source": "emandate.pnb.bank.in",
+      "target": "8adc2c896a6487154d7d62ce7d5e69701fce3f98047d29e63984201b83675237",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "emandate.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "8adc2c896a6487154d7d62ce7d5e69701fce3f98047d29e63984201b83675237",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "atmmonitoring.pnb.bank.in",
+      "target": "103.109.225.215",
+      "type": "resolves_to"
+    },
+    {
+      "source": "atmmonitoring.pnb.bank.in",
+      "target": "d8a6958226334d52ce5b686ff1404f12deb80b871dba1429c606d47a506f8ba2",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "atmmonitoring.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "atmmonitoring.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "d8a6958226334d52ce5b686ff1404f12deb80b871dba1429c606d47a506f8ba2",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "epayment.pnb.bank.in",
+      "target": "103.109.225.239",
+      "type": "resolves_to"
+    },
+    {
+      "source": "epayment.pnb.bank.in",
+      "target": "687d7c935ec7ae3dcede7d4dd22a6fcff14ce2c1f5e3bd86c403de2d1a9862c9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "epayment.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "687d7c935ec7ae3dcede7d4dd22a6fcff14ce2c1f5e3bd86c403de2d1a9862c9",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "cgrms.pnb.bank.in",
+      "target": "103.109.224.183",
+      "type": "resolves_to"
+    },
+    {
+      "source": "cgrms.pnb.bank.in",
+      "target": "291835e5af44647c37b5b926bc5a09a76b2eb3b76bc114f7c2ca22602710d690",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "cgrms.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "291835e5af44647c37b5b926bc5a09a76b2eb3b76bc114f7c2ca22602710d690",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "icorp.pnb.bank.in",
+      "target": "103.109.224.173",
+      "type": "resolves_to"
+    },
+    {
+      "source": "icorp.pnb.bank.in",
+      "target": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "icorp.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "icorp.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tnretmbs.pnb.bank.in",
+      "target": "103.109.224.91",
+      "type": "resolves_to"
+    },
+    {
+      "source": "tnretmbs.pnb.bank.in",
+      "target": "6f6c4b350e1000afdd6fe63434963c4da6c757aab7513b38e81ac0f01981ba31",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tnretmbs.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "tnretmbs.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "6f6c4b350e1000afdd6fe63434963c4da6c757aab7513b38e81ac0f01981ba31",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "ibanking.pnb.bank.in",
+      "target": "103.109.225.175",
+      "type": "resolves_to"
+    },
+    {
+      "source": "ibanking.pnb.bank.in",
+      "target": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ibanking.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ibanking.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "images.pnb.bank.in",
+      "target": "1.7.178.31",
+      "type": "resolves_to"
+    },
+    {
+      "source": "images.pnb.bank.in",
+      "target": "fd024ebb341774888c4efa72d8d79527d02d08da385064bebca988084b35a103",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "fd024ebb341774888c4efa72d8d79527d02d08da385064bebca988084b35a103",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "upi.pnb.bank.in",
+      "target": "103.109.225.129",
+      "type": "resolves_to"
+    },
+    {
+      "source": "upi.pnb.bank.in",
+      "target": "445c7a3c4efbadda3aef2f616851edd843012e03cc93e58911ecedeac8daaa80",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "upi.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "upi.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "445c7a3c4efbadda3aef2f616851edd843012e03cc93e58911ecedeac8daaa80",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "corpmbs.pnb.bank.in",
+      "target": "103.109.225.193",
+      "type": "resolves_to"
+    },
+    {
+      "source": "corpmbs.pnb.bank.in",
+      "target": "e7e325c0431b712cc3413396be26137c507e5a7fd2a8134bfe94cd65001d69e9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "corpmbs.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "corpmbs.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e7e325c0431b712cc3413396be26137c507e5a7fd2a8134bfe94cd65001d69e9",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "apply.creditcard.pnb.bank.in",
+      "target": "103.109.225.168",
+      "type": "resolves_to"
+    },
+    {
+      "source": "apply.creditcard.pnb.bank.in",
+      "target": "c86d6beb4a9f375033918aada1dc994f307eb8f6a2eda1eecaf10fdfcdaf3a57",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "apply.creditcard.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "apply.creditcard.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "c86d6beb4a9f375033918aada1dc994f307eb8f6a2eda1eecaf10fdfcdaf3a57",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "apim.pnb.bank.in",
+      "target": "103.109.225.51",
+      "type": "resolves_to"
+    },
+    {
+      "source": "apim.pnb.bank.in",
+      "target": "aacbf8b2fd5ce198ca6b2d93673c92dc50acb2c2cce9ee16bf72df1882c5c5a4",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "aacbf8b2fd5ce198ca6b2d93673c92dc50acb2c2cce9ee16bf72df1882c5c5a4",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "p22cucm1-expwaye1.pnb.bank.in",
+      "target": "103.122.156.69",
+      "type": "resolves_to"
+    },
+    {
+      "source": "p22cucm1-expwaye1.pnb.bank.in",
+      "target": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "ns4.pnb.bank.in",
+      "target": "49.50.122.27",
+      "type": "resolves_to"
+    },
+    {
+      "source": "ns4.pnb.bank.in",
+      "target": "7c2a4233b99353f8022967e50ae911e855e014708d6360a895a6c635594ccf72",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "7c2a4233b99353f8022967e50ae911e855e014708d6360a895a6c635594ccf72",
+      "target": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issued_by"
+    },
+    {
+      "source": "admin.pnb.bank.in",
+      "target": "1.7.178.30",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcdelhi.pnb.bank.in",
+      "target": "49.50.81.77",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcdelhi.pnb.bank.in",
+      "target": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcdelhi.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcdelhi.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digiel.pnb.bank.in",
+      "target": "103.109.225.130",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digiel.pnb.bank.in",
+      "target": "96baa79e45c6c1921d86013c529abcb25ba29a0fba65155ff889232274d5816c",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "96baa79e45c6c1921d86013c529abcb25ba29a0fba65155ff889232274d5816c",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "slbcpunjab.pnb.bank.in",
+      "target": "49.50.79.57",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcpunjab.pnb.bank.in",
+      "target": "73253e767797ca833a58ab42bba43c28fdd34b0cfd22f0fe3d2ee5f81538319e",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcpunjab.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcpunjab.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "73253e767797ca833a58ab42bba43c28fdd34b0cfd22f0fe3d2ee5f81538319e",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "udaan.pnb.bank.in",
+      "target": "103.109.224.152",
+      "type": "resolves_to"
+    },
+    {
+      "source": "udaan.pnb.bank.in",
+      "target": "e74635c9184ffa8da012a9b09eec2f97c1c18bd628054c6a6d6c43436a079b5d",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e74635c9184ffa8da012a9b09eec2f97c1c18bd628054c6a6d6c43436a079b5d",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pfmsrrb.pnb.bank.in",
+      "target": "103.109.225.220",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pfmsrrb.pnb.bank.in",
+      "target": "cfeadb86d9bf6f7c7bd97874afed8b99d739371a5118065f59f4da5670963e1f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pfmsrrb.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "cfeadb86d9bf6f7c7bd97874afed8b99d739371a5118065f59f4da5670963e1f",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "payapps.pnb.bank.in",
+      "target": "103.109.225.15",
+      "type": "resolves_to"
+    },
+    {
+      "source": "payapps.pnb.bank.in",
+      "target": "19e7a007c912b0ff58d3e62621fc88b1c82cf96e3f93c2482685ab7d18aaac51",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "payapps.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "19e7a007c912b0ff58d3e62621fc88b1c82cf96e3f93c2482685ab7d18aaac51",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "lockeragreement.pnb.bank.in",
+      "target": "103.109.225.39",
+      "type": "resolves_to"
+    },
+    {
+      "source": "lockeragreement.pnb.bank.in",
+      "target": "dd91bfea8c7569411fe1262151af38416e8b911f8d5ec73ad796616b06dab39f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "lockeragreement.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "lockeragreement.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "dd91bfea8c7569411fe1262151af38416e8b911f8d5ec73ad796616b06dab39f",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "pnbtfr.pnb.bank.in",
+      "target": "103.109.224.177",
+      "type": "resolves_to"
+    },
+    {
+      "source": "pnbtfr.pnb.bank.in",
+      "target": "a60354e1eaa83d23abb16a8fce9a005eada5d42def16499cd9bc2bc9feb2de60",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbtfr.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "pnbtfr.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "a60354e1eaa83d23abb16a8fce9a005eada5d42def16499cd9bc2bc9feb2de60",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "webapi.pnb.bank.in",
+      "target": "103.109.224.236",
+      "type": "resolves_to"
+    },
+    {
+      "source": "webapi.pnb.bank.in",
+      "target": "e21b2e80dc366cc66fcb69baef6490cd4d353412b9842dce041523eeb3abf712",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "e21b2e80dc366cc66fcb69baef6490cd4d353412b9842dce041523eeb3abf712",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "gstsahay.pnb.bank.in",
+      "target": "103.109.225.246",
+      "type": "resolves_to"
+    },
+    {
+      "source": "gstsahay.pnb.bank.in",
+      "target": "99986eed5fd6703a8ab5778baa7ac881b81c9254b5c6075dbf642228368d192d",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "gstsahay.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "gstsahay.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "99986eed5fd6703a8ab5778baa7ac881b81c9254b5c6075dbf642228368d192d",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "slbcdataportal.pnb.bank.in",
+      "target": "49.50.81.102",
+      "type": "resolves_to"
+    },
+    {
+      "source": "slbcdataportal.pnb.bank.in",
+      "target": "38532c7642e433448b99d94919cf9fc62f1983eb01a036b603d91831020041f1",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcdataportal.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "slbcdataportal.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "38532c7642e433448b99d94919cf9fc62f1983eb01a036b603d91831020041f1",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "aafip.pnb.bank.in",
+      "target": "103.109.225.159",
+      "type": "resolves_to"
+    },
+    {
+      "source": "aafip.pnb.bank.in",
+      "target": "205ffb5f22ce78c47a7eb748f06e18dc3d02c53fb91c3b59fb088d2f92037e56",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "205ffb5f22ce78c47a7eb748f06e18dc3d02c53fb91c3b59fb088d2f92037e56",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "lens.pnb.bank.in",
+      "target": "103.109.224.160",
+      "type": "resolves_to"
+    },
+    {
+      "source": "lens.pnb.bank.in",
+      "target": "364d9a0a59d90d656f8234138162ad0250ecdd29c54c07437d5932be9b558c15",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "lens.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "364d9a0a59d90d656f8234138162ad0250ecdd29c54c07437d5932be9b558c15",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "giftretailbanking.pnb.bank.in",
+      "target": "103.109.224.3",
+      "type": "resolves_to"
+    },
+    {
+      "source": "giftretailbanking.pnb.bank.in",
+      "target": "af813abc5df12b84af025d6208de1756f98818b83a0d42ebb0d952c338228507",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "giftretailbanking.pnb.bank.in",
+      "target": "1b2928021a4b89cf0f572a2436e914e25412ad58edee221e6c7c3c5437179a26",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "giftretailbanking.pnb.bank.in",
+      "target": "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "af813abc5df12b84af025d6208de1756f98818b83a0d42ebb0d952c338228507",
+      "target": "GlobalSign GCC R3 EV TLS CA 2025",
+      "type": "issued_by"
+    },
+    {
+      "source": "analytics.pnb.bank.in",
+      "target": "103.109.224.105",
+      "type": "resolves_to"
+    },
+    {
+      "source": "analytics.pnb.bank.in",
+      "target": "7f514fe5db38c2ea26f14cc5b684dafb39e642c4f0c99094dd2401f8a4031ed4",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "analytics.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "7f514fe5db38c2ea26f14cc5b684dafb39e642c4f0c99094dd2401f8a4031ed4",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "meet.pnb.bank.in",
+      "target": "103.122.156.66",
+      "type": "resolves_to"
+    },
+    {
+      "source": "meet.pnb.bank.in",
+      "target": "397ab316482c2a0b931ea482755f1fa1e30231445568c7c8bd253e2a2525d8e9",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "meet.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "meet.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digitalbanking.pnb.bank.in",
+      "target": "103.109.224.57",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digitalbanking.pnb.bank.in",
+      "target": "84f29676a6627b041b668c0621dd35da1ea00737c4ef64938904c7b4f37021c5",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digitalbanking.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "84f29676a6627b041b668c0621dd35da1ea00737c4ef64938904c7b4f37021c5",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "saral.creditcard.pnb.bank.in",
+      "target": "103.109.225.231",
+      "type": "resolves_to"
+    },
+    {
+      "source": "saral.creditcard.pnb.bank.in",
+      "target": "50d4d3b9aa112679b160da500d70b59588488d7e86801297fe892db16a0d9e1d",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "saral.creditcard.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "saral.creditcard.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "50d4d3b9aa112679b160da500d70b59588488d7e86801297fe892db16a0d9e1d",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "creditcard.pnb.bank.in",
+      "target": "103.109.224.169",
+      "type": "resolves_to"
+    },
+    {
+      "source": "creditcard.pnb.bank.in",
+      "target": "0651fbd9c748521dd42cbe33988196652ef3c1d2b43e171d0e6a1abb228eab85",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "creditcard.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "creditcard.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "0651fbd9c748521dd42cbe33988196652ef3c1d2b43e171d0e6a1abb228eab85",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "instaloans.pnb.bank.in",
+      "target": "103.109.225.158",
+      "type": "resolves_to"
+    },
+    {
+      "source": "instaloans.pnb.bank.in",
+      "target": "0120b9a6370077923a0ba5d6b64a6272a9c8368c5f8b1485a1f2930c39853632",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "instaloans.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "0120b9a6370077923a0ba5d6b64a6272a9c8368c5f8b1485a1f2930c39853632",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "digikccreview.pnb.bank.in",
+      "target": "103.109.224.237",
+      "type": "resolves_to"
+    },
+    {
+      "source": "digikccreview.pnb.bank.in",
+      "target": "f28602e783781ca3224f74e70dfc51ec38eb49d82bf8d8cc63222730f7e947fa",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digikccreview.pnb.bank.in",
+      "target": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "digikccreview.pnb.bank.in",
+      "target": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "f28602e783781ca3224f74e70dfc51ec38eb49d82bf8d8cc63222730f7e947fa",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    },
+    {
+      "source": "insurance.pnb.bank.in",
+      "target": "103.109.225.21",
+      "type": "resolves_to"
+    },
+    {
+      "source": "insurance.pnb.bank.in",
+      "target": "002ee0b306eb59b396befa3e37e0af63c47223fb831d1f8ea0b673e54ba8502f",
+      "type": "uses_certificate"
+    },
+    {
+      "source": "002ee0b306eb59b396befa3e37e0af63c47223fb831d1f8ea0b673e54ba8502f",
+      "target": "GeoTrust EV RSA CA G2",
+      "type": "issued_by"
+    }
+  ]
+}

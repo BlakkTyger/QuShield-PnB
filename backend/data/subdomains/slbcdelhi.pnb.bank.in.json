@@ -1336,6 +1336,1275 @@
         },
         "raw_pqcscan_json_from_phase2": null
       }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:34:59.535702Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "ad1a46a9-09d8-4954-816f-ecb961e02371",
+        "asset_id": "5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22",
+        "hostname": "slbcdelhi.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "slbcdelhi.pnb.bank.in",
+          "ip_v4": "49.50.81.77",
+          "http": {
+            "status_code": 200,
+            "title": "OBC SLBC ghg",
+            "web_server": "Apache",
+            "tls_version": "TLSv1.2",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.2",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.2",
+            "certificate_chain_pem": [
+              "-----BEGIN CERTIFICATE-----\nMIIG6zCCBdOgAwIBAgIQA5i1o57osHh1f8x6A4onAjANBgkqhkiG9w0BAQsFADBE\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMR4wHAYDVQQDExVH\nZW9UcnVzdCBFViBSU0EgQ0EgRzIwHhcNMjUwODI3MDAwMDAwWhcNMjYwODI2MjM1\nOTU5WjCBvTETMBEGCysGAQQBgjc8AgEDEwJJTjEaMBgGA1UEDwwRR292ZXJubWVu\ndCBFbnRpdHkxGjAYBgNVBAUTEUdvdmVybm1lbnQgRW50aXR5MQswCQYDVQQGEwJJ\nTjEOMAwGA1UECBMFRGVsaGkxEjAQBgNVBAcTCU5ldyBEZWxoaTEdMBsGA1UEChMU\nUHVuamFiIE5hdGlvbmFsIEJhbmsxHjAcBgNVBAMTFXNsYmNkZWxoaS5wbmIuYmFu\nay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOlcMJ39sBjJLSNt\nOkwFwsIZX3QRlEje1P3YG7XfFWqtfmeRd/emHK5WT4Q/aSbAjyqnUr/zFDixbSre\npOcrOtLUH5eunN0JpEt/SbprAjimsQWZapowuCfIJ4frq0XV4pJOCJ+NXvYoOgWE\n5ooHcc35uvpdF/G9XJKIdboHX3j+Ni6QgZaBDsEdlF7Sq2XaQ2To0kqyZlKzj+Qd\nGshzw61HUEnmu51JvgG2zq7Z6IQi+XGjjH5Wtzm9i3VIuMefPMk5+Wd0X4+AyDQG\nqAqITAwpvp8d7Cf18l/s4FsL1X/6Hc+DwdW1eeadfTbP/H0EOgfsx9U9SDlYA9tf\n2JjTjO8CAwEAAaOCA10wggNZMB8GA1UdIwQYMBaAFCjSz+4JhHXdtbK1vzzVoMZz\niF0fMB0GA1UdDgQWBBT1yUpvihpQ8aN5QvYMSBfJepIvLDAgBgNVHREEGTAXghVz\nbGJjZGVsaGkucG5iLmJhbmsuaW4wSgYDVR0gBEMwQTALBglghkgBhv1sAgEwMgYF\nZ4EMAQEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BT\nMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw\ndQYDVR0fBG4wbDA0oDKgMIYuaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0dlb1Ry\ndXN0RVZSU0FDQUcyLmNybDA0oDKgMIYuaHR0cDovL2NybDQuZGlnaWNlcnQuY29t\nL0dlb1RydXN0RVZSU0FDQUcyLmNybDBzBggrBgEFBQcBAQRnMGUwJAYIKwYBBQUH\nMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTA9BggrBgEFBQcwAoYxaHR0cDov\nL2NhY2VydHMuZGlnaWNlcnQuY29tL0dlb1RydXN0RVZSU0FDQUcyLmNydDAMBgNV\nHRMBAf8EAjAAMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdgDYCVU7lE96/8gW\nGW+UT4WrsPj8XodVJg8V0S5yu0VLFAAAAZjq42qYAAAEAwBHMEUCIAtHwj/TgnTd\n/X+SFArMk9iK3ymAgDUEy4LYVSw+WiaMAiEA6xv1LumMcDP5BfwMyhZoZzf8tMrM\nOOsXYKYuS/XHaEAAdwDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAA\nAZjq42qKAAAEAwBIMEYCIQCU0bk/VMiY4yEzKZSjv1SAZjaDZaHUNRhQQKy1sgVM\nBAIhAKTK1Y1+2GypDYOUGQe7UM9q+SXFcdU8UlAoWvQJ7mZBAHUAlE5Dh/rswe+B\n8xkkJqgYZQHH0184AgE/cmd9VTcuGdgAAAGY6uNqmwAABAMARjBEAiAj75kK29M3\nhZ47e93w5hW6uw8gX26fLpnh+ZUyC5iYmwIgRoUnF0gbqZ+E58PE0R8ztMDFzEdd\ng7XPDaMV2bsNnUUwDQYJKoZIhvcNAQELBQADggEBACjCQPQ2BQW3wr0q0jdWc4qt\nIBE1MKX+NO7YYbexdidR/d0LzmOV4SCm53+fGHGDcdV9wjzaufThs+kq+bxgjOSm\nJDHbbTp3XMU7jH+7TjMsvNLrjCZYNbtDZpujqWMzI5oFJEsZw1awKOR9tjutHZou\ndJoev78uJHb/6B8/wOjJG4I6ITsQ2eZQHN1yQT64AHiczA19/rF7M2/criwvYAQo\nvSmfiLfPd5BamaXZMfxYdfhDRTE1m2bTmOAVYtJOAEypRdW/t31tdfbgkYzWTF89\nzF1KgO+dFa4WuXzRBapNug8DD1hrvqsra1jhhY0AQt2Da2o0urQW5yjExNCHA+k=\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIFPDCCBCSgAwIBAgIQDWASYsinchpuqwNh5WGVgDANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0yMDA3MDIxMjQyNTdaFw0zMDA3MDIxMjQyNTdaMEQxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxHjAcBgNVBAMTFUdlb1RydXN0IEVWIFJT\nQSBDQSBHMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDSvFMMGIOI\nD2N+rpyaGTPfyItp3atCyimRJCPtAakU984EB19Zugrb82ui0iy0zLKMDrOuN+Ku\nH6jF4F4ZCoHjN7tFdMtSsCUAbrpFVO/5BLY+VTIg7YUN5LwRHUb2QVSGwKyIeYS+\nSqPV8mzTMkG9GnWjG1IQT0F1+Xu7+uAGRFVnIdYCSBgl7iG4qOWZjcPKnW+3OJRO\ndZtwGE39E7WoasoW8Nvpu5FFp2WIsvY6B/0whr3w+xKeBYb2WNKI1ZXvk4y+AmUa\nBdRTY0HPBZ4+6Ipcq2Rl+QLQXQuGXH95YujYNYpbnV7ASU5/dVmqVPY0LHnp2sNK\nIN65/n+DbcsCAwEAAaOCAgswggIHMB0GA1UdDgQWBBQo0s/uCYR13bWytb881aDG\nc4hdHzAfBgNVHSMEGDAWgBROIlQgGJXm427mD/r6uRLtBhePOTAOBgNVHQ8BAf8E\nBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQI\nMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\naWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDA3oDWgM4YxaHR0cDov\nL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDCBzgYD\nVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5k\naWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcCAjB+DHxBbnkgdXNlIG9mIHRoaXMg\nQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZSBvZiB0aGUgUmVseWlu\nZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBhdCBodHRwczovL3d3dy5kaWdpY2Vy\ndC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUAA4IBAQBVbQs8KD6qRnOf/dtOHNAy\nieoRcA1Zk3lGMLwqNfuLpTb9gDQFpvxGN/3X7i0mAEtRhN/r9fDv8oiVLn6gfpm0\nUUN47vFJCzf5dqkV/N7LkMTqlhDA0Ve/GBJ3A2E5yFT7TgAGN4wJ9cCZrKbqKHVU\nRatwJ+T58jmhbvtEM7t2ucB7u+Dmu4KoOTEx8LR8+qn8OyLh1VLq75vzDTsnhTN5\n3AgPdMVFk6F8sjT2P2xbvAb0kAlyAtldAtpGvBzXhacmRs7rTqz/oTDwYZLkrm+q\nEltdmGwUOWvFPjwucH6tS+gQgiUYiNJqijzI1jr8TZ01VGOSTW7rRUKgkN5WJqDA\n-----END CERTIFICATE-----\n",
+              "-----BEGIN CERTIFICATE-----\nMIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\nq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\ntCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\nvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\nBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\nNeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\nFdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\npLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\nMrY=\n-----END CERTIFICATE-----\n"
+            ],
+            "server_name": "slbcdelhi.pnb.bank.in"
+          },
+          "asn": {
+            "number": "AS55470",
+            "org": "ASN-55470"
+          },
+          "discovery_methods": [
+            "dns",
+            "httpx",
+            "tls"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "slbcdelhi.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.2",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "certificates": [
+            {
+              "common_name": "slbcdelhi.pnb.bank.in",
+              "san_list": [
+                "slbcdelhi.pnb.bank.in"
+              ],
+              "issuer": "GeoTrust EV RSA CA G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-08-27T00:00:00+00:00",
+              "valid_to": "2026-08-26T23:59:59+00:00",
+              "sha256_fingerprint": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 134,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GeoTrust EV RSA CA G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2020-07-02T12:42:57+00:00",
+              "valid_to": "2030-07-02T12:42:57+00:00",
+              "sha256_fingerprint": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+              "is_ct_logged": false,
+              "is_self_signed": false,
+              "days_until_expiry": 1540,
+              "chain_depth": 1,
+              "chain_position": "intermediate",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "DigiCert Global Root G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2013-08-01T12:00:00+00:00",
+              "valid_to": "2038-01-15T12:00:00+00:00",
+              "sha256_fingerprint": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+              "is_ct_logged": false,
+              "is_self_signed": true,
+              "days_until_expiry": 4294,
+              "chain_depth": 2,
+              "chain_position": "root",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "No PQC TLS or PQC certificate signature detected.",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-08-26T23:59:59+00:00",
+                "calendar_expiry": "2026-08-26T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 134,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2030-07-02T12:42:57+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 992,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2038-01-15T12:00:00+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 992,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+            ]
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.2",
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 3
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "tls_version": "TLSv1.2",
+                "quantum": {
+                  "nist_level": 1,
+                  "is_quantum_vulnerable": false,
+                  "quantum_status": "safe",
+                  "matched_as": "AES-128-GCM"
+                }
+              }
+            ],
+            "negotiated_cipher": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": null,
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "No PQC TLS or PQC certificate signature detected.",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "RSA-2048"
+            ],
+            "safe_algorithms": [
+              "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+            ]
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:40:44.721935Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "ad1a46a9-09d8-4954-816f-ecb961e02371",
+        "asset_id": "5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22",
+        "hostname": "slbcdelhi.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:40:45.032084Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "ad1a46a9-09d8-4954-816f-ecb961e02371",
+        "asset_id": "5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22",
+        "hostname": "slbcdelhi.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-5301da91\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"], \"name\": \"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for slbcdelhi.pnb.bank.in:443\", \"name\": \"TLS TLSv1.2 (slbcdelhi.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (TLSv1.2)\", \"name\": \"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-26T23:59:59+00:00\", \"notValidBefore\": \"2025-08-27T00:00:00+00:00\", \"subjectName\": \"slbcdelhi.pnb.bank.in\"}}, \"description\": \"X.509 certificate: slbcdelhi.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"slbcdelhi.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"}, {\"ref\": \"crypto-cert-0-5301da91\"}, {\"ref\": \"crypto-cert-1-5301da91\"}, {\"ref\": \"crypto-cert-2-5301da91\"}, {\"ref\": \"crypto-protocol-tls-5301da91\"}], \"metadata\": {\"timestamp\": \"2026-04-14T05:40:44.438799+00:00\"}, \"serialNumber\": \"urn:uuid:ec2a7452-5bc7-46b5-9067-30e679252971\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-5301da91"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-5301da91"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-5301da91"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-5301da91"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2954
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-5301da91\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"], \"name\": \"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\"}], \"cryptoRefArray\": [\"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for slbcdelhi.pnb.bank.in:443\", \"name\": \"TLS TLSv1.2 (slbcdelhi.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 1, \"parameterSetIdentifier\": \"\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (TLSv1.2)\", \"name\": \"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-5301da91\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-26T23:59:59+00:00\", \"notValidBefore\": \"2025-08-27T00:00:00+00:00\", \"subjectName\": \"slbcdelhi.pnb.bank.in\"}}, \"description\": \"X.509 certificate: slbcdelhi.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"slbcdelhi.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91\"}, {\"ref\": \"crypto-cert-0-5301da91\"}, {\"ref\": \"crypto-cert-1-5301da91\"}, {\"ref\": \"crypto-cert-2-5301da91\"}, {\"ref\": \"crypto-protocol-tls-5301da91\"}], \"metadata\": {\"timestamp\": \"2026-04-14T05:40:44.438799+00:00\"}, \"serialNumber\": \"urn:uuid:ec2a7452-5bc7-46b5-9067-30e679252971\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\ad1a46a9-09d8-4954-816f-ecb961e02371\\5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "ad1a46a9-09d8-4954-816f-ecb961e02371",
+            "asset_id": "5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22",
+            "total_components": 5,
+            "vulnerable_components": 3,
+            "quantum_ready_pct": 25.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\ad1a46a9-09d8-4954-816f-ecb961e02371\\5301da91-a5e5-4a4d-9bf2-34f8cc8d2a22.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-5301da91"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-5301da91"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-5301da91"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-5301da91"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 1,
+              "is_vulnerable": false,
+              "bom_ref": "crypto-algo-TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256-5301da91",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-128-GCM",
+                "mac": "SHA-256",
+                "tls_version": "1.3"
+              }
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-5301da91"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-5301da91"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-5301da91"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 1,
+              "forward_secrecy": false,
+              "bom_ref": "crypto-protocol-tls-5301da91"
+            }
+          ],
+          "stats": {
+            "total_components": 5,
+            "algorithm_components": 1,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 3,
+            "safe_count": 1,
+            "quantum_ready_pct": 25.0,
+            "json_size_bytes": 2954
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:52:00.705291Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "ef86c35d-5af9-4624-88ce-62aa327b591a",
+        "asset_id": "817d9da4-7853-4dd5-adf0-3cd35d2ae8d9",
+        "hostname": "slbcdelhi.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "slbcdelhi.pnb.bank.in",
+          "ip_v4": "49.50.81.77",
+          "ports": [
+            {
+              "port": 443,
+              "protocol": "tcp"
+            }
+          ],
+          "http": {
+            "status_code": 200,
+            "title": "OBC SLBC ghg",
+            "web_server": "Apache",
+            "tls_version": "TLSv1.2",
+            "content_type": "text/html; charset=utf-8"
+          },
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 49.50.81.77:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS55470",
+            "org": "ASN-55470"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan",
+            "httpx"
+          ],
+          "confidence_score": 0.75
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": "CONNECTED(000001E8)\n---\nCertificate chain\n 0 s:jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\n   i:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug 27 00:00:00 2025 GMT; NotAfter: Aug 26 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIG6zCCBdOgAwIBAgIQA5i1o57osHh1f8x6A4onAjANBgkqhkiG9w0BAQsFADBE\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMR4wHAYDVQQDExVH\nZW9UcnVzdCBFViBSU0EgQ0EgRzIwHhcNMjUwODI3MDAwMDAwWhcNMjYwODI2MjM1\nOTU5WjCBvTETMBEGCysGAQQBgjc8AgEDEwJJTjEaMBgGA1UEDwwRR292ZXJubWVu\ndCBFbnRpdHkxGjAYBgNVBAUTEUdvdmVybm1lbnQgRW50aXR5MQswCQYDVQQGEwJJ\nTjEOMAwGA1UECBMFRGVsaGkxEjAQBgNVBAcTCU5ldyBEZWxoaTEdMBsGA1UEChMU\nUHVuamFiIE5hdGlvbmFsIEJhbmsxHjAcBgNVBAMTFXNsYmNkZWxoaS5wbmIuYmFu\nay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOlcMJ39sBjJLSNt\nOkwFwsIZX3QRlEje1P3YG7XfFWqtfmeRd/emHK5WT4Q/aSbAjyqnUr/zFDixbSre\npOcrOtLUH5eunN0JpEt/SbprAjimsQWZapowuCfIJ4frq0XV4pJOCJ+NXvYoOgWE\n5ooHcc35uvpdF/G9XJKIdboHX3j+Ni6QgZaBDsEdlF7Sq2XaQ2To0kqyZlKzj+Qd\nGshzw61HUEnmu51JvgG2zq7Z6IQi+XGjjH5Wtzm9i3VIuMefPMk5+Wd0X4+AyDQG\nqAqITAwpvp8d7Cf18l/s4FsL1X/6Hc+DwdW1eeadfTbP/H0EOgfsx9U9SDlYA9tf\n2JjTjO8CAwEAAaOCA10wggNZMB8GA1UdIwQYMBaAFCjSz+4JhHXdtbK1vzzVoMZz\niF0fMB0GA1UdDgQWBBT1yUpvihpQ8aN5QvYMSBfJepIvLDAgBgNVHREEGTAXghVz\nbGJjZGVsaGkucG5iLmJhbmsuaW4wSgYDVR0gBEMwQTALBglghkgBhv1sAgEwMgYF\nZ4EMAQEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BT\nMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw\ndQYDVR0fBG4wbDA0oDKgMIYuaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0dlb1Ry\ndXN0RVZSU0FDQUcyLmNybDA0oDKgMIYuaHR0cDovL2NybDQuZGlnaWNlcnQuY29t\nL0dlb1RydXN0RVZSU0FDQUcyLmNybDBzBggrBgEFBQcBAQRnMGUwJAYIKwYBBQUH\nMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTA9BggrBgEFBQcwAoYxaHR0cDov\nL2NhY2VydHMuZGlnaWNlcnQuY29tL0dlb1RydXN0RVZSU0FDQUcyLmNydDAMBgNV\nHRMBAf8EAjAAMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdgDYCVU7lE96/8gW\nGW+UT4WrsPj8XodVJg8V0S5yu0VLFAAAAZjq42qYAAAEAwBHMEUCIAtHwj/TgnTd\n/X+SFArMk9iK3ymAgDUEy4LYVSw+WiaMAiEA6xv1LumMcDP5BfwMyhZoZzf8tMrM\nOOsXYKYuS/XHaEAAdwDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAA\nAZjq42qKAAAEAwBIMEYCIQCU0bk/VMiY4yEzKZSjv1SAZjaDZaHUNRhQQKy1sgVM\nBAIhAKTK1Y1+2GypDYOUGQe7UM9q+SXFcdU8UlAoWvQJ7mZBAHUAlE5Dh/rswe+B\n8xkkJqgYZQHH0184AgE/cmd9VTcuGdgAAAGY6uNqmwAABAMARjBEAiAj75kK29M3\nhZ47e93w5hW6uw8gX26fLpnh+ZUyC5iYmwIgRoUnF0gbqZ+E58PE0R8ztMDFzEdd\ng7XPDaMV2bsNnUUwDQYJKoZIhvcNAQELBQADggEBACjCQPQ2BQW3wr0q0jdWc4qt\nIBE1MKX+NO7YYbexdidR/d0LzmOV4SCm53+fGHGDcdV9wjzaufThs+kq+bxgjOSm\nJDHbbTp3XMU7jH+7TjMsvNLrjCZYNbtDZpujqWMzI5oFJEsZw1awKOR9tjutHZou\ndJoev78uJHb/6B8/wOjJG4I6ITsQ2eZQHN1yQT64AHiczA19/rF7M2/criwvYAQo\nvSmfiLfPd5BamaXZMfxYdfhDRTE1m2bTmOAVYtJOAEypRdW/t31tdfbgkYzWTF89\nzF1KgO+dFa4WuXzRBapNug8DD1hrvqsra1jhhY0AQt2Da2o0urQW5yjExNCHA+k=\n-----END CERTIFICATE-----\n 1 s:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jul  2 12:42:57 2020 GMT; NotAfter: Jul  2 12:42:57 2030 GMT\n-----BEGIN CERTIFICATE-----\nMIIFPDCCBCSgAwIBAgIQDWASYsinchpuqwNh5WGVgDANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0yMDA3MDIxMjQyNTdaFw0zMDA3MDIxMjQyNTdaMEQxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxHjAcBgNVBAMTFUdlb1RydXN0IEVWIFJT\nQSBDQSBHMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDSvFMMGIOI\nD2N+rpyaGTPfyItp3atCyimRJCPtAakU984EB19Zugrb82ui0iy0zLKMDrOuN+Ku\nH6jF4F4ZCoHjN7tFdMtSsCUAbrpFVO/5BLY+VTIg7YUN5LwRHUb2QVSGwKyIeYS+\nSqPV8mzTMkG9GnWjG1IQT0F1+Xu7+uAGRFVnIdYCSBgl7iG4qOWZjcPKnW+3OJRO\ndZtwGE39E7WoasoW8Nvpu5FFp2WIsvY6B/0whr3w+xKeBYb2WNKI1ZXvk4y+AmUa\nBdRTY0HPBZ4+6Ipcq2Rl+QLQXQuGXH95YujYNYpbnV7ASU5/dVmqVPY0LHnp2sNK\nIN65/n+DbcsCAwEAAaOCAgswggIHMB0GA1UdDgQWBBQo0s/uCYR13bWytb881aDG\nc4hdHzAfBgNVHSMEGDAWgBROIlQgGJXm427mD/r6uRLtBhePOTAOBgNVHQ8BAf8E\nBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQI\nMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\naWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDA3oDWgM4YxaHR0cDov\nL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDCBzgYD\nVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5k\naWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcCAjB+DHxBbnkgdXNlIG9mIHRoaXMg\nQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZSBvZiB0aGUgUmVseWlu\nZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBhdCBodHRwczovL3d3dy5kaWdpY2Vy\ndC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUAA4IBAQBVbQs8KD6qRnOf/dtOHNAy\nieoRcA1Zk3lGMLwqNfuLpTb9gDQFpvxGN/3X7i0mAEtRhN/r9fDv8oiVLn6gfpm0\nUUN47vFJCzf5dqkV/N7LkMTqlhDA0Ve/GBJ3A2E5yFT7TgAGN4wJ9cCZrKbqKHVU\nRatwJ+T58jmhbvtEM7t2ucB7u+Dmu4KoOTEx8LR8+qn8OyLh1VLq75vzDTsnhTN5\n3AgPdMVFk6F8sjT2P2xbvAb0kAlyAtldAtpGvBzXhacmRs7rTqz/oTDwYZLkrm+q\nEltdmGwUOWvFPjwucH6tS+gQgiUYiNJqijzI1jr8TZ01VGOSTW7rRUKgkN5WJqDA\n-----END CERTIFICATE-----\n 2 s:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug  1 12:00:00 2013 GMT; NotAfter: Jan 15 12:00:00 2038 GMT\n-----BEGIN CERTIFICATE-----\nMIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\nq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\ntCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\nvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\nBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\nNeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\nFdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\npLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\nMrY=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 4745 bytes and written 1678 bytes\nVerification: OK\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 17CB028FF0927AC88C2B8CCE67083CCE2E7908897CB06B1A62C5DA8667DAB60C\n    Session-ID-ctx: \n    Master-Key: B8076FAF0FF495BB46FB82C59343CABAA91ECC64F78F846733DF9320CDA60A0269BF242873C061B588ABF55670AD908E\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    TLS session ticket lifetime hint: 7200 (seconds)\n    TLS session ticket:\n    0000 - 6a 74 5f a3 47 a3 24 e9-2d 84 eb f5 e5 c8 dc ed   jt_.G.$.-.......\n    0010 - 4e 29 d9 f0 a2 8e 14 b3-84 8f 8c 2f 02 17 b1 84   N)........./....\n    0020 - fe 94 f9 05 ae e3 49 51-9e 4e 3c 00 4c dd 52 08   ......IQ.N<.L.R.\n    0030 - 62 d8 93 4e 97 bd 95 20-8e 8f 28 18 a5 d0 8f 04   b..N... ..(.....\n    0040 - 98 84 90 48 06 e4 98 e4-a6 a4 5b 58 59 6f a6 7f   ...H......[XYo..\n    0050 - 20 8c 58 48 5a 91 57 a2-0d ef 3a 7a 56 77 79 11    .XHZ.W...:zVwy.\n    0060 - 6e 50 3e 2e b5 62 ec ff-9b f9 8e 94 21 96 6e b5   nP>..b......!.n.\n    0070 - b8 74 5a 74 b5 ac ac 65-06 f8 11 b2 ba 12 5f d9   .tZt...e......_.\n    0080 - 30 ca 68 8c 13 8d 9e 59-40 99 7f 56 4d cd 83 dc   0.h....Y@..VM...\n    0090 - 1e 1c 2c 0f 29 d7 a4 59-d1 d9 64 41 53 8f 11 95   ..,.)..Y..dAS...\n    00a0 - 41 01 cd e6 71 4e e4 7e-03 da e3 c7 bb 7f b7 7f   A...qN.~........\n    00b0 - 32 24 58 4e 7c bc b0 01-c9 7a 40 fe 6d 14 2f 2f   2$XN|....z@.m.//\n    00c0 - 88 d4 e6 7e 99 0a 1d 61-86 2f 4a 84 98 8f cb 9c   ...~...a./J.....\n\n    Start Time: 1776145895\n    Timeout   : 7200 (sec)\n    Verify return code: 0 (ok)\n    Extended master secret: no\n---\n\nConnecting to 49.50.81.77\ndepth=2 C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\nverify return:1\ndepth=1 C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\nverify return:1\ndepth=0 jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nverify return:1\nDONE\n",
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "slbcdelhi.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDH",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(000001E8)\n---\nCertificate chain\n 0 s:jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\n   i:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug 27 00:00:00 2025 GMT; NotAfter: Aug 26 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIG6zCCBdOgAwIBAgIQA5i1o57osHh1f8x6A4onAjANBgkqhkiG9w0BAQsFADBE\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMR4wHAYDVQQDExVH\nZW9UcnVzdCBFViBSU0EgQ0EgRzIwHhcNMjUwODI3MDAwMDAwWhcNMjYwODI2MjM1\nOTU5WjCBvTETMBEGCysGAQQBgjc8AgEDEwJJTjEaMBgGA1UEDwwRR292ZXJubWVu\ndCBFbnRpdHkxGjAYBgNVBAUTEUdvdmVybm1lbnQgRW50aXR5MQswCQYDVQQGEwJJ\nTjEOMAwGA1UECBMFRGVsaGkxEjAQBgNVBAcTCU5ldyBEZWxoaTEdMBsGA1UEChMU\nUHVuamFiIE5hdGlvbmFsIEJhbmsxHjAcBgNVBAMTFXNsYmNkZWxoaS5wbmIuYmFu\nay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOlcMJ39sBjJLSNt\nOkwFwsIZX3QRlEje1P3YG7XfFWqtfmeRd/emHK5WT4Q/aSbAjyqnUr/zFDixbSre\npOcrOtLUH5eunN0JpEt/SbprAjimsQWZapowuCfIJ4frq0XV4pJOCJ+NXvYoOgWE\n5ooHcc35uvpdF/G9XJKIdboHX3j+Ni6QgZaBDsEdlF7Sq2XaQ2To0kqyZlKzj+Qd\nGshzw61HUEnmu51JvgG2zq7Z6IQi+XGjjH5Wtzm9i3VIuMefPMk5+Wd0X4+AyDQG\nqAqITAwpvp8d7Cf18l/s4FsL1X/6Hc+DwdW1eeadfTbP/H0EOgfsx9U9SDlYA9tf\n2JjTjO8CAwEAAaOCA10wggNZMB8GA1UdIwQYMBaAFCjSz+4JhHXdtbK1vzzVoMZz\niF0fMB0GA1UdDgQWBBT1yUpvihpQ8aN5QvYMSBfJepIvLDAgBgNVHREEGTAXghVz\nbGJjZGVsaGkucG5iLmJhbmsuaW4wSgYDVR0gBEMwQTALBglghkgBhv1sAgEwMgYF\nZ4EMAQEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BT\nMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw\ndQYDVR0fBG4wbDA0oDKgMIYuaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0dlb1Ry\ndXN0RVZSU0FDQUcyLmNybDA0oDKgMIYuaHR0cDovL2NybDQuZGlnaWNlcnQuY29t\nL0dlb1RydXN0RVZSU0FDQUcyLmNybDBzBggrBgEFBQcBAQRnMGUwJAYIKwYBBQUH\nMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTA9BggrBgEFBQcwAoYxaHR0cDov\nL2NhY2VydHMuZGlnaWNlcnQuY29tL0dlb1RydXN0RVZSU0FDQUcyLmNydDAMBgNV\nHRMBAf8EAjAAMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdgDYCVU7lE96/8gW\nGW+UT4WrsPj8XodVJg8V0S5yu0VLFAAAAZjq42qYAAAEAwBHMEUCIAtHwj/TgnTd\n/X+SFArMk9iK3ymAgDUEy4LYVSw+WiaMAiEA6xv1LumMcDP5BfwMyhZoZzf8tMrM\nOOsXYKYuS/XHaEAAdwDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAA\nAZjq42qKAAAEAwBIMEYCIQCU0bk/VMiY4yEzKZSjv1SAZjaDZaHUNRhQQKy1sgVM\nBAIhAKTK1Y1+2GypDYOUGQe7UM9q+SXFcdU8UlAoWvQJ7mZBAHUAlE5Dh/rswe+B\n8xkkJqgYZQHH0184AgE/cmd9VTcuGdgAAAGY6uNqmwAABAMARjBEAiAj75kK29M3\nhZ47e93w5hW6uw8gX26fLpnh+ZUyC5iYmwIgRoUnF0gbqZ+E58PE0R8ztMDFzEdd\ng7XPDaMV2bsNnUUwDQYJKoZIhvcNAQELBQADggEBACjCQPQ2BQW3wr0q0jdWc4qt\nIBE1MKX+NO7YYbexdidR/d0LzmOV4SCm53+fGHGDcdV9wjzaufThs+kq+bxgjOSm\nJDHbbTp3XMU7jH+7TjMsvNLrjCZYNbtDZpujqWMzI5oFJEsZw1awKOR9tjutHZou\ndJoev78uJHb/6B8/wOjJG4I6ITsQ2eZQHN1yQT64AHiczA19/rF7M2/criwvYAQo\nvSmfiLfPd5BamaXZMfxYdfhDRTE1m2bTmOAVYtJOAEypRdW/t31tdfbgkYzWTF89\nzF1KgO+dFa4WuXzRBapNug8DD1hrvqsra1jhhY0AQt2Da2o0urQW5yjExNCHA+k=\n-----END CERTIFICATE-----\n 1 s:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jul  2 12:42:57 2020 GMT; NotAfter: Jul  2 12:42:57 2030 GMT\n-----BEGIN CERTIFICATE-----\nMIIFPDCCBCSgAwIBAgIQDWASYsinchpuqwNh5WGVgDANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0yMDA3MDIxMjQyNTdaFw0zMDA3MDIxMjQyNTdaMEQxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxHjAcBgNVBAMTFUdlb1RydXN0IEVWIFJT\nQSBDQSBHMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDSvFMMGIOI\nD2N+rpyaGTPfyItp3atCyimRJCPtAakU984EB19Zugrb82ui0iy0zLKMDrOuN+Ku\nH6jF4F4ZCoHjN7tFdMtSsCUAbrpFVO/5BLY+VTIg7YUN5LwRHUb2QVSGwKyIeYS+\nSqPV8mzTMkG9GnWjG1IQT0F1+Xu7+uAGRFVnIdYCSBgl7iG4qOWZjcPKnW+3OJRO\ndZtwGE39E7WoasoW8Nvpu5FFp2WIsvY6B/0whr3w+xKeBYb2WNKI1ZXvk4y+AmUa\nBdRTY0HPBZ4+6Ipcq2Rl+QLQXQuGXH95YujYNYpbnV7ASU5/dVmqVPY0LHnp2sNK\nIN65/n+DbcsCAwEAAaOCAgswggIHMB0GA1UdDgQWBBQo0s/uCYR13bWytb881aDG\nc4hdHzAfBgNVHSMEGDAWgBROIlQgGJXm427mD/r6uRLtBhePOTAOBgNVHQ8BAf8E\nBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQI\nMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\naWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDA3oDWgM4YxaHR0cDov\nL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDCBzgYD\nVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5k\naWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcCAjB+DHxBbnkgdXNlIG9mIHRoaXMg\nQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZSBvZiB0aGUgUmVseWlu\nZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBhdCBodHRwczovL3d3dy5kaWdpY2Vy\ndC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUAA4IBAQBVbQs8KD6qRnOf/dtOHNAy\nieoRcA1Zk3lGMLwqNfuLpTb9gDQFpvxGN/3X7i0mAEtRhN/r9fDv8oiVLn6gfpm0\nUUN47vFJCzf5dqkV/N7LkMTqlhDA0Ve/GBJ3A2E5yFT7TgAGN4wJ9cCZrKbqKHVU\nRatwJ+T58jmhbvtEM7t2ucB7u+Dmu4KoOTEx8LR8+qn8OyLh1VLq75vzDTsnhTN5\n3AgPdMVFk6F8sjT2P2xbvAb0kAlyAtldAtpGvBzXhacmRs7rTqz/oTDwYZLkrm+q\nEltdmGwUOWvFPjwucH6tS+gQgiUYiNJqijzI1jr8TZ01VGOSTW7rRUKgkN5WJqDA\n-----END CERTIFICATE-----\n 2 s:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug  1 12:00:00 2013 GMT; NotAfter: Jan 15 12:00:00 2038 GMT\n-----BEGIN CERTIFICATE-----\nMIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\nq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\ntCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\nvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\nBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\nNeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\nFdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\npLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\nMrY=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 4745 bytes and written 1678 bytes\nVerification: OK\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 17CB028FF0927AC88C2B8CCE67083CCE2E7908897CB06B1A62C5DA8667DAB60C\n    Session-ID-ctx: \n    Master-Key: B8076FAF0FF495BB46FB82C59343CABAA91ECC64F78F846733DF9320CDA60A0269BF242873C061B588ABF55670AD908E\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    TLS session ticket lifetime hint: 7200 (seconds)\n    TLS session ticket:\n    0000 - 6a 74 5f a3 47 a3 24 e9-2d 84 eb f5 e5 c8 dc ed   jt_.G.$.-.......\n    0010 - 4e 29 d9 f0 a2 8e 14 b3-84 8f 8c 2f 02 17 b1 84   N)........./....\n    0020 - fe 94 f9 05 ae e3 49 51-9e 4e 3c 00 4c dd 52 08   ......IQ.N<.L.R.\n    0030 - 62 d8 93 4e 97 bd 95 20-8e 8f 28 18 a5 d0 8f 04   b..N... ..(.....\n    0040 - 98 84 90 48 06 e4 98 e4-a6 a4 5b 58 59 6f a6 7f   ...H......[XYo..\n    0050 - 20 8c 58 48 5a 91 57 a2-0d ef 3a 7a 56 77 79 11    .XHZ.W...:zVwy.\n    0060 - 6e 50 3e 2e b5 62 ec ff-9b f9 8e 94 21 96 6e b5   nP>..b......!.n.\n    0070 - b8 74 5a 74 b5 ac ac 65-06 f8 11 b2 ba 12 5f d9   .tZt...e......_.\n    0080 - 30 ca 68 8c 13 8d 9e 59-40 99 7f 56 4d cd 83 dc   0.h....Y@..VM...\n    0090 - 1e 1c 2c 0f 29 d7 a4 59-d1 d9 64 41 53 8f 11 95   ..,.)..Y..dAS...\n    00a0 - 41 01 cd e6 71 4e e4 7e-03 da e3 c7 bb 7f b7 7f   A...qN.~........\n    00b0 - 32 24 58 4e 7c bc b0 01-c9 7a 40 fe 6d 14 2f 2f   2$XN|....z@.m.//\n    00c0 - 88 d4 e6 7e 99 0a 1d 61-86 2f 4a 84 98 8f cb 9c   ...~...a./J.....\n\n    Start Time: 1776145895\n    Timeout   : 7200 (sec)\n    Verify return code: 0 (ok)\n    Extended master secret: no\n---\n\nConnecting to 49.50.81.77\ndepth=2 C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\nverify return:1\ndepth=1 C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\nverify return:1\ndepth=0 jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nverify return:1\nDONE\n"
+          },
+          "certificates": [
+            {
+              "common_name": "slbcdelhi.pnb.bank.in",
+              "san_list": [
+                "slbcdelhi.pnb.bank.in"
+              ],
+              "issuer": "GeoTrust EV RSA CA G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2025-08-27T00:00:00+00:00",
+              "valid_to": "2026-08-26T23:59:59+00:00",
+              "sha256_fingerprint": "0adcc17e8c7a9338e75de6a585a6ed44aae2db471502845c03f47b199fb47ddb",
+              "is_ct_logged": true,
+              "is_self_signed": false,
+              "days_until_expiry": 134,
+              "chain_depth": 0,
+              "chain_position": "leaf",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "GeoTrust EV RSA CA G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2020-07-02T12:42:57+00:00",
+              "valid_to": "2030-07-02T12:42:57+00:00",
+              "sha256_fingerprint": "2d140f20b8a96e2b4d2f1cc5aca5e5a1e7dc56a7491e510906960f38d2d21aef",
+              "is_ct_logged": false,
+              "is_self_signed": false,
+              "days_until_expiry": 1540,
+              "chain_depth": 1,
+              "chain_position": "intermediate",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            },
+            {
+              "common_name": "DigiCert Global Root G2",
+              "san_list": [],
+              "issuer": "DigiCert Global Root G2",
+              "ca_name": "DigiCert Inc",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "signature_algorithm_oid": "1.2.840.113549.1.1.11",
+              "valid_from": "2013-08-01T12:00:00+00:00",
+              "valid_to": "2038-01-15T12:00:00+00:00",
+              "sha256_fingerprint": "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f",
+              "is_ct_logged": false,
+              "is_self_signed": true,
+              "days_until_expiry": 4294,
+              "chain_depth": 2,
+              "chain_position": "root",
+              "chain_valid": true,
+              "quantum": {
+                "nist_level": 0,
+                "is_quantum_vulnerable": true,
+                "quantum_status": "vulnerable",
+                "matched_as": "RSA-2048"
+              }
+            }
+          ],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [
+            {
+              "effective_expiry": {
+                "effective_expiry": "2026-08-26T23:59:59+00:00",
+                "calendar_expiry": "2026-08-26T23:59:59+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 134,
+                "limited_by": "calendar"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 1,
+                "unique_domains": 1,
+                "is_multi_san": false,
+                "risk_note": null,
+                "domains": [
+                  "bank.in"
+                ]
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2030-07-02T12:42:57+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 992,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            },
+            {
+              "effective_expiry": {
+                "effective_expiry": "2029-01-01T00:00:00+00:00",
+                "calendar_expiry": "2038-01-15T12:00:00+00:00",
+                "crqc_adjusted": true,
+                "effective_remaining_days": 992,
+                "limited_by": "crqc"
+              },
+              "ca_readiness": {
+                "name": "DigiCert Inc.",
+                "pqc_roadmap_published": true,
+                "pqc_hybrid_certs_available": true,
+                "pqc_target_date": "2025-Q2",
+                "pqc_algorithms_supported": [
+                  "ML-DSA-44",
+                  "ML-DSA-65",
+                  "ML-DSA-87"
+                ],
+                "hybrid_mode_available": true,
+                "notes": "DigiCert began issuing PQC hybrid certificates in 2024."
+              },
+              "san_exposure": {
+                "san_count": 0,
+                "unique_domains": 0,
+                "is_multi_san": false,
+                "risk_note": null
+              }
+            }
+          ],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": "Self-hosted (Apache)",
+            "cdn_detected": null,
+            "waf_detected": "Citrix NetScaler",
+            "server_header": "Apache",
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {
+              "server": "Apache",
+              "set-cookie": "id=0h0tarvjuag5823po22oqrl8bc; path=/; secure; HttpOnly; SameSite=Strict, id=b2u8b0bqmiuebu9smi9m0r8ihl; path=/; secure; HttpOnly; SameSite=Strict, _ga=GA1.2.1057958167.1646990448; secure; HttpOnly, id=b2u8b0bqmiuebu9smi9m0r8ihl; secure; HttpOnly, custome_cookies=cookievalue; expires=Mon, 02-Mar-1970 00:00:00 GMT; Max-Age=0; path=/; domain=slbcdelhi.pnb.bank.in, sessionid=slbcdelhi.pnb.bank.in; expires=Tue, 14-Apr-2026 06:52:00 GMT; Max-Age=3600; path=/; secure; HttpOnly; SameSite=Strict, custome_cookies=cookievalue; expires=Mon, 02-Mar-1970 00:00:00 GMT; Max-Age=0; path=/; domain=slbcdelhi.pnbindia.in, SESSIONID=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/; secure; HttpOnly; SameSite=Strict",
+              "x-frame-options": "SAMEORIGIN",
+              "x-content-type-options": "nosniff",
+              "x-xss-protection": "1; mode=block",
+              "x-ua-compatible": "IE=edge,chrome=1",
+              "x-permitted-cross-domain-policies": "none",
+              "x-download-options": "noopen"
+            }
+          },
+          "asset_type": "internet_banking",
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "ECDHE-RSA-AES256-GCM-SHA384",
+              "RSA-2048"
+            ],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": "TLSv1.2",
+            "hosting_provider": "Self-hosted (Apache)",
+            "cdn_detected": null,
+            "waf_detected": "Citrix NetScaler",
+            "web_server": "Apache",
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "internet_banking"
+          },
+          "certificate_count_to_db": 3
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [
+              "TLSv1.2"
+            ],
+            "cipher_suites": [
+              {
+                "name": "ECDHE-RSA-AES256-GCM-SHA384",
+                "tls_version": "TLSv1.2",
+                "key_size": null,
+                "quantum": {
+                  "nist_level": 0,
+                  "is_quantum_vulnerable": true,
+                  "quantum_status": "vulnerable",
+                  "matched_as": "ECDHE-RSA"
+                }
+              }
+            ],
+            "negotiated_cipher": "ECDHE-RSA-AES256-GCM-SHA384",
+            "negotiated_protocol": "TLSv1.2",
+            "key_exchange": "ECDH",
+            "forward_secrecy": true,
+            "engine": "openssl",
+            "raw_openssl_output": "CONNECTED(000001E8)\n---\nCertificate chain\n 0 s:jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\n   i:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug 27 00:00:00 2025 GMT; NotAfter: Aug 26 23:59:59 2026 GMT\n-----BEGIN CERTIFICATE-----\nMIIG6zCCBdOgAwIBAgIQA5i1o57osHh1f8x6A4onAjANBgkqhkiG9w0BAQsFADBE\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMR4wHAYDVQQDExVH\nZW9UcnVzdCBFViBSU0EgQ0EgRzIwHhcNMjUwODI3MDAwMDAwWhcNMjYwODI2MjM1\nOTU5WjCBvTETMBEGCysGAQQBgjc8AgEDEwJJTjEaMBgGA1UEDwwRR292ZXJubWVu\ndCBFbnRpdHkxGjAYBgNVBAUTEUdvdmVybm1lbnQgRW50aXR5MQswCQYDVQQGEwJJ\nTjEOMAwGA1UECBMFRGVsaGkxEjAQBgNVBAcTCU5ldyBEZWxoaTEdMBsGA1UEChMU\nUHVuamFiIE5hdGlvbmFsIEJhbmsxHjAcBgNVBAMTFXNsYmNkZWxoaS5wbmIuYmFu\nay5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOlcMJ39sBjJLSNt\nOkwFwsIZX3QRlEje1P3YG7XfFWqtfmeRd/emHK5WT4Q/aSbAjyqnUr/zFDixbSre\npOcrOtLUH5eunN0JpEt/SbprAjimsQWZapowuCfIJ4frq0XV4pJOCJ+NXvYoOgWE\n5ooHcc35uvpdF/G9XJKIdboHX3j+Ni6QgZaBDsEdlF7Sq2XaQ2To0kqyZlKzj+Qd\nGshzw61HUEnmu51JvgG2zq7Z6IQi+XGjjH5Wtzm9i3VIuMefPMk5+Wd0X4+AyDQG\nqAqITAwpvp8d7Cf18l/s4FsL1X/6Hc+DwdW1eeadfTbP/H0EOgfsx9U9SDlYA9tf\n2JjTjO8CAwEAAaOCA10wggNZMB8GA1UdIwQYMBaAFCjSz+4JhHXdtbK1vzzVoMZz\niF0fMB0GA1UdDgQWBBT1yUpvihpQ8aN5QvYMSBfJepIvLDAgBgNVHREEGTAXghVz\nbGJjZGVsaGkucG5iLmJhbmsuaW4wSgYDVR0gBEMwQTALBglghkgBhv1sAgEwMgYF\nZ4EMAQEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BT\nMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw\ndQYDVR0fBG4wbDA0oDKgMIYuaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0dlb1Ry\ndXN0RVZSU0FDQUcyLmNybDA0oDKgMIYuaHR0cDovL2NybDQuZGlnaWNlcnQuY29t\nL0dlb1RydXN0RVZSU0FDQUcyLmNybDBzBggrBgEFBQcBAQRnMGUwJAYIKwYBBQUH\nMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTA9BggrBgEFBQcwAoYxaHR0cDov\nL2NhY2VydHMuZGlnaWNlcnQuY29tL0dlb1RydXN0RVZSU0FDQUcyLmNydDAMBgNV\nHRMBAf8EAjAAMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdgDYCVU7lE96/8gW\nGW+UT4WrsPj8XodVJg8V0S5yu0VLFAAAAZjq42qYAAAEAwBHMEUCIAtHwj/TgnTd\n/X+SFArMk9iK3ymAgDUEy4LYVSw+WiaMAiEA6xv1LumMcDP5BfwMyhZoZzf8tMrM\nOOsXYKYuS/XHaEAAdwDCMX5XRRmjRe5/ON6ykEHrx8IhWiK/f9W1rXaa2Q5SzQAA\nAZjq42qKAAAEAwBIMEYCIQCU0bk/VMiY4yEzKZSjv1SAZjaDZaHUNRhQQKy1sgVM\nBAIhAKTK1Y1+2GypDYOUGQe7UM9q+SXFcdU8UlAoWvQJ7mZBAHUAlE5Dh/rswe+B\n8xkkJqgYZQHH0184AgE/cmd9VTcuGdgAAAGY6uNqmwAABAMARjBEAiAj75kK29M3\nhZ47e93w5hW6uw8gX26fLpnh+ZUyC5iYmwIgRoUnF0gbqZ+E58PE0R8ztMDFzEdd\ng7XPDaMV2bsNnUUwDQYJKoZIhvcNAQELBQADggEBACjCQPQ2BQW3wr0q0jdWc4qt\nIBE1MKX+NO7YYbexdidR/d0LzmOV4SCm53+fGHGDcdV9wjzaufThs+kq+bxgjOSm\nJDHbbTp3XMU7jH+7TjMsvNLrjCZYNbtDZpujqWMzI5oFJEsZw1awKOR9tjutHZou\ndJoev78uJHb/6B8/wOjJG4I6ITsQ2eZQHN1yQT64AHiczA19/rF7M2/criwvYAQo\nvSmfiLfPd5BamaXZMfxYdfhDRTE1m2bTmOAVYtJOAEypRdW/t31tdfbgkYzWTF89\nzF1KgO+dFa4WuXzRBapNug8DD1hrvqsra1jhhY0AQt2Da2o0urQW5yjExNCHA+k=\n-----END CERTIFICATE-----\n 1 s:C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Jul  2 12:42:57 2020 GMT; NotAfter: Jul  2 12:42:57 2030 GMT\n-----BEGIN CERTIFICATE-----\nMIIFPDCCBCSgAwIBAgIQDWASYsinchpuqwNh5WGVgDANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0yMDA3MDIxMjQyNTdaFw0zMDA3MDIxMjQyNTdaMEQxCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxHjAcBgNVBAMTFUdlb1RydXN0IEVWIFJT\nQSBDQSBHMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDSvFMMGIOI\nD2N+rpyaGTPfyItp3atCyimRJCPtAakU984EB19Zugrb82ui0iy0zLKMDrOuN+Ku\nH6jF4F4ZCoHjN7tFdMtSsCUAbrpFVO/5BLY+VTIg7YUN5LwRHUb2QVSGwKyIeYS+\nSqPV8mzTMkG9GnWjG1IQT0F1+Xu7+uAGRFVnIdYCSBgl7iG4qOWZjcPKnW+3OJRO\ndZtwGE39E7WoasoW8Nvpu5FFp2WIsvY6B/0whr3w+xKeBYb2WNKI1ZXvk4y+AmUa\nBdRTY0HPBZ4+6Ipcq2Rl+QLQXQuGXH95YujYNYpbnV7ASU5/dVmqVPY0LHnp2sNK\nIN65/n+DbcsCAwEAAaOCAgswggIHMB0GA1UdDgQWBBQo0s/uCYR13bWytb881aDG\nc4hdHzAfBgNVHSMEGDAWgBROIlQgGJXm427mD/r6uRLtBhePOTAOBgNVHQ8BAf8E\nBAMCAYYwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMBIGA1UdEwEB/wQI\nMAYBAf8CAQAwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\naWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDA3oDWgM4YxaHR0cDov\nL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsUm9vdEcyLmNybDCBzgYD\nVR0gBIHGMIHDMIHABgRVHSAAMIG3MCgGCCsGAQUFBwIBFhxodHRwczovL3d3dy5k\naWdpY2VydC5jb20vQ1BTMIGKBggrBgEFBQcCAjB+DHxBbnkgdXNlIG9mIHRoaXMg\nQ2VydGlmaWNhdGUgY29uc3RpdHV0ZXMgYWNjZXB0YW5jZSBvZiB0aGUgUmVseWlu\nZyBQYXJ0eSBBZ3JlZW1lbnQgbG9jYXRlZCBhdCBodHRwczovL3d3dy5kaWdpY2Vy\ndC5jb20vcnBhLXVhMA0GCSqGSIb3DQEBCwUAA4IBAQBVbQs8KD6qRnOf/dtOHNAy\nieoRcA1Zk3lGMLwqNfuLpTb9gDQFpvxGN/3X7i0mAEtRhN/r9fDv8oiVLn6gfpm0\nUUN47vFJCzf5dqkV/N7LkMTqlhDA0Ve/GBJ3A2E5yFT7TgAGN4wJ9cCZrKbqKHVU\nRatwJ+T58jmhbvtEM7t2ucB7u+Dmu4KoOTEx8LR8+qn8OyLh1VLq75vzDTsnhTN5\n3AgPdMVFk6F8sjT2P2xbvAb0kAlyAtldAtpGvBzXhacmRs7rTqz/oTDwYZLkrm+q\nEltdmGwUOWvFPjwucH6tS+gQgiUYiNJqijzI1jr8TZ01VGOSTW7rRUKgkN5WJqDA\n-----END CERTIFICATE-----\n 2 s:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   i:C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\n   a:PKEY: RSA, 2048 (bit); sigalg: sha256WithRSAEncryption\n   v:NotBefore: Aug  1 12:00:00 2013 GMT; NotAfter: Jan 15 12:00:00 2038 GMT\n-----BEGIN CERTIFICATE-----\nMIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBH\nMjAeFw0xMzA4MDExMjAwMDBaFw0zODAxMTUxMjAwMDBaMGExCzAJBgNVBAYTAlVT\nMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\nb20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IEcyMIIBIjANBgkqhkiG\n9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzfNNNx7a8myaJCtSnX/RrohCgiN9RlUyfuI\n2/Ou8jqJkTx65qsGGmvPrC3oXgkkRLpimn7Wo6h+4FR1IAWsULecYxpsMNzaHxmx\n1x7e/dfgy5SDN67sH0NO3Xss0r0upS/kqbitOtSZpLYl6ZtrAGCSYP9PIUkY92eQ\nq2EGnI/yuum06ZIya7XzV+hdG82MHauVBJVJ8zUtluNJbd134/tJS7SsVQepj5Wz\ntCO7TG1F8PapspUwtP1MVYwnSlcUfIKdzXOS0xZKBgyMUNGPHgm+F6HmIcr9g+UQ\nvIOlCsRnKPZzFBQ9RnbDhxSJITRNrw9FDKZJobq7nMWxM4MphQIDAQABo0IwQDAP\nBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNVHQ4EFgQUTiJUIBiV\n5uNu5g/6+rkS7QYXjzkwDQYJKoZIhvcNAQELBQADggEBAGBnKJRvDkhj6zHd6mcY\n1Yl9PMWLSn/pvtsrF9+wX3N3KjITOYFnQoQj8kVnNeyIv/iPsGEMNKSuIEyExtv4\nNeF22d+mQrvHRAiGfzZ0JFrabA0UWTW98kndth/Jsw1HKj2ZL7tcu7XUIOGZX1NG\nFdtom/DzMNU+MeKNhJ7jitralj41E6Vf8PlwUHBHQRFXGU7Aj64GxJUTFy8bJZ91\n8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\npLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\nMrY=\n-----END CERTIFICATE-----\n---\nServer certificate\nsubject=jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nissuer=C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\n---\nNo client certificate CA names sent\nPeer signing digest: SHA256\nPeer signature type: rsa_pkcs1_sha256\nPeer Temp Key: ECDH, prime256v1, 256 bits\n---\nSSL handshake has read 4745 bytes and written 1678 bytes\nVerification: OK\n---\nNew, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384\nProtocol: TLSv1.2\nServer public key is 2048 bit\nSecure Renegotiation IS supported\nCompression: NONE\nExpansion: NONE\nNo ALPN negotiated\nSSL-Session:\n    Protocol  : TLSv1.2\n    Cipher    : ECDHE-RSA-AES256-GCM-SHA384\n    Session-ID: 17CB028FF0927AC88C2B8CCE67083CCE2E7908897CB06B1A62C5DA8667DAB60C\n    Session-ID-ctx: \n    Master-Key: B8076FAF0FF495BB46FB82C59343CABAA91ECC64F78F846733DF9320CDA60A0269BF242873C061B588ABF55670AD908E\n    PSK identity: None\n    PSK identity hint: None\n    SRP username: None\n    TLS session ticket lifetime hint: 7200 (seconds)\n    TLS session ticket:\n    0000 - 6a 74 5f a3 47 a3 24 e9-2d 84 eb f5 e5 c8 dc ed   jt_.G.$.-.......\n    0010 - 4e 29 d9 f0 a2 8e 14 b3-84 8f 8c 2f 02 17 b1 84   N)........./....\n    0020 - fe 94 f9 05 ae e3 49 51-9e 4e 3c 00 4c dd 52 08   ......IQ.N<.L.R.\n    0030 - 62 d8 93 4e 97 bd 95 20-8e 8f 28 18 a5 d0 8f 04   b..N... ..(.....\n    0040 - 98 84 90 48 06 e4 98 e4-a6 a4 5b 58 59 6f a6 7f   ...H......[XYo..\n    0050 - 20 8c 58 48 5a 91 57 a2-0d ef 3a 7a 56 77 79 11    .XHZ.W...:zVwy.\n    0060 - 6e 50 3e 2e b5 62 ec ff-9b f9 8e 94 21 96 6e b5   nP>..b......!.n.\n    0070 - b8 74 5a 74 b5 ac ac 65-06 f8 11 b2 ba 12 5f d9   .tZt...e......_.\n    0080 - 30 ca 68 8c 13 8d 9e 59-40 99 7f 56 4d cd 83 dc   0.h....Y@..VM...\n    0090 - 1e 1c 2c 0f 29 d7 a4 59-d1 d9 64 41 53 8f 11 95   ..,.)..Y..dAS...\n    00a0 - 41 01 cd e6 71 4e e4 7e-03 da e3 c7 bb 7f b7 7f   A...qN.~........\n    00b0 - 32 24 58 4e 7c bc b0 01-c9 7a 40 fe 6d 14 2f 2f   2$XN|....z@.m.//\n    00c0 - 88 d4 e6 7e 99 0a 1d 61-86 2f 4a 84 98 8f cb 9c   ...~...a./J.....\n\n    Start Time: 1776145895\n    Timeout   : 7200 (sec)\n    Verify return code: 0 (ok)\n    Extended master secret: no\n---\n\nConnecting to 49.50.81.77\ndepth=2 C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2\nverify return:1\ndepth=1 C=US, O=DigiCert Inc, CN=GeoTrust EV RSA CA G2\nverify return:1\ndepth=0 jurisdictionC=IN, businessCategory=Government Entity, serialNumber=Government Entity, C=IN, ST=Delhi, L=New Delhi, O=Punjab National Bank, CN=slbcdelhi.pnb.bank.in\nverify return:1\nDONE\n"
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": null,
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": 0,
+            "has_vulnerable_crypto": true,
+            "has_pqc": false,
+            "vulnerable_algorithms": [
+              "ECDHE-RSA-AES256-GCM-SHA384",
+              "RSA-2048"
+            ],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T06:00:20.255456Z",
+      "section": "TRACE_SECTION_BREAK",
+      "payload": {
+        "separator": "----- END CRYPTO TRACE ----- BEGIN CBOM/PQCSCAN TRACE -----",
+        "scan_id": "ef86c35d-5af9-4624-88ce-62aa327b591a",
+        "asset_id": "817d9da4-7853-4dd5-adf0-3cd35d2ae8d9",
+        "hostname": "slbcdelhi.pnb.bank.in"
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T06:00:20.483275Z",
+      "section": "CBOM_AND_PQCSCAN_TRACE",
+      "payload": {
+        "scan_id": "ef86c35d-5af9-4624-88ce-62aa327b591a",
+        "asset_id": "817d9da4-7853-4dd5-adf0-3cd35d2ae8d9",
+        "hostname": "slbcdelhi.pnb.bank.in",
+        "raw_cbom_builder_output": {
+          "cbom_json": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-ECDH-817d9da4\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDH\", \"name\": \"ECDH Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-817d9da4\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDH-817d9da4\"], \"name\": \"ECDH\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\", \"crypto-kex-ECDH-817d9da4\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for slbcdelhi.pnb.bank.in:443\", \"name\": \"TLS TLSv1.2 (slbcdelhi.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-26T23:59:59+00:00\", \"notValidBefore\": \"2025-08-27T00:00:00+00:00\", \"subjectName\": \"slbcdelhi.pnb.bank.in\"}}, \"description\": \"X.509 certificate: slbcdelhi.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"slbcdelhi.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\"}, {\"ref\": \"crypto-cert-0-817d9da4\"}, {\"ref\": \"crypto-cert-1-817d9da4\"}, {\"ref\": \"crypto-cert-2-817d9da4\"}, {\"ref\": \"crypto-kex-ECDH-817d9da4\"}, {\"ref\": \"crypto-protocol-tls-817d9da4\"}], \"metadata\": {\"timestamp\": \"2026-04-14T06:00:19.906289+00:00\"}, \"serialNumber\": \"urn:uuid:696dff00-ce94-458e-bdae-0236f71c13a0\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-817d9da4"
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-817d9da4"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-817d9da4"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-817d9da4"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-817d9da4"
+            }
+          ],
+          "stats": {
+            "total_components": 6,
+            "algorithm_components": 2,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 5,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 3322
+          }
+        },
+        "raw_cbom_json_written": "{\"components\": [{\"bom-ref\": \"crypto-cert-2-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2038-01-15T12:00:00+00:00\", \"notValidBefore\": \"2013-08-01T12:00:00+00:00\", \"subjectName\": \"DigiCert Global Root G2\"}}, \"description\": \"X.509 certificate: DigiCert Global Root G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"DigiCert Global Root G2 (root)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-kex-ECDH-817d9da4\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"keygen\"], \"nistQuantumSecurityLevel\": 0, \"primitive\": \"unknown\"}, \"assetType\": \"algorithm\"}, \"description\": \"Key exchange algorithm: ECDH\", \"name\": \"ECDH Key Exchange\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\", \"cryptoProperties\": {\"algorithmProperties\": {\"cryptoFunctions\": [\"encrypt\"], \"nistQuantumSecurityLevel\": 0, \"parameterSetIdentifier\": \"None\", \"primitive\": \"pke\"}, \"assetType\": \"algorithm\"}, \"description\": \"Cipher suite: ECDHE-RSA-AES256-GCM-SHA384 (TLSv1.2)\", \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-1-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"DigiCert Global Root G2\", \"notValidAfter\": \"2030-07-02T12:42:57+00:00\", \"notValidBefore\": \"2020-07-02T12:42:57+00:00\", \"subjectName\": \"GeoTrust EV RSA CA G2\"}}, \"description\": \"X.509 certificate: GeoTrust EV RSA CA G2 | RSA-2048 | Issuer: DigiCert Global Root G2\", \"name\": \"GeoTrust EV RSA CA G2 (intermediate)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-protocol-tls-817d9da4\", \"cryptoProperties\": {\"assetType\": \"protocol\", \"protocolProperties\": {\"cipherSuites\": [{\"algorithms\": [\"crypto-kex-ECDH-817d9da4\"], \"name\": \"ECDH\"}, {\"algorithms\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\"], \"name\": \"ECDHE-RSA-AES256-GCM-SHA384\"}], \"cryptoRefArray\": [\"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\", \"crypto-kex-ECDH-817d9da4\"], \"type\": \"tls\", \"version\": \"TLSv1.2\"}}, \"description\": \"TLS protocol configuration for slbcdelhi.pnb.bank.in:443\", \"name\": \"TLS TLSv1.2 (slbcdelhi.pnb.bank.in)\", \"type\": \"cryptographic-asset\"}, {\"bom-ref\": \"crypto-cert-0-817d9da4\", \"cryptoProperties\": {\"assetType\": \"certificate\", \"certificateProperties\": {\"certificateFormat\": \"X.509\", \"issuerName\": \"GeoTrust EV RSA CA G2\", \"notValidAfter\": \"2026-08-26T23:59:59+00:00\", \"notValidBefore\": \"2025-08-27T00:00:00+00:00\", \"subjectName\": \"slbcdelhi.pnb.bank.in\"}}, \"description\": \"X.509 certificate: slbcdelhi.pnb.bank.in | RSA-2048 | Issuer: GeoTrust EV RSA CA G2\", \"name\": \"slbcdelhi.pnb.bank.in (leaf)\", \"type\": \"cryptographic-asset\"}], \"dependencies\": [{\"ref\": \"crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4\"}, {\"ref\": \"crypto-cert-0-817d9da4\"}, {\"ref\": \"crypto-cert-1-817d9da4\"}, {\"ref\": \"crypto-cert-2-817d9da4\"}, {\"ref\": \"crypto-kex-ECDH-817d9da4\"}, {\"ref\": \"crypto-protocol-tls-817d9da4\"}], \"metadata\": {\"timestamp\": \"2026-04-14T06:00:19.906289+00:00\"}, \"serialNumber\": \"urn:uuid:696dff00-ce94-458e-bdae-0236f71c13a0\", \"version\": 1, \"$schema\": \"http://cyclonedx.org/schema/bom-1.6.schema.json\", \"bomFormat\": \"CycloneDX\", \"specVersion\": \"1.6\"}",
+        "cbom_file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\ef86c35d-5af9-4624-88ce-62aa327b591a\\817d9da4-7853-4dd5-adf0-3cd35d2ae8d9.cdx.json",
+        "db_payload_preview": {
+          "cbom_record": {
+            "scan_id": "ef86c35d-5af9-4624-88ce-62aa327b591a",
+            "asset_id": "817d9da4-7853-4dd5-adf0-3cd35d2ae8d9",
+            "total_components": 6,
+            "vulnerable_components": 5,
+            "quantum_ready_pct": 0.0,
+            "file_path": "C:\\Users\\sgpan\\QuShield-PnB\\backend\\data\\cbom\\ef86c35d-5af9-4624-88ce-62aa327b591a\\817d9da4-7853-4dd5-adf0-3cd35d2ae8d9.cdx.json"
+          },
+          "cbom_components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-817d9da4"
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-817d9da4"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-817d9da4"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-817d9da4"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-817d9da4"
+            }
+          ]
+        },
+        "frontend_payload_preview": {
+          "components": [
+            {
+              "name": "ECDHE-RSA-AES256-GCM-SHA384",
+              "type": "algorithm",
+              "tls_version": "TLSv1.2",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-algo-ECDHE-RSA-AES256-GCM-SHA384-817d9da4",
+              "decomposition": {
+                "key_exchange": "ECDHE",
+                "authentication": "RSA",
+                "symmetric": "AES-256-GCM",
+                "mac": "SHA-384",
+                "tls_version": "1.2"
+              }
+            },
+            {
+              "name": "ECDH",
+              "type": "key_exchange",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "bom_ref": "crypto-kex-ECDH-817d9da4"
+            },
+            {
+              "name": "slbcdelhi.pnb.bank.in",
+              "type": "certificate",
+              "chain_position": "leaf",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 134,
+              "bom_ref": "crypto-cert-0-817d9da4"
+            },
+            {
+              "name": "GeoTrust EV RSA CA G2",
+              "type": "certificate",
+              "chain_position": "intermediate",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 1540,
+              "bom_ref": "crypto-cert-1-817d9da4"
+            },
+            {
+              "name": "DigiCert Global Root G2",
+              "type": "certificate",
+              "chain_position": "root",
+              "key_type": "RSA",
+              "key_length": 2048,
+              "signature_algorithm": "RSA-SHA256",
+              "nist_level": 0,
+              "is_vulnerable": true,
+              "days_until_expiry": 4294,
+              "bom_ref": "crypto-cert-2-817d9da4"
+            },
+            {
+              "name": "TLS TLSv1.2",
+              "type": "protocol",
+              "tls_version": "TLSv1.2",
+              "cipher_count": 2,
+              "forward_secrecy": true,
+              "bom_ref": "crypto-protocol-tls-817d9da4"
+            }
+          ],
+          "stats": {
+            "total_components": 6,
+            "algorithm_components": 2,
+            "certificate_components": 3,
+            "protocol_components": 1,
+            "vulnerable_count": 5,
+            "safe_count": 0,
+            "quantum_ready_pct": 0.0,
+            "json_size_bytes": 3322
+          }
+        },
+        "raw_pqcscan_json_from_phase2": null
+      }
     }
   ]
 }

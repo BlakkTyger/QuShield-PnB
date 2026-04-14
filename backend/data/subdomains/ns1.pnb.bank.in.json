@@ -613,6 +613,625 @@
         },
         "error": null
       }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:13:19.922522Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "f5422103-d938-4b80-8efc-59e954bd3382",
+        "asset_id": "ee5a4597-21cf-4423-8b78-a707c3373aa7",
+        "hostname": "ns1.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "ns1.pnb.bank.in",
+          "ip_v4": "49.50.69.49",
+          "discovery_methods": [
+            "dns_brute"
+          ],
+          "confidence_score": 0.5
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "ns1.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "certificates": [],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "dns_server",
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": null,
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "dns_server"
+          },
+          "certificate_count_to_db": 0
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:20:02.546920Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "9ac8ba5c-2a0a-4b6b-b6ab-39be02773ad4",
+        "asset_id": "0557c4b7-3dcd-4404-8d61-5f1e0541166e",
+        "hostname": "ns1.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "ns1.pnb.bank.in",
+          "ip_v4": "49.50.69.49",
+          "discovery_methods": [
+            "dns_brute"
+          ],
+          "confidence_score": 0.5
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": "\n",
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "ns1.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": "\n"
+          },
+          "certificates": [],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "dns_server",
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": null,
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "dns_server"
+          },
+          "certificate_count_to_db": 0
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": "\n"
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:33:05.143735Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "ad1a46a9-09d8-4954-816f-ecb961e02371",
+        "asset_id": "37be13fb-5451-4ea4-9669-5e3d02d09da9",
+        "hostname": "ns1.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "ns1.pnb.bank.in",
+          "ip_v4": "49.50.69.49",
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 49.50.69.49:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS55470",
+            "org": "ASN-55470"
+          },
+          "discovery_methods": [
+            "dns"
+          ],
+          "confidence_score": 0.25
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "ns1.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "certificates": [],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "dns_server",
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": null,
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "dns_server"
+          },
+          "certificate_count_to_db": 0
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
+    },
+    {
+      "timestamp_utc": "2026-04-14T05:57:22.385435Z",
+      "section": "CRYPTO_TRACE",
+      "payload": {
+        "scan_id": "ef86c35d-5af9-4624-88ce-62aa327b591a",
+        "asset_id": "f78c6711-af3c-41a3-8166-4728ac7e56e9",
+        "hostname": "ns1.pnb.bank.in",
+        "phase": "phase_2_crypto_inspection",
+        "raw_input_initial_discovery": {
+          "hostname": "ns1.pnb.bank.in",
+          "ip_v4": "49.50.69.49",
+          "ports": [
+            {
+              "port": 53,
+              "protocol": "tcp"
+            }
+          ],
+          "tls_results": {
+            "tls_versions_supported": null,
+            "cipher_suites": null,
+            "negotiated_cipher": "",
+            "negotiated_protocol": "",
+            "certificate_chain_pem": null,
+            "error": "dial tcp 49.50.69.49:443: i/o timeout"
+          },
+          "asn": {
+            "number": "AS55470",
+            "org": "ASN-55470"
+          },
+          "discovery_methods": [
+            "dns",
+            "portscan"
+          ],
+          "confidence_score": 0.5
+        },
+        "raw_engine_outputs": {
+          "openssl_raw_text": null,
+          "pqcscan_raw_json": null,
+          "pqcscan_command": null
+        },
+        "parsed_output": {
+          "hostname": "ns1.pnb.bank.in",
+          "port": 443,
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "certificates": [],
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "auth": {
+            "auth_mechanisms": [],
+            "jwt_algorithm": null,
+            "jwt_details": null,
+            "oidc_endpoint": null,
+            "note": null
+          },
+          "cert_intelligence": [],
+          "pinning": {
+            "hpkp_detected": false,
+            "expect_ct_detected": false,
+            "expect_staple_detected": false,
+            "is_pinned": false,
+            "pinning_headers": {},
+            "migration_note": null
+          },
+          "infrastructure": {
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "server_header": null,
+            "via_header": null,
+            "powered_by": null,
+            "is_behind_proxy": false,
+            "http2_supported": false,
+            "response_headers_raw": {}
+          },
+          "asset_type": "dns_server",
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          },
+          "error": null
+        },
+        "db_payload_preview": {
+          "asset_update": {
+            "tls_version": null,
+            "hosting_provider": null,
+            "cdn_detected": null,
+            "waf_detected": null,
+            "web_server": null,
+            "auth_mechanisms": "",
+            "jwt_algorithm": null,
+            "asset_type": "dns_server"
+          },
+          "certificate_count_to_db": 0
+        },
+        "frontend_payload_preview": {
+          "tls": {
+            "versions_supported": [],
+            "cipher_suites": [],
+            "negotiated_cipher": null,
+            "negotiated_protocol": null,
+            "key_exchange": null,
+            "forward_secrecy": false,
+            "engine": "openssl",
+            "raw_openssl_output": null
+          },
+          "pqc": {
+            "pqc_key_exchange": false,
+            "pqc_signature": false,
+            "pqc_algorithms_found": [],
+            "detection_method": "oid_check",
+            "note": "PQC detection error: timed out PQCscan: Timed out after 5s connecting to 49.50.69.49:443",
+            "hybrid_tls_algorithms": [],
+            "pure_pqc_tls_algorithms": [],
+            "pqcscan": {
+              "performed": true,
+              "ok": true,
+              "scan_version": "0.8.0",
+              "pqc_supported": false,
+              "error": null,
+              "tls_error": "Timed out after 5s connecting to 49.50.69.49:443",
+              "subprocess_error": null
+            },
+            "hybrid_groups": [],
+            "is_hybrid": false
+          },
+          "quantum_summary": {
+            "lowest_nist_level": -1,
+            "has_vulnerable_crypto": false,
+            "has_pqc": false,
+            "vulnerable_algorithms": [],
+            "safe_algorithms": []
+          }
+        },
+        "error": null
+      }
     }
   ]
 }

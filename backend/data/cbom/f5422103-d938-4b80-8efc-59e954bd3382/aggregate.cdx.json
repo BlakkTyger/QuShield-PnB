@@ -1,0 +1,126 @@
+{
+  "scan_id": "f5422103-d938-4b80-8efc-59e954bd3382",
+  "total_assets": 10,
+  "total_components_raw": 20,
+  "total_components_deduplicated": 12,
+  "vulnerable_components": 9,
+  "safe_components": 3,
+  "quantum_ready_pct": 25.0,
+  "nist_level_distribution": {
+    "0": 7,
+    "-1": 2,
+    "5": 1,
+    "1": 1,
+    "3": 1
+  },
+  "components": [
+    {
+      "name": "ECDHE-RSA-AES256-GCM-SHA384",
+      "type": "algorithm",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "ECDHE",
+      "type": "key_exchange",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 2
+    },
+    {
+      "name": "TLS TLSv1.2",
+      "type": "protocol",
+      "nist_level": -1,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "TLS_AES_256_GCM_SHA384",
+      "type": "algorithm",
+      "nist_level": 5,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 1
+    },
+    {
+      "name": "X25519",
+      "type": "key_exchange",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "ns1.pnbindia.com",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "TLS TLSv1.3",
+      "type": "protocol",
+      "nist_level": -1,
+      "is_vulnerable": true,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 3
+    },
+    {
+      "name": "TLS_AES_128_GCM_SHA256",
+      "type": "algorithm",
+      "nist_level": 1,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 2
+    },
+    {
+      "name": "X25519MLKEM768",
+      "type": "key_exchange",
+      "nist_level": 3,
+      "is_vulnerable": false,
+      "key_type": null,
+      "key_length": null,
+      "asset_count": 1
+    },
+    {
+      "name": "digitallending.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    },
+    {
+      "name": "upi.pnb.bank.in",
+      "type": "certificate",
+      "nist_level": 0,
+      "is_vulnerable": true,
+      "key_type": "RSA",
+      "key_length": 2048,
+      "asset_count": 1
+    }
+  ]
+}

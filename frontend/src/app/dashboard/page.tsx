@@ -19,28 +19,14 @@ export default function DashboardPage() {
   const { data: scans, isLoading: scansLoading } = useScans();
 
   useEffect(() => {
-    if (scans?.length) {
-      // Prioritize the latest completed deep scan
-      const latestDeep = scans.find((s) => s.status === "completed" && s.scan_type === "deep");
-      if (latestDeep) {
-        setScanId(latestDeep.scan_id);
-        return;
-      }
-
-      // Try localStorage next
-      const stored = typeof window !== "undefined" ? localStorage.getItem("qushield_scan_id") : null;
-      if (stored) { 
-        setScanId(stored); 
-        return; 
-      }
-
-      // Fallback to any completed scan
-      const completed = scans.find((s) => s.status === "completed");
-      if (completed) {
-        setScanId(completed.scan_id);
+    if (scans?.length && !scanId) {
+      // Just grab the absolute most recent completed scan
+      const latest = scans.find((s) => s.status === "completed");
+      if (latest) {
+        setScanId(latest.scan_id);
       }
     }
-  }, [scans]);
+  }, [scans, scanId]);
 
   const { data: summary } = useScanSummary(scanId);
   const { data: rating } = useEnterpriseRating(scanId);
