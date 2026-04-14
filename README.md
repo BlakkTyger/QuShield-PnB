@@ -157,6 +157,23 @@ QuShield-PnB automates the discovery, assessment, and monitoring of cryptographi
 - **CRQC simulation embedded** in executive and full scan reports (P5/P50/P95 + cert race)
 - **Scheduled reports** — APScheduler-powered cron scheduling
 
+### TLS Deep Inspection (testssl.sh)
+- **Per-asset deep TLS scanning** — runs [testssl.sh](https://github.com/testssl/testssl.sh) against individual assets for comprehensive TLS/SSL analysis
+- **One-click launch** from asset detail panel — "Run TLS Deep Inspection" button with running/completed state detection
+- **Comprehensive dashboard** at `/assets/{id}/tls-inspection` (not a sidebar tab — accessed via asset detail):
+  - **Overall security grade** (A–F) computed from severity distribution
+  - **Severity donut chart** — CRITICAL/HIGH/MEDIUM/LOW/OK/INFO breakdown
+  - **Protocol support matrix** — SSL 2.0/3.0, TLS 1.0/1.1/1.2/1.3 with visual offered/deprecated indicators
+  - **Cipher strength bar** — strong/acceptable/weak/insecure cipher distribution
+  - **Vulnerability assessment grid** — Heartbleed, CCS, ROBOT, BEAST, POODLE, SWEET32, FREAK, DROWN, Logjam, BREACH, CRIME, Lucky13, Ticketbleed, Winshock status
+  - **Certificate chain details** — subject, issuer, key type/size, validity, trust chain, OCSP, CT logging
+  - **HTTP security headers checklist** — HSTS, HPKP, CSP, X-Frame-Options, X-Content-Type-Options
+  - **Forward secrecy analysis** — supported FS cipher suites and curves
+  - **Server preferences** — negotiated protocols, cipher order
+  - **Full findings table** — sortable, filterable, with CVE links to NVD
+- **Inspection history** — view past scans and compare grades over time
+- **Background execution** — scans run in a background thread, UI polls for completion
+
 ### Topology & Visualisation
 - **Network topology graph** — D3.js force-directed graph of asset relationships
 - **Node filtering** by risk level, asset type, HNDL status
@@ -204,6 +221,10 @@ graph TB
         TLS[TLS Inspector - sslyze]
     end
 
+    subgraph DeepScan["TLS Deep Inspection"]
+        TestSSL[testssl.sh]
+    end
+
     UI --> Hooks --> Proxy --> API
     API --> Services --> PG
     Services --> Chroma
@@ -213,6 +234,7 @@ graph TB
     Scanner --> Discovery
     Scanner --> PG
     Services --> GeoIP
+    Services --> TestSSL
     Agent --> DDG
     Chroma --> Jina
 ```
@@ -317,17 +339,17 @@ signature_alg      hndl_exposed        key_size
 is_quantum_vuln    mosca_x             is_quantum_vuln
 valid_from/to      mosca_y
 
-compliance_results
-──────────────────
-asset_id
-scan_id
-compliance_pct
-crypto_agility_score
-rbi_compliant
-sebi_compliant
-pci_compliant
-tls_13_enforced
-hybrid_mode_active
+compliance_results           tls_inspections
+──────────────────           ───────────────
+asset_id                     id (UUID)
+scan_id                      asset_id → assets
+compliance_pct               hostname
+crypto_agility_score         port
+rbi_compliant                status (pending/running/completed/failed)
+sebi_compliant               started_at / completed_at
+pci_compliant                raw_json (JSON)
+tls_13_enforced              summary (JSON — grade, severity counts, sections)
+hybrid_mode_active           error_message
 fips_203_deployed / 204 / 205
 ```
 
@@ -518,6 +540,16 @@ All endpoints (except `/auth/register` and `/auth/login`) require: `Authorizatio
 | GET | `/assets/shadow` | List shadow/unmanaged assets |
 | GET | `/assets/third-party` | List third-party hosted assets |
 
+### TLS Deep Inspection
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/testssl/{asset_id}/run` | Start testssl.sh deep inspection (background) |
+| GET | `/testssl/{asset_id}/status` | Get latest inspection status + grade |
+| GET | `/testssl/{asset_id}/results` | Full parsed results with summary |
+| GET | `/testssl/{asset_id}/results/raw` | Raw testssl.sh JSON findings |
+| GET | `/testssl/{asset_id}/history` | List past inspections for an asset |
+
 ### Risk
 
 | Method | Path | Description |
@@ -602,7 +634,8 @@ QuShield-PnB/
 │   │   │   ├── topology.py  # Network graph
 │   │   │   ├── geo.py       # GeoIP endpoints
 │   │   │   ├── ai.py        # AI chat + agent streaming
-│   │   │   └── reports.py   # Report generation + scheduling
+│   │   │   ├── reports.py   # Report generation + scheduling
+│   │   │   └── testssl.py   # TLS Deep Inspection endpoints
 │   │   ├── core/
 │   │   │   ├── database.py  # SQLAlchemy session management
 │   │   │   ├── logging.py   # Structured JSON logging
@@ -623,7 +656,8 @@ QuShield-PnB/
 │   │   │   ├── report_generator.py   # PDF/HTML report generation
 │   │   │   ├── roadmap_agent.py      # PQC migration roadmap AI
 │   │   │   ├── geo_service.py        # MaxMind GeoIP lookup
-│   │   │   └── ai_service.py         # LLM abstraction layer
+│   │   │   ├── ai_service.py         # LLM abstraction layer
+│   │   │   └── testssl_service.py    # testssl.sh runner + JSON parser
 │   │   ├── templates/       # Jinja2 HTML report templates
 │   │   │   ├── executive.html
 │   │   │   ├── full_scan.html
@@ -643,6 +677,7 @@ QuShield-PnB/
 │   │   │   ├── page.tsx     # Quick Scan (home)
 │   │   │   ├── dashboard/   # PQC Dashboard
 │   │   │   ├── assets/      # Asset Inventory
+│   │   │   │   └── [id]/tls-inspection/  # TLS Deep Inspection dashboard
 │   │   │   ├── cbom/        # CBOM Explorer
 │   │   │   ├── risk/        # Risk Intelligence
 │   │   │   │   └── monte-carlo/  # Monte Carlo simulation page
@@ -661,6 +696,8 @@ QuShield-PnB/
 │   │       └── types.ts     # TypeScript interfaces
 │   ├── next.config.ts       # Next.js config with /api/v1 proxy
 │   └── Dockerfile
+│
+├── backend/testssl.sh/      # testssl.sh (cloned from github.com/testssl/testssl.sh)
 │
 ├── discovery/               # Go 1.22 Discovery Engine
 │   ├── main.go
@@ -797,6 +834,8 @@ Score > 750: Ready — on track for PQC transition
 | `PYTHONPATH` | No | Set to `/app` inside Docker for clean imports |
 | `LOG_LEVEL` | No | Logging level: `DEBUG`, `INFO`, `WARNING` (default: `INFO`) |
 | `APP_ENV` | No | `development` or `production` |
+| `TESTSSL_TIMEOUT` | No | Max seconds for a single testssl.sh run (default: `300`) |
+| `TESTSSL_BIN` | No | Path to testssl.sh binary (default: `/app/testssl.sh/testssl.sh`) |
 | `BACKEND_URL` | No (frontend) | Backend URL for Next.js proxy (default: `http://localhost:8000`) |
 
 **`.env.example`:**

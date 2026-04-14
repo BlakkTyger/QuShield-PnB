@@ -43,6 +43,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6 \
     libpng16-16 \
     libgomp1 \
+    dnsutils \
+    bsdmainutils \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=/app
@@ -70,6 +73,12 @@ RUN mkdir -p /app/data/chroma /app/data/reports /app/data/graphs \
 
 # Ensure scripts and binary are executable
 RUN chmod +x scripts/*.py scripts/*.sh discovery/bin/discovery-engine 2>/dev/null || true
+
+# Make testssl.sh executable
+RUN chmod +x /app/testssl.sh/testssl.sh 2>/dev/null || true
+
+# Pre-create testssl results directory
+RUN mkdir -p /app/data/testssl
 
 # Expose port
 EXPOSE 8000

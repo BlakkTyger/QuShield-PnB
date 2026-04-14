@@ -15,6 +15,7 @@ from app.models.auth import User, EmailVerification, ScanCache
 from app.models.report import ReportSchedule
 from app.models.generated_report import GeneratedReport
 from app.models.geo import GeoLocation
+from app.models.tls_inspection import TLSInspection, TLSInspectionStatus
 
 __all__ = [
     "Base",
@@ -28,4 +29,5 @@ __all__ = [
     "ReportSchedule",
     "GeneratedReport",
     "GeoLocation",
+    "TLSInspection", "TLSInspectionStatus",
 ]

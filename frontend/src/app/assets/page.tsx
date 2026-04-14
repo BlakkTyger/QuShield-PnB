@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Search, Download, X, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
-import { useScans, useAssets, useAssetDetail } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
+import { Search, Download, X, ExternalLink, ChevronUp, ChevronDown, Shield, Loader2, FileSearch } from "lucide-react";
+import { useScans, useAssets, useAssetDetail, useTestSSLStatus, useTestSSLRun } from "@/lib/hooks";
 import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import type { Asset } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RISK_FILTERS = [
   { value: "", label: "All Risk Levels" },
@@ -43,6 +45,10 @@ export default function AssetsPage() {
   });
 
   const { data: assetDetail } = useAssetDetail(selectedAsset);
+  const { data: tlsStatus } = useTestSSLStatus(selectedAsset);
+  const runTLS = useTestSSLRun(selectedAsset);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Client-side sort
   const sortedAssets = useMemo(() => {
@@ -410,6 +416,67 @@ export default function AssetsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* TLS Deep Inspection */}
+                <div className="pt-2 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+                  {tlsStatus?.status === "completed" ? (
+                    <button
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all"
+                      style={{
+                        background: "var(--accent)",
+                        color: "#fff",
+                      }}
+                      onClick={() => router.push(`/assets/${selectedAsset}/tls-inspection`)}
+                    >
+                      <FileSearch size={16} />
+                      View TLS Inspection Report
+                    </button>
+                  ) : tlsStatus?.status === "running" || tlsStatus?.status === "pending" ? (
+                    <button
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold opacity-70 cursor-wait"
+                      style={{
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border-subtle)",
+                        color: "var(--text-secondary)",
+                      }}
+                      disabled
+                    >
+                      <Loader2 size={16} className="animate-spin" />
+                      TLS Inspection Running…
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                      style={{
+                        background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                        color: "#fff",
+                      }}
+                      onClick={() => {
+                        runTLS.mutate(undefined, {
+                          onSuccess: () => {
+                            queryClient.invalidateQueries({ queryKey: ["testssl-status", selectedAsset] });
+                          },
+                        });
+                      }}
+                      disabled={runTLS.isPending}
+                    >
+                      <Shield size={16} />
+                      {runTLS.isPending ? "Starting…" : "Run TLS Deep Inspection"}
+                    </button>
+                  )}
+                  {tlsStatus?.status === "completed" && tlsStatus?.grade && (
+                    <div className="flex items-center gap-2 mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                      <span>Last grade:</span>
+                      <span className="font-bold text-sm" style={{
+                        color: tlsStatus.grade === "A" ? "#22c55e" :
+                               tlsStatus.grade === "B" ? "#3b82f6" :
+                               tlsStatus.grade === "C" ? "#eab308" :
+                               tlsStatus.grade === "D" ? "#f97316" : "#ef4444"
+                      }}>{tlsStatus.grade}</span>
+                      <span>• {tlsStatus.total_findings} findings</span>
+                    </div>
+                  )}
+                </div>
 
                 {/* Certificates */}
                 {assetDetail.certificates?.length > 0 && (
