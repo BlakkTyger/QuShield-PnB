@@ -405,17 +405,8 @@ class ReportGenerator:
         return '\n'.join(result)
 
     def _ai_generate(self, prompt: str, system: str, fallback: str = "") -> str:
-        import time
-        if not self.ai:
-            return fallback or "<p>AI generation unavailable — configure GROQ_API_KEY.</p>"
-        try:
-            raw = self.ai.generate(prompt=prompt, system=system, temperature=0.2)
-            return self._md_to_html(raw)
-        except Exception as e:
-            logger.warning(f"AI section generation failed: {e}")
-            if fallback:
-                return fallback
-            return f"<p><em>AI analysis unavailable: {str(e)[:120]}</em></p>"
+        """Disabled AI calls per user request; entirely uses static fallback content."""
+        return fallback or "<p>AI generation is disabled.</p>"
 
     def _ai_generate_with_delay(self, prompt: str, system: str, fallback: str = "") -> str:
         """Same as _ai_generate but adds a small delay after to avoid burst rate limiting."""
