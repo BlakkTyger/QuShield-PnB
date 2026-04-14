@@ -157,6 +157,7 @@ from app.api.v1.geo import router as geo_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.ai import router as ai_router
 from app.api.v1.reports import router as reports_router
+from app.api.v1.testssl import router as testssl_router
 
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(scans_router, prefix="/api/v1/scans", tags=["Scans"])
@@ -168,3 +169,4 @@ app.include_router(topology_router, prefix="/api/v1/topology", tags=["Topology"]
 app.include_router(geo_router, prefix="/api/v1/geo", tags=["GeoIP"])
 app.include_router(ai_router, prefix="/api/v1/ai", tags=["AI"])
 app.include_router(reports_router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(testssl_router, prefix="/api/v1/testssl", tags=["TLS Inspection"])

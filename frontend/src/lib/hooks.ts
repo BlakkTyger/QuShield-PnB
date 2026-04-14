@@ -19,6 +19,9 @@ import type {
   ChatResponse,
   AIStatus,
   AIModelsResponse,
+  TLSInspectionStatus as TLSInspectionStatusType,
+  TLSInspectionResults,
+  TLSInspectionHistoryItem,
 } from "@/lib/types";
 
 /* ─── Scans ──────────────────────────────────────────── */
@@ -593,5 +596,53 @@ export function useAgentStream() {
         }
       }
     },
+  });
+}
+
+/* ─── TLS Deep Inspection (testssl.sh) ─────────────── */
+export function useTestSSLRun(assetId: string | null) {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post(`/testssl/${assetId}/run`);
+      return data;
+    },
+  });
+}
+
+export function useTestSSLStatus(assetId: string | null) {
+  return useQuery({
+    queryKey: ["testssl-status", assetId],
+    queryFn: async () => {
+      const { data } = await api.get<TLSInspectionStatusType>(`/testssl/${assetId}/status`);
+      return data;
+    },
+    enabled: !!assetId,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (status === "pending" || status === "running") return 3000;
+      return false;
+    },
+  });
+}
+
+export function useTestSSLResults(assetId: string | null) {
+  return useQuery({
+    queryKey: ["testssl-results", assetId],
+    queryFn: async () => {
+      const { data } = await api.get<TLSInspectionResults>(`/testssl/${assetId}/results`);
+      return data;
+    },
+    enabled: !!assetId,
+  });
+}
+
+export function useTestSSLHistory(assetId: string | null) {
+  return useQuery({
+    queryKey: ["testssl-history", assetId],
+    queryFn: async () => {
+      const { data } = await api.get<TLSInspectionHistoryItem[]>(`/testssl/${assetId}/history`);
+      return data;
+    },
+    enabled: !!assetId,
   });
 }

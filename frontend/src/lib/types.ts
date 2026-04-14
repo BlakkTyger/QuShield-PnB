@@ -351,3 +351,79 @@ export const RISK_LABELS: Record<string, string> = {
   quantum_aware: "Quantum Aware",
   quantum_ready: "Quantum Ready",
 };
+
+// ─── TLS Deep Inspection (testssl.sh) ────────────────────────
+export interface TLSFinding {
+  id: string;
+  severity: string;
+  finding: string;
+  cve: string;
+  cwe: string;
+  hint: string;
+}
+
+export interface TLSProtocolSupport {
+  offered: boolean;
+  severity: string;
+  detail: string;
+}
+
+export interface TLSVulnStatus {
+  vulnerable: boolean;
+  severity: string;
+  detail: string;
+  cve: string;
+}
+
+export interface TLSCipherStrength {
+  strong: number;
+  acceptable: number;
+  weak: number;
+  insecure: number;
+}
+
+export interface TLSInspectionSummary {
+  grade: string;
+  severity_counts: Record<string, number>;
+  total_findings: number;
+  protocol_support: Record<string, TLSProtocolSupport>;
+  vuln_status: Record<string, TLSVulnStatus>;
+  cipher_strength: TLSCipherStrength;
+  sections: Record<string, TLSFinding[]>;
+  all_findings: TLSFinding[];
+}
+
+export interface TLSInspectionStatus {
+  inspection_id?: string;
+  status: "none" | "pending" | "running" | "completed" | "failed";
+  hostname?: string;
+  started_at?: string;
+  completed_at?: string;
+  error_message?: string;
+  grade?: string;
+  total_findings?: number;
+  severity_counts?: Record<string, number>;
+  message?: string;
+}
+
+export interface TLSInspectionResults {
+  inspection_id: string;
+  hostname: string;
+  port: string;
+  status: string;
+  started_at: string;
+  completed_at: string;
+  summary: TLSInspectionSummary;
+  raw_findings_count: number;
+}
+
+export interface TLSInspectionHistoryItem {
+  inspection_id: string;
+  hostname: string;
+  status: string;
+  grade?: string;
+  total_findings?: number;
+  started_at?: string;
+  completed_at?: string;
+  error_message?: string;
+}

@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Sun, Moon, LogOut, User as UserIcon } from "lucide-react";
+import { Bell, Sun, Moon, LogOut, User as UserIcon, Menu, Search } from "lucide-react";
 import { fetchCurrentUser, clearTokens, UserResponse } from "@/lib/auth";
 import { useNotifications } from "@/lib/notifications";
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}
+
+export default function Header({ onToggleSidebar, searchQuery, setSearchQuery }: HeaderProps) {
   const router = useRouter();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [user, setUser] = useState<UserResponse | null>(null);
@@ -47,24 +53,56 @@ export default function Header() {
 
   return (
     <header
-      className="fixed top-0 right-0 flex items-center justify-between px-8 z-30 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 flex items-center justify-between px-4 z-40 transition-all duration-300"
       style={{
-        left: "var(--sidebar-width)",
         height: "var(--header-height)",
         background: "var(--header-bg)",
         borderBottom: "1px solid var(--border-subtle)",
       }}
     >
-      <div>
-        <h2
-          className="text-sm font-semibold"
-          style={{ color: "var(--text-primary)" }}
+      <div className="flex items-center gap-4 flex-1">
+        {/* Hamburger Menu */}
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 rounded-lg transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+          style={{ color: "var(--text-secondary)" }}
+          title="Toggle Sidebar"
         >
-          Punjab National Bank
-        </h2>
-        <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-          Quantum-Safe Crypto Posture Dashboard
-        </p>
+          <Menu size={20} />
+        </button>
+        <div>
+          <h2
+            className="text-sm font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Punjab National Bank
+          </h2>
+          <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+            Quantum-Safe Crypto Posture Dashboard
+          </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mx-8 max-w-md flex-1">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{ color: "var(--text-muted)" }}
+          />
+          <input
+            type="text"
+            placeholder="Search navigation..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full py-2 pl-10 pr-3 text-sm rounded-lg transition-colors"
+            style={{
+              background: "var(--bg-card)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--text-primary)",
+              outline: "none",
+            }}
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
