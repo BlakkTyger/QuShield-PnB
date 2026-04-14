@@ -63,6 +63,12 @@ def modify_db():
             print("AI tier columns added successfully.")
     except Exception as e:
         print("AI tier columns errored or existed:", e)
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE scan_jobs ADD COLUMN result_data JSON;"))
+            print("result_data column added successfully.")
+    except Exception as e:
+        print("result_data errored or existed:", e)
 
 if __name__ == "__main__":
     modify_db()
