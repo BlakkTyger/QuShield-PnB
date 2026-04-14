@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend, LineChart, Line,
 } from "recharts";
 import { ShieldAlert, Clock, Target, TrendingUp } from "lucide-react";
 import {
   useScans, useScanSummary, useEnterpriseRating,
   useRiskHeatmap, useRegulatoryDeadlines, useCBOMAlgorithms,
+  useAssetTypeDistribution, useCertificateExpiryTimeline, useIPVersionDistribution, useNameserverRecords,
 } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge, ProgressBar, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
@@ -33,6 +34,10 @@ export default function DashboardPage() {
   const { data: heatmap } = useRiskHeatmap(scanId);
   const { data: deadlines } = useRegulatoryDeadlines();
   const { data: algorithms } = useCBOMAlgorithms(scanId);
+  const { data: assetTypeDist } = useAssetTypeDistribution(scanId);
+  const { data: certExpiryTimeline } = useCertificateExpiryTimeline(scanId);
+  const { data: ipVersionDist } = useIPVersionDistribution(scanId);
+  const { data: nameserverRecords } = useNameserverRecords(scanId);
 
   if (scansLoading) {
     return (
@@ -63,6 +68,25 @@ export default function DashboardPage() {
   }));
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
+
+  // Asset type distribution data
+  const assetTypeData = assetTypeDist?.distribution
+    ? Object.entries(assetTypeDist.distribution)
+      .map(([type, count]) => ({ name: type, value: count }))
+      .sort((a, b) => (b.value as number) - (a.value as number))
+    : [];
+
+  // Certificate expiry timeline data
+  const expiryData = certExpiryTimeline?.timeline || [];
+
+  // IP version distribution data
+  const ipVersionData = ipVersionDist
+    ? [
+        { name: "IPv4 Only", value: ipVersionDist.ipv4_only, color: "#3b82f6" },
+        { name: "IPv6 Only", value: ipVersionDist.ipv6_only, color: "#8b5cf6" },
+        { name: "Dual Stack", value: ipVersionDist.dual_stack, color: "#22c55e" },
+      ]
+    : [];
 
   const hndlCount = typeof summary?.total_assets === "number"
     ? Math.min(heatmap?.assets.filter((a) => a.hndl_exposed).length || 0, summary.total_assets)
@@ -161,7 +185,13 @@ export default function DashboardPage() {
           {algoData.length > 0 ? (
             <div className="flex flex-col gap-3 max-h-[260px] overflow-y-auto pr-1">
               {algoData
-                .sort((a, b) => (b.value as number) - (a.value as number))
+                .sort((a, b) => {
+                  // Put UNKNOWN entries last, then sort by count descending
+                  const aIsUnknown = a.name === "UNKNOWN" ? 1 : 0;
+                  const bIsUnknown = b.name === "UNKNOWN" ? 1 : 0;
+                  if (aIsUnknown !== bIsUnknown) return aIsUnknown - bIsUnknown;
+                  return (b.value as number) - (a.value as number);
+                })
                 .slice(0, 20)
                 .map((algo, i) => {
                   const pct = Math.round(((algo.value as number) / algoData.reduce((s, x) => s + (x.value as number), 0)) * 100);
@@ -193,6 +223,195 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Second Row: Asset Type Distribution & IP Version Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Asset Type Distribution */}
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            Asset Type Distribution
+          </h3>
+          {assetTypeData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={assetTypeData.slice(0, 8)} margin={{ left: 10, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "var(--chart-tick)", fontSize: 10 }}
+                  angle={-30}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--tooltip-bg)",
+                    border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "var(--tooltip-text)",
+                  }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton height={220} />
+          )}
+        </div>
+
+        {/* IP Version Distribution */}
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            IP Version Breakdown
+          </h3>
+          {ipVersionData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={ipVersionData}
+                  innerRadius={40}
+                  outerRadius={70}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {ipVersionData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--tooltip-bg)",
+                    border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "var(--tooltip-text)",
+                  }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
+                />
+                <Legend
+                  formatter={(value) => <span style={{ color: "var(--chart-tick)", fontSize: 10 }}>{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton height={220} />
+          )}
+        </div>
+
+        {/* Certificate Expiry Timeline */}
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            Certificate Expiry Timeline
+          </h3>
+          {expiryData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={expiryData} margin={{ left: 0, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fill: "var(--chart-tick)", fontSize: 9 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={50}
+                />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--tooltip-bg)",
+                    border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "var(--tooltip-text)",
+                  }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
+                />
+                <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="critical" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton height={220} />
+          )}
+          {certExpiryTimeline && (
+            <div className="flex items-center justify-center gap-4 mt-2 text-xs">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                Total
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                Critical (&lt;30d)
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Third Row: Nameserver Records */}
+      {nameserverRecords && nameserverRecords.nameservers.length > 0 && (
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            Nameserver Records
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Hostname</th>
+                  <th>NS Records</th>
+                  <th>IP Addresses</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nameserverRecords.nameservers.slice(0, 10).map((ns, i) => (
+                  <tr key={i}>
+                    <td className="font-medium" style={{ color: "var(--text-primary)" }}>
+                      {ns.hostname}
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-1">
+                        {ns.ns_records.map((record, j) => (
+                          <span
+                            key={j}
+                            className="px-2 py-0.5 rounded text-[10px]"
+                            style={{
+                              background: "var(--bg-card)",
+                              border: "1px solid var(--border-subtle)",
+                            }}
+                          >
+                            {record}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-1">
+                        {ns.ip_addresses.map((ip, j) => (
+                          <span
+                            key={j}
+                            className="px-2 py-0.5 rounded text-[10px]"
+                            style={{
+                              background: "var(--accent-gold-dim)",
+                              color: "var(--accent-gold)",
+                            }}
+                          >
+                            {ip}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Bottom: Regulatory Deadlines & PQC Adoption */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

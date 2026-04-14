@@ -3,7 +3,7 @@ GeoIP API Router — IP geolocation endpoints for scan assets.
 """
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -18,15 +18,26 @@ router = APIRouter()
 
 
 @router.get("/scan/{scan_id}")
-def get_geo_locations(scan_id: UUID, db: Session = Depends(get_db)):
+def get_geo_locations(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+    refresh: bool = Query(False, description="Clear cached geo data and re-resolve"),
+):
     """
     Get all IP geolocations for a scan.
 
     If geo data doesn't exist yet, resolves and geolocates all assets on-the-fly.
     Returns GeoJSON-compatible FeatureCollection.
+    Pass ?refresh=true to re-resolve all locations (clears stale data).
     """
     # Check for existing geo data
     existing = db.query(GeoLocation).filter(GeoLocation.scan_id == scan_id).all()
+
+    if refresh and existing:
+        db.query(GeoLocation).filter(GeoLocation.scan_id == scan_id).delete()
+        db.commit()
+        existing = []
+        logger.info(f"Cleared geo cache for scan {scan_id}, re-resolving")
 
     if not existing:
         # Resolve on-the-fly from assets
@@ -79,7 +90,7 @@ def get_geo_locations(scan_id: UUID, db: Session = Depends(get_db)):
                     "state": loc.state,
                     "country": loc.country,
                     "country_code": loc.country_code,
-                    "org": loc.org,
+                    "org": loc.org or loc.isp,
                     "isp": loc.isp,
                     "as_number": loc.as_number,
                     "asset_id": str(loc.asset_id) if loc.asset_id else None,
@@ -125,7 +136,7 @@ def get_map_data(scan_id: UUID, db: Session = Depends(get_db)):
             "city": loc.city,
             "country": loc.country,
             "country_code": loc.country_code,
-            "org": loc.org,
+            "org": loc.org or loc.isp,
             "asset_type": asset.asset_type if asset else "unknown",
             "risk_score": risk.quantum_risk_score if risk else None,
             "risk_classification": risk.risk_classification if risk else None,

@@ -6,7 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from "recharts";
 import { Download, Search, ChevronRight, Shield } from "lucide-react";
-import { useScans, useAssets, useCBOMForAsset, useCBOMAggregate, useCBOMAlgorithms } from "@/lib/hooks";
+import { useScans, useAssets, useCBOMForAsset, useCBOMAggregate, useCBOMAlgorithms, useCBOMKeyLengths, useCertificateAuthorities } from "@/lib/hooks";
 import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 
 const NIST_COLORS: Record<number, string> = {
@@ -48,6 +48,8 @@ export default function CBOMPage() {
   const { data: cbom } = useCBOMForAsset(selectedAssetId);
   const { data: aggregate } = useCBOMAggregate(scanId);
   const { data: algorithms } = useCBOMAlgorithms(scanId);
+  const { data: keyLengths } = useCBOMKeyLengths(scanId);
+  const { data: certAuthorities } = useCertificateAuthorities(scanId);
 
   // Filter assets by search
   const filteredAssets = assetsData?.items.filter(
@@ -58,6 +60,22 @@ export default function CBOMPage() {
     ? algorithms.algorithms
       .map((algo: any) => ({ name: algo.name, value: algo.count }))
       .sort((a: { value: number }, b: { value: number }) => b.value - a.value)
+    : [];
+
+  // Key length distribution data
+  const keyLengthData = keyLengths?.key_length_distribution
+    ? Object.entries(keyLengths.key_length_distribution)
+      .map(([length, count]) => ({ name: `${length} bit`, value: count, length: parseInt(length) }))
+      .sort((a, b) => a.length - b.length)
+    : [];
+
+  // Certificate authorities data
+  const caData = certAuthorities?.top_cas
+    ? certAuthorities.top_cas.map((ca: any) => ({ 
+        name: ca.name || "Unknown", 
+        value: Number(ca.count) || 0, 
+        pqcReady: ca.pqc_ready ?? false 
+      }))
     : [];
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
@@ -185,6 +203,86 @@ export default function CBOMPage() {
               </span>
               <span className="text-xs ml-1" style={{ color: "var(--text-muted)" }}>
                 quantum-ready
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Key Length Distribution */}
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            Key Length Distribution
+          </h3>
+          {keyLengthData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={keyLengthData} margin={{ left: 10, right: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "var(--chart-tick)", fontSize: 11 }}
+                />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--tooltip-bg)", border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8, fontSize: 12, color: "var(--tooltip-text)",
+                  }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]} fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton height={250} />
+          )}
+        </div>
+
+        {/* Top Certificate Authorities */}
+        <div className="glass-card-static p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-muted)" }}>
+            Top Certificate Authorities
+          </h3>
+          {caData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={caData.slice(0, 8)} layout="vertical" margin={{ left: 100, right: 30, top: 5, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" horizontal={true} vertical={false} />
+                <XAxis type="number" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} domain={[0, 'auto']} />
+                <YAxis 
+                  dataKey="name" 
+                  type="category" 
+                  tick={{ fill: "var(--chart-tick)", fontSize: 10 }} 
+                  width={95}
+                  interval={0}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--tooltip-bg)", border: "1px solid var(--tooltip-border)",
+                    borderRadius: 8, fontSize: 12, color: "var(--tooltip-text)",
+                  }}
+                  itemStyle={{ color: "var(--tooltip-text)" }}
+                  labelStyle={{ color: "var(--tooltip-text)" }}
+                  formatter={(value: number) => [value, "Certificates"]}
+                />
+                <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]}>
+                  {caData.slice(0, 8).map((ca, i) => (
+                    <Cell key={i} fill={ca.pqcReady ? "#22c55e" : "#f97316"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <Skeleton height={250} />
+          )}
+          {certAuthorities && (
+            <div className="flex items-center justify-center gap-4 mt-2 text-xs">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-green-500" />
+                PQC Ready
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-orange-500" />
+                Not Ready
               </span>
             </div>
           )}

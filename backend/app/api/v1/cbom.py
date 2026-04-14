@@ -2,6 +2,7 @@
 CBOM API Router — per-asset CBOM, aggregate, export CycloneDX JSON, algorithm distributions.
 """
 import json
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import UUID
 
@@ -13,6 +14,7 @@ from sqlalchemy import func
 from app.core.database import get_db
 from app.models.cbom import CBOMRecord, CBOMComponent
 from app.models.asset import Asset
+from app.models.certificate import Certificate
 
 router = APIRouter()
 
@@ -177,5 +179,115 @@ def get_algorithm_distribution(
             }
         algo_map[name]["count"] += 1
 
-    algos = sorted(algo_map.values(), key=lambda x: x["count"], reverse=True)
+    # Sort by count descending, but put UNKNOWN entries last
+    algos = sorted(
+        algo_map.values(),
+        key=lambda x: (x["name"] == "UNKNOWN", -x["count"])
+    )
     return {"algorithms": algos, "total_unique": len(algos)}
+
+
+@router.get("/scan/{scan_id}/key-lengths")
+def get_key_length_distribution(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Key length distribution for cryptographic components."""
+    components = db.query(CBOMComponent).filter(
+        CBOMComponent.scan_id == scan_id,
+        CBOMComponent.key_length.isnot(None)
+    ).all()
+    
+    length_dist = {}
+    for c in components:
+        length = c.key_length
+        if length:
+            length_dist[length] = length_dist.get(length, 0) + 1
+    
+    return {
+        "scan_id": str(scan_id),
+        "key_length_distribution": length_dist,
+        "total_components": len(components),
+    }
+
+
+@router.get("/certificates/scan/{scan_id}/authorities")
+def get_certificate_authorities(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Top certificate authorities by usage count with PQC readiness status."""
+    certs = db.query(Certificate).filter(
+        Certificate.scan_id == scan_id,
+        Certificate.ca_name.isnot(None)
+    ).all()
+    
+    ca_map = {}
+    for c in certs:
+        ca_name = c.ca_name or "Unknown"
+        if ca_name not in ca_map:
+            ca_map[ca_name] = {
+                "name": ca_name,
+                "count": 0,
+                "pqc_ready": c.ca_pqc_ready or False,
+            }
+        ca_map[ca_name]["count"] += 1
+    
+    top_cas = sorted(ca_map.values(), key=lambda x: x["count"], reverse=True)
+    
+    return {
+        "scan_id": str(scan_id),
+        "top_cas": top_cas[:20],
+        "total_certificates": len(certs),
+    }
+
+
+@router.get("/certificates/scan/{scan_id}/expiry-timeline")
+def get_certificate_expiry_timeline(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Certificate expiry timeline for dashboard charts — next 12 months."""
+    certs = db.query(Certificate).filter(
+        Certificate.scan_id == scan_id,
+        Certificate.valid_to.isnot(None)
+    ).all()
+    
+    now = datetime.now(timezone.utc)
+    
+    # Build 12-month timeline
+    timeline = []
+    expiring_30_days = 0
+    expiring_90_days = 0
+    
+    for i in range(12):
+        month_start = now + timedelta(days=30*i)
+        month_end = now + timedelta(days=30*(i+1))
+        
+        month_certs = [c for c in certs if c.valid_to and month_start <= c.valid_to < month_end]
+        critical = [c for c in month_certs if c.valid_to and (c.valid_to - now).days < 30]
+        warning = [c for c in month_certs if c.valid_to and 30 <= (c.valid_to - now).days < 90]
+        
+        timeline.append({
+            "month": month_start.strftime("%b %Y"),
+            "count": len(month_certs),
+            "critical": len(critical),
+            "warning": len(warning),
+        })
+    
+    # Count critical and warning certs
+    for c in certs:
+        if c.valid_to:
+            days = (c.valid_to - now).days
+            if 0 <= days < 30:
+                expiring_30_days += 1
+            if 0 <= days < 90:
+                expiring_90_days += 1
+    
+    return {
+        "scan_id": str(scan_id),
+        "timeline": timeline,
+        "total_certificates": len(certs),
+        "expiring_30_days": expiring_30_days,
+        "expiring_90_days": expiring_90_days,
+    }

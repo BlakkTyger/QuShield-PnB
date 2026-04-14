@@ -475,3 +475,88 @@ def get_asset_detail(asset_id: UUID, db: Session = Depends(get_db)):
             "checks": compliance.checks_json,
         } if compliance else None,
     }
+
+
+@router.get("/scan/{scan_id}/type-distribution")
+def get_asset_type_distribution(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Distribution of assets by type for dashboard charts."""
+    assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
+    
+    type_dist = {}
+    for a in assets:
+        asset_type = a.asset_type or "unknown"
+        type_dist[asset_type] = type_dist.get(asset_type, 0) + 1
+    
+    return {
+        "scan_id": str(scan_id),
+        "distribution": type_dist,
+        "total_assets": len(assets),
+    }
+
+
+@router.get("/scan/{scan_id}/ip-distribution")
+def get_ip_version_distribution(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """IP version distribution (IPv4, IPv6, dual-stack) for dashboard charts."""
+    assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
+    
+    ipv4_only = 0
+    ipv6_only = 0
+    dual_stack = 0
+    
+    for a in assets:
+        has_v4 = bool(a.ip_v4)
+        has_v6 = bool(a.ip_v6)
+        
+        if has_v4 and has_v6:
+            dual_stack += 1
+        elif has_v4:
+            ipv4_only += 1
+        elif has_v6:
+            ipv6_only += 1
+    
+    return {
+        "scan_id": str(scan_id),
+        "ipv4_only": ipv4_only,
+        "ipv6_only": ipv6_only,
+        "dual_stack": dual_stack,
+        "total_assets": len(assets),
+    }
+
+
+@router.get("/dns/scan/{scan_id}/nameservers")
+def get_nameserver_records(
+    scan_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Nameserver records for DNS-type assets in the scan."""
+    assets = db.query(Asset).filter(
+        Asset.scan_id == scan_id,
+        Asset.asset_type.in_(["dns_server", "dns", "nameserver"])
+    ).all()
+    
+    nameservers = []
+    for a in assets:
+        ports = db.query(AssetPort).filter(AssetPort.asset_id == a.id).all()
+        ip_addresses = []
+        if a.ip_v4:
+            ip_addresses.append(a.ip_v4)
+        if a.ip_v6:
+            ip_addresses.append(a.ip_v6)
+        
+        nameservers.append({
+            "hostname": a.hostname,
+            "ns_records": [a.hostname],  # The asset itself is a nameserver
+            "ip_addresses": ip_addresses,
+        })
+    
+    return {
+        "scan_id": str(scan_id),
+        "nameservers": nameservers,
+        "total_zones": len(nameservers),
+    }
