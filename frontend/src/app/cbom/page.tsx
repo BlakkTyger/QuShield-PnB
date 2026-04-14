@@ -262,7 +262,7 @@ export default function CBOMPage() {
                   }}
                   itemStyle={{ color: "var(--tooltip-text)" }}
                   labelStyle={{ color: "var(--tooltip-text)" }}
-                  formatter={(value: number) => [value, "Certificates"]}
+                  formatter={(value) => [value as number, "Certificates"]}
                 />
                 <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]}>
                   {caData.slice(0, 8).map((ca, i) => (
