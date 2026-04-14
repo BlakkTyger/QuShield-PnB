@@ -26,6 +26,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
@@ -41,6 +45,9 @@ services:
       - REPORTS_DIR=/app/data/reports
       - MPLBACKEND=Agg
       - PYTHONPATH=/app
+      - SECURITYTRAILS_API_KEY=${SECURITYTRAILS_API_KEY:-}
+      - SHODAN_API_KEY=${SHODAN_API_KEY:-}
+      - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY:-}
     logging:
       driver: "json-file"
       options:

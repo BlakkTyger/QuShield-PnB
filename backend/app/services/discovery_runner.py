@@ -89,6 +89,9 @@ def run_discovery(
     # Run subprocess
     env = os.environ.copy()
     env["LOG_DIR"] = str(settings.log_dir_abs)
+    env["SECURITYTRAILS_API_KEY"] = os.environ.get("SECURITYTRAILS_API_KEY", "")
+    env["SHODAN_API_KEY"] = os.environ.get("SHODAN_API_KEY", "")
+    env["VIRUSTOTAL_API_KEY"] = os.environ.get("VIRUSTOTAL_API_KEY", "")
 
     try:
         result = subprocess.run(

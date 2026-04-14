@@ -1,7 +1,7 @@
 # Stage 1: Build Go Discovery Engine
 FROM golang:1.22-alpine AS go-builder
 WORKDIR /app
-COPY discovery/ ./discovery/
+COPY backend/discovery/ ./discovery/
 WORKDIR /app/discovery
 RUN go build -o bin/discovery-engine .
 
