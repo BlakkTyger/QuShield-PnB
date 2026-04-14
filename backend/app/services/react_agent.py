@@ -29,16 +29,62 @@ logger = logging.getLogger(__name__)
 
 # ─── Lazy imports so server still starts if llama-index not installed ─────────
 
+# Ordered fallback model list — first available model that doesn't rate-limit wins
+_GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "gemma2-9b-it",
+]
+
+
 def _get_llm():
-    try:
-        from llama_index.llms.groq import Groq
-        key = settings.GROQ_API_KEY
-        if not key:
-            raise RuntimeError("GROQ_API_KEY not configured.")
-        return Groq(model="llama-3.3-70b-versatile", api_key=key,
-                    temperature=0.1, max_tokens=4096)
-    except ImportError:
-        raise RuntimeError("llama-index-llms-groq not installed. Run: pip install llama-index-llms-groq")
+    key = settings.GROQ_API_KEY
+    if not key:
+        raise RuntimeError(
+            "GROQ_API_KEY is not configured. Set it in your .env file. "
+            "Get a free key at https://console.groq.com"
+        )
+
+    # Try native LlamaIndex Groq integration first
+    for model in _GROQ_MODELS:
+        try:
+            from llama_index.llms.groq import Groq
+            llm = Groq(
+                model=model,
+                api_key=key,
+                temperature=0.1,
+                max_tokens=4096,
+                context_window=32768,
+            )
+            logger.info(f"ReAct agent LLM: Groq/{model} (native)")
+            return llm
+        except ImportError:
+            break  # llama-index-llms-groq not installed, try OpenAI-compat
+        except Exception as e:
+            logger.warning(f"Groq/{model} init failed: {e} — trying next model")
+            continue
+
+    # Fallback: use llama-index OpenAI provider pointing at Groq's OpenAI-compatible endpoint
+    for model in _GROQ_MODELS:
+        try:
+            from llama_index.llms.openai import OpenAI
+            llm = OpenAI(
+                model=model,
+                api_key=key,
+                api_base="https://api.groq.com/openai/v1",
+                temperature=0.1,
+                max_tokens=4096,
+                context_window=32768,
+            )
+            logger.info(f"ReAct agent LLM: Groq/{model} (OpenAI-compat fallback)")
+            return llm
+        except Exception as e:
+            logger.warning(f"Groq OpenAI-compat/{model} init failed: {e}")
+            continue
+
+    raise RuntimeError(
+        "Could not initialise any Groq model. Check GROQ_API_KEY and network connectivity."
+    )
 
 
 def _get_embed_model():
@@ -266,7 +312,10 @@ def build_react_agent(user: User, db: Session, scan_id: Optional[str] = None):
     scan_scope_note = (
         f" This conversation is scoped to scan ID {scan_id[:8].upper()} — "
         "filter all database queries and vector searches to data from this specific scan."
-    ) if scan_id else ""
+    ) if scan_id else (
+        " You have access to ALL scans for this user. "
+        "Use your tools to find, compare, and aggregate data across all scans when answering."
+    )
 
     system_prompt = (
         "You are QuShield AI, an expert Post-Quantum Cryptography security advisor for Indian banking infrastructure. "
@@ -310,6 +359,8 @@ def stream_agent_response(
     try:
         agent = build_react_agent(user, db, scan_id=scan_id)
     except Exception as e:
+        import traceback
+        logger.error(f"Agent initialization failed: {e}\n{traceback.format_exc()}")
         yield _sse("error", f"Agent initialization failed: {e}")
         return
 

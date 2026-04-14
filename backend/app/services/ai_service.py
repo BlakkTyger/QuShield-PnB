@@ -55,7 +55,12 @@ class OllamaProvider(AIProvider):
 
 class GroqProvider(AIProvider):
     """Cloud execution via Groq. Free tier: llama-3.3-70b-versatile."""
-    # Best available free models on Groq as of 2025
+    # Ordered fallback model list — lighter models used when primary is rate-limited
+    FALLBACK_MODELS = [
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "gemma2-9b-it",
+    ]
     FREE_MODEL = "llama-3.3-70b-versatile"
     PRO_MODEL = "llama-3.3-70b-versatile"
     ENTERPRISE_MODEL = "llama-3.3-70b-versatile"
@@ -81,42 +86,57 @@ class GroqProvider(AIProvider):
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": 4096,
-        }
+        # Build model attempt list: primary model first, then fallbacks
+        models_to_try = [self.model] + [m for m in self.FALLBACK_MODELS if m != self.model]
+        backoff_delays = [1, 2, 4, 8, 16]
 
-        max_attempts = 3
-        for attempt in range(max_attempts):
-            try:
-                logger.info(f"Groq Cloud Request [Model: {self.model}, attempt {attempt + 1}]")
-                response = requests.post(self.base_url, headers=headers, json=payload, timeout=120)
-                if response.status_code in (429, 503):
-                    wait = 2 ** attempt
-                    logger.warning(f"Groq rate limit / overload ({response.status_code}) — waiting {wait}s before retry")
-                    time.sleep(wait)
-                    if attempt == max_attempts - 1:
-                        raise RuntimeError(
-                            f"Groq API rate limit exceeded after {max_attempts} attempts. "
-                            "Please wait 30 seconds and try again."
+        for model_idx, model in enumerate(models_to_try):
+            payload = {
+                "model": model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": 4096,
+            }
+            rate_limited_attempts = 0
+            for attempt in range(3):
+                try:
+                    logger.info(f"Groq Cloud Request [Model: {model}, attempt {attempt + 1}]")
+                    response = requests.post(self.base_url, headers=headers, json=payload, timeout=120)
+                    if response.status_code in (429, 503):
+                        rate_limited_attempts += 1
+                        wait = backoff_delays[min(rate_limited_attempts - 1, len(backoff_delays) - 1)]
+                        logger.warning(
+                            f"Groq rate limit ({response.status_code}) on {model} — "
+                            f"waiting {wait}s (attempt {attempt + 1}/3)"
                         )
-                    continue
-                response.raise_for_status()
-                return response.json()["choices"][0]["message"]["content"]
-            except RuntimeError:
-                raise
-            except requests.HTTPError as e:
-                logger.error(f"Groq API HTTP error: {e.response.status_code} — {e.response.text[:200]}")
-                raise RuntimeError(f"Groq API error ({e.response.status_code})") from e
-            except Exception as e:
-                if attempt < max_attempts - 1:
-                    time.sleep(2 ** attempt)
-                    continue
-                logger.error(f"Groq API generation failed: {e}")
-                raise RuntimeError(f"Cloud generation failed: {e}") from e
-        raise RuntimeError("Groq API failed after all retries.")
+                        time.sleep(wait)
+                        if attempt == 2:
+                            # This model is exhausted, try next fallback
+                            logger.warning(f"Groq model {model} rate-limited after 3 attempts — trying fallback")
+                            break
+                        continue
+                    response.raise_for_status()
+                    if model != self.model:
+                        logger.info(f"Groq fell back to model: {model}")
+                    return response.json()["choices"][0]["message"]["content"]
+                except RuntimeError:
+                    raise
+                except requests.HTTPError as e:
+                    logger.error(f"Groq API HTTP error on {model}: {e.response.status_code} — {e.response.text[:200]}")
+                    if e.response.status_code not in (429, 503):
+                        raise RuntimeError(f"Groq API error ({e.response.status_code})") from e
+                    break
+                except Exception as e:
+                    if attempt < 2:
+                        time.sleep(2 ** attempt)
+                        continue
+                    logger.error(f"Groq API generation failed on {model}: {e}")
+                    break
+
+        raise RuntimeError(
+            "Groq API failed on all models after retries. "
+            "Please wait 30 seconds and try again, or check https://status.groq.com"
+        )
 
 
 class OpenAIProvider(AIProvider):

@@ -23,22 +23,23 @@ from app.models.certificate import Certificate
 
 logger = logging.getLogger(__name__)
 
-DARK_BG = "#0f172a"
-CARD_BG = "#1e293b"
-BORDER = "#334155"
-GOLD = "#f59e0b"
-RED = "#b91c1c"
-ORANGE = "#ea580c"
-GREEN = "#16a34a"
-BLUE = "#2563eb"
-PURPLE = "#7c3aed"
-MUTED = "#64748b"
-TEXT = "#f1f5f9"
+CHART_BG = "#ffffff"
+CARD_BG  = "#f8fafc"
+BORDER   = "#e2e8f0"
+GOLD     = "#d97706"
+RED      = "#dc2626"
+ORANGE   = "#ea580c"
+GREEN    = "#16a34a"
+BLUE     = "#2563eb"
+PURPLE   = "#7c3aed"
+MUTED    = "#94a3b8"
+TEXT     = "#1e293b"
+DARK_BG  = CHART_BG  # kept for compatibility
 
 
 def _fig_to_b64(fig: plt.Figure) -> str:
     buf = io.BytesIO()
-    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight",
+    fig.savefig(buf, format="png", dpi=180, bbox_inches="tight",
                 facecolor=fig.get_facecolor(), edgecolor="none")
     buf.seek(0)
     encoded = base64.b64encode(buf.read()).decode("utf-8")
@@ -46,8 +47,8 @@ def _fig_to_b64(fig: plt.Figure) -> str:
     return encoded
 
 
-def _apply_dark_style(ax, fig):
-    fig.patch.set_facecolor(DARK_BG)
+def _apply_light_style(ax, fig):
+    fig.patch.set_facecolor(CHART_BG)
     ax.set_facecolor(CARD_BG)
     ax.tick_params(colors=TEXT, labelsize=8)
     ax.xaxis.label.set_color(TEXT)
@@ -55,6 +56,11 @@ def _apply_dark_style(ax, fig):
     ax.title.set_color(TEXT)
     for spine in ax.spines.values():
         spine.set_edgecolor(BORDER)
+    ax.grid(color=BORDER, linewidth=0.5, alpha=0.7)
+
+
+# Alias kept for any legacy internal calls
+_apply_dark_style = _apply_light_style
 
 
 class ChartGenerator:
@@ -118,12 +124,13 @@ class ChartGenerator:
         sizes = list(counts.values())
         colors = [colors_map.get(k, MUTED) for k in counts]
 
-        fig, ax = plt.subplots(figsize=(5, 4))
-        _apply_dark_style(ax, fig)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        _apply_light_style(ax, fig)
+        ax.grid(False)
         wedges, texts, autotexts = ax.pie(
             sizes, labels=None, colors=colors, autopct="%1.0f%%",
             startangle=90, pctdistance=0.75,
-            wedgeprops={"linewidth": 2, "edgecolor": DARK_BG}
+            wedgeprops={"linewidth": 2, "edgecolor": CHART_BG}
         )
         for at in autotexts:
             at.set_color(TEXT)
@@ -142,9 +149,9 @@ class ChartGenerator:
         ready = sum(1 for r in self.risks if (r.risk_classification or "").startswith("quantum_ready"))
         pct = (ready / total * 100) if total else 0
 
-        fig, ax = plt.subplots(figsize=(4, 3), subplot_kw={"polar": True})
-        fig.patch.set_facecolor(DARK_BG)
-        ax.set_facecolor(DARK_BG)
+        fig, ax = plt.subplots(figsize=(5, 4), subplot_kw={"polar": True})
+        fig.patch.set_facecolor(CHART_BG)
+        ax.set_facecolor(CARD_BG)
 
         theta = np.linspace(0, np.pi, 200)
         ax.fill_between(theta, 0, 0.7, color=CARD_BG, alpha=0.8)
@@ -188,8 +195,8 @@ class ChartGenerator:
         bar_colors = [RED if algo_vuln.get(n, True) else GREEN for n in names]
 
         fig, ax = plt.subplots(figsize=(7, 4))
-        _apply_dark_style(ax, fig)
-        bars = ax.barh(range(len(names)), counts, color=bar_colors, edgecolor=DARK_BG, linewidth=0.5)
+        _apply_light_style(ax, fig)
+        bars = ax.barh(range(len(names)), counts, color=bar_colors, edgecolor=CHART_BG, linewidth=0.5)
         ax.set_yticks(range(len(names)))
         ax.set_yticklabels(names, fontsize=7, color=TEXT)
         ax.set_xlabel("Count", color=TEXT, fontsize=8)
@@ -229,9 +236,9 @@ class ChartGenerator:
         sizes = list(version_counts.values())
         colors = [version_colors.get(l, MUTED) for l in labels]
 
-        fig, ax = plt.subplots(figsize=(5, 3))
-        _apply_dark_style(ax, fig)
-        bars = ax.bar(labels, sizes, color=colors, edgecolor=DARK_BG, linewidth=0.5)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        _apply_light_style(ax, fig)
+        bars = ax.bar(labels, sizes, color=colors, edgecolor=CHART_BG, linewidth=0.5)
         ax.set_xlabel("TLS Version", color=TEXT, fontsize=8)
         ax.set_ylabel("Asset Count", color=TEXT, fontsize=8)
         ax.set_title("TLS Version Distribution", color=TEXT, fontsize=10)
@@ -264,11 +271,11 @@ class ChartGenerator:
         values += values[:1]
         angles += angles[:1]
 
-        fig, ax = plt.subplots(figsize=(5, 4), subplot_kw={"polar": True})
-        fig.patch.set_facecolor(DARK_BG)
+        fig, ax = plt.subplots(figsize=(6, 5), subplot_kw={"polar": True})
+        fig.patch.set_facecolor(CHART_BG)
         ax.set_facecolor(CARD_BG)
         ax.plot(angles, values, color=GOLD, linewidth=2)
-        ax.fill(angles, values, alpha=0.25, color=GOLD)
+        ax.fill(angles, values, alpha=0.2, color=GOLD)
         ax.set_xticks(angles[:-1])
         ax.set_xticklabels(labels, size=7, color=TEXT)
         ax.set_ylim(0, 1)
@@ -295,7 +302,7 @@ class ChartGenerator:
             return _fig_to_b64(fig)
 
         fig, ax = plt.subplots(figsize=(6, 4))
-        _apply_dark_style(ax, fig)
+        _apply_light_style(ax, fig)
         colors_list = [RED, ORANGE, GOLD, BLUE, PURPLE, GREEN, MUTED]
         for i, (atype, scores) in enumerate(sorted(type_map.items())):
             color = colors_list[i % len(colors_list)]
@@ -338,8 +345,8 @@ class ChartGenerator:
         labels = [r["host"] for r in rows]
         col_labels = ["Risk Score", "Migration\nComplexity", "HNDL\nExposure"]
 
-        fig, ax = plt.subplots(figsize=(6, max(3, len(rows) * 0.3 + 1)))
-        _apply_dark_style(ax, fig)
+        fig, ax = plt.subplots(figsize=(7, max(4, len(rows) * 0.35 + 1)))
+        _apply_light_style(ax, fig)
         norm_data = data / np.maximum(data.max(axis=0), 1)
         im = ax.imshow(norm_data, cmap="RdYlGn_r", aspect="auto", vmin=0, vmax=1)
         ax.set_xticks(range(len(col_labels)))
@@ -378,10 +385,10 @@ class ChartGenerator:
         avg_risks = [vendors[v]["risk_sum"] / max(vendors[v]["count"], 1) for v in vendor_names]
         hndl_counts = [vendors[v]["hndl"] for v in vendor_names]
 
-        fig, ax = plt.subplots(figsize=(6, max(3, len(vendor_names) * 0.4 + 1)))
-        _apply_dark_style(ax, fig)
+        fig, ax = plt.subplots(figsize=(7, max(4, len(vendor_names) * 0.45 + 1)))
+        _apply_light_style(ax, fig)
         bar_colors = [RED if r > 600 else ORANGE if r > 400 else GOLD for r in avg_risks]
-        bars = ax.barh(vendor_names, avg_risks, color=bar_colors, edgecolor=DARK_BG)
+        bars = ax.barh(vendor_names, avg_risks, color=bar_colors, edgecolor=CHART_BG)
         ax2 = ax.twiny()
         ax2.scatter(hndl_counts, vendor_names, color=BLUE, s=50, zorder=5, label="HNDL exposed")
         ax2.set_xlabel("HNDL Assets", color=BLUE, fontsize=7)
@@ -412,10 +419,10 @@ class ChartGenerator:
             else:
                 buckets["76-100"] += 1
 
-        fig, ax = plt.subplots(figsize=(5, 3))
-        _apply_dark_style(ax, fig)
+        fig, ax = plt.subplots(figsize=(6, 4))
+        _apply_light_style(ax, fig)
         colors = [RED, ORANGE, GOLD, GREEN]
-        bars = ax.bar(buckets.keys(), buckets.values(), color=colors, edgecolor=DARK_BG)
+        bars = ax.bar(buckets.keys(), buckets.values(), color=colors, edgecolor=CHART_BG)
         ax.set_xlabel("Crypto Agility Score Range", color=TEXT, fontsize=8)
         ax.set_ylabel("Asset Count", color=TEXT, fontsize=8)
         ax.set_title("Crypto Agility Distribution", color=TEXT, fontsize=10)
@@ -434,13 +441,14 @@ class ChartGenerator:
         years = list(range(2024, 2036))
         crqc_prob = [max(0, min(1, (y - 2027) / 8)) for y in years]
 
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3))
-        _apply_dark_style(ax1, fig)
-        _apply_dark_style(ax2, fig)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+        _apply_light_style(ax1, fig)
+        _apply_light_style(ax2, fig)
+        ax1.grid(False)
 
-        ax1.pie([hndl_count, safe_count], labels=["HNDL Exposed", "Protected"],
+        ax1.pie([hndl_count or 1, safe_count], labels=["HNDL Exposed", "Protected"],
                 colors=[RED, GREEN], autopct="%1.0f%%", startangle=90,
-                wedgeprops={"edgecolor": DARK_BG, "linewidth": 2},
+                wedgeprops={"edgecolor": CHART_BG, "linewidth": 2},
                 textprops={"color": TEXT, "fontsize": 8})
         ax1.set_title("HNDL Exposure", color=TEXT, fontsize=9)
 

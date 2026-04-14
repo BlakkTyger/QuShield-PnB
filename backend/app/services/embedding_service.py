@@ -93,8 +93,7 @@ class JinaEmbedder(EmbeddingProvider):
         }
         payload = {
             "model": self.model,
-            "input": texts,
-            "task": "retrieval_document" # Default task for Jina v3
+            "input": [{"text": t, "task": "retrieval.passage"} for t in texts],
         }
         try:
             logger.info(f"Jina Cloud Embedding [Model: {self.model}]")

@@ -251,7 +251,7 @@ def _get_embedder():
                 resp = req.post(
                     "https://api.jina.ai/v1/embeddings",
                     headers={"Authorization": f"Bearer {jina_key}", "Content-Type": "application/json"},
-                    json={"model": "jina-embeddings-v3", "input": texts, "task": "retrieval_document"},
+                    json={"model": "jina-embeddings-v3", "input": [{"text": t, "task": "retrieval.passage"} for t in texts]},
                     timeout=60,
                 )
                 resp.raise_for_status()

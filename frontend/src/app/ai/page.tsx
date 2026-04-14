@@ -8,7 +8,7 @@ import {
 } from "@/lib/hooks";
 import { ScanSelector } from "@/components/ui";
 import { Bot, Send, Loader2, Search, RefreshCw, Settings, X,
-  Cpu, Cloud, ChevronDown, ChevronRight, Zap, Database, Globe } from "lucide-react";
+  Cpu, Cloud, ChevronDown, ChevronRight, Zap, Database, Globe, Lock, Check } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
 
 const STARTER_QUERIES = [
@@ -232,10 +232,10 @@ export default function AIAssistantPage() {
           {/* Scan scope */}
           <div className="mb-0">
             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-muted)" }}>Scan Scope</p>
-            <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} className="w-full" />
-            {scanId && (
-              <p className="text-[9px] mt-1" style={{ color: "var(--text-muted)" }}>Agent scoped to selected scan only.</p>
-            )}
+            <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} className="w-full" allowAll />
+            <p className="text-[9px] mt-1" style={{ color: "var(--text-muted)" }}>
+              {scanId ? "Agent scoped to selected scan only." : "All scans (global) — agent has full data access."}
+            </p>
           </div>
         </div>
 
@@ -274,6 +274,61 @@ export default function AIAssistantPage() {
                 )}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* AI Service — Tier & Mode */}
+        <div className="p-4 border-b" style={{ borderColor: "var(--border-subtle)" }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>AI Service</p>
+
+          {/* Deployment Mode */}
+          <p className="text-[9px] uppercase tracking-widest mb-1.5 font-semibold" style={{ color: "var(--text-muted)" }}>Deployment</p>
+          <div className="flex gap-1.5 mb-3">
+            <div className="flex-1 flex items-center gap-1.5 p-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 cursor-default">
+              <Cloud size={11} className="text-yellow-400 shrink-0" />
+              <span className="text-[11px] font-bold text-yellow-400">Cloud</span>
+              <Check size={10} className="text-yellow-400 ml-auto shrink-0" />
+            </div>
+            <div
+              className="flex-1 flex items-center gap-1.5 p-2 rounded-lg border opacity-40 cursor-not-allowed"
+              style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+              title="Local mode requires Ollama. Coming Soon."
+            >
+              <Cpu size={11} className="shrink-0" />
+              <span className="text-[11px] font-semibold">Local</span>
+              <Lock size={9} className="ml-auto shrink-0" />
+            </div>
+          </div>
+
+          {/* AI Tier */}
+          <p className="text-[9px] uppercase tracking-widest mb-1.5 font-semibold" style={{ color: "var(--text-muted)" }}>Tier</p>
+          <div className="space-y-1">
+            {/* Free — active */}
+            <div className="flex items-center gap-2 p-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 cursor-default">
+              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-[11px] font-bold text-yellow-400 flex-1">Free</span>
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-yellow-400 text-black font-black">ACTIVE</span>
+            </div>
+            {/* Professional — locked */}
+            <div
+              className="flex items-center gap-2 p-2 rounded-lg border opacity-40 cursor-not-allowed"
+              style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+              title="Requires OpenAI API key. Coming Soon."
+            >
+              <Lock size={10} className="shrink-0" />
+              <span className="text-[11px] font-semibold flex-1">Professional</span>
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full border" style={{ borderColor: "var(--border-subtle)" }}>SOON</span>
+            </div>
+            {/* Enterprise — locked */}
+            <div
+              className="flex items-center gap-2 p-2 rounded-lg border opacity-40 cursor-not-allowed"
+              style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+              title="Requires enterprise contract. Coming Soon."
+            >
+              <Lock size={10} className="shrink-0" />
+              <span className="text-[11px] font-semibold flex-1">Enterprise</span>
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full border" style={{ borderColor: "var(--border-subtle)" }}>SOON</span>
+            </div>
           </div>
         </div>
 

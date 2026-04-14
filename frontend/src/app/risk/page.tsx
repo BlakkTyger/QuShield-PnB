@@ -6,7 +6,7 @@ import {
   ResponsiveContainer, ReferenceLine, ZAxis,
 } from "recharts";
 import { useScans, useRiskHeatmap, useAssetRisk, useEnterpriseRating } from "@/lib/hooks";
-import { ScoreGauge, RiskBadge, MetricCard, EmptyState, Skeleton, ProgressBar } from "@/components/ui";
+import { ScoreGauge, RiskBadge, MetricCard, EmptyState, Skeleton, ProgressBar, ScanSelector } from "@/components/ui";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
 import { AlertTriangle, Shield, X } from "lucide-react";
 
@@ -27,10 +27,6 @@ export default function RiskPage() {
   const { data: heatmap } = useRiskHeatmap(scanId);
   const { data: rating } = useEnterpriseRating(scanId);
   const { data: assetRisk } = useAssetRisk(selectedAssetId);
-
-  if (!scanId) {
-    return <EmptyState message="No scan data available. Run a Quick Scan first." />;
-  }
 
   // Prepare scatter data
   const scatterData = heatmap?.assets.map((a) => ({
@@ -59,6 +55,9 @@ export default function RiskPage() {
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             Mosca&apos;s Theorem analysis and quantum risk scoring
           </p>
+          <div className="mt-2">
+            <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+          </div>
         </div>
         {rating && (
           <div className="text-right">
