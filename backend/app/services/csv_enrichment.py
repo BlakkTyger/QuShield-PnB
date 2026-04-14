@@ -8,8 +8,11 @@ Provides two entry-points used by the orchestrator:
 """
 import csv
 import re
+import time
 from pathlib import Path
 from typing import Optional
+
+import requests
 
 from app.config import PROJECT_ROOT
 from app.core.logging import get_logger
@@ -163,7 +166,89 @@ def get_csv_asset_count(target_domain: str) -> int:
     return sum(1 for h in csv if h.endswith(target_lower))
 
 
-# ─── 2. Crypto / scan-data enrichment ──────────────────────────────────────
+# ─── 2. Reachability gate ──────────────────────────────────────────────────
+
+_PROBE_TIMEOUT = 6      # seconds per attempt
+_PROBE_RETRIES = 3      # must fail all 3 to be declared unreachable
+_PROBE_DELAY   = 1.5   # seconds between retries
+_PROBE_HEADERS = {"User-Agent": "QuShield-Enrichment/1.0"}
+
+
+def _scan_was_reachable(fingerprint: dict | None) -> bool:
+    """Fast check: did the preceding TLS scan get any real data from the host?"""
+    if not fingerprint or not isinstance(fingerprint, dict):
+        return False
+    tls = fingerprint.get("tls") or {}
+    if tls.get("negotiated_protocol"):
+        return True
+    if fingerprint.get("certificates"):
+        return True
+    return False
+
+
+def _http_probe(hostname: str) -> bool:
+    """
+    Try HTTPS then HTTP with a short timeout.
+    Returns True on any HTTP response (any status code counts — the host answered).
+    """
+    for scheme in ("https", "http"):
+        try:
+            r = requests.get(
+                f"{scheme}://{hostname}",
+                timeout=_PROBE_TIMEOUT,
+                headers=_PROBE_HEADERS,
+                allow_redirects=True,
+                verify=False,
+            )
+            return True  # any response = reachable
+        except requests.exceptions.SSLError:
+            return True  # SSL error means TLS layer responded — host is up
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout):
+            continue
+    return False
+
+
+def was_reachable(hostname: str, fingerprint: dict | None) -> bool:
+    """
+    Determine if a host should receive CSV enrichment.
+
+    Decision logic:
+    1. If the scan already got a TLS handshake or cert → reachable immediately.
+    2. If the scan got nothing, do a fresh live HTTP probe (3 attempts, 1.5 s apart).
+       - Any single successful probe → reachable.
+       - All 3 fail → genuinely unreachable; skip enrichment.
+    3. If the probe itself throws an unexpected error, fall back to scan signal
+       so we never silently drop enrichment due to a probe bug.
+    """
+    if _scan_was_reachable(fingerprint):
+        return True
+
+    # Scan got nothing — do a live confirmation before giving up
+    try:
+        for attempt in range(_PROBE_RETRIES):
+            if _http_probe(hostname):
+                logger.debug(
+                    f"[reachability] {hostname} confirmed reachable on probe "
+                    f"{attempt + 1}/{_PROBE_RETRIES} (scan had no TLS data)"
+                )
+                return True
+            if attempt < _PROBE_RETRIES - 1:
+                time.sleep(_PROBE_DELAY)
+        logger.debug(
+            f"[reachability] {hostname} unreachable after "
+            f"{_PROBE_RETRIES} probes — skipping CSV enrichment"
+        )
+        return False
+    except Exception as exc:
+        logger.warning(
+            f"[reachability] probe error for {hostname}: {exc} — "
+            "falling back to scan signal (no enrichment)"
+        )
+        return _scan_was_reachable(fingerprint)
+
+
+# ─── 3. Crypto / scan-data enrichment ──────────────────────────────────────
 
 def _is_stronger_kex(csv_kex: str | None, live_kex: str | None) -> bool:
     """True if the CSV key-exchange is strictly stronger than the live value."""
@@ -195,12 +280,15 @@ def enrich_fingerprint(hostname: str, fingerprint: dict) -> dict:
     Merge CSV baseline data into a single asset's crypto fingerprint dict.
 
     Rules:
+    - Only runs if the live scan reached the host (negotiated TLS or got a cert).
     - If the live scan has None / empty for a field but CSV has data → adopt CSV.
     - If both have data, adopt the *stronger* value (better TLS, better KEX, PQC > classical).
     - If the live scan already has a stronger result, keep it.
 
     Mutates and returns the same fingerprint dict.
     """
+    if not was_reachable(hostname, fingerprint):
+        return fingerprint
     csv = _csv_data()
     row = csv.get(hostname.lower())
     if not row:
@@ -261,11 +349,13 @@ def enrich_fingerprint(hostname: str, fingerprint: dict) -> dict:
     return fingerprint
 
 
-def enrich_asset_db_row(asset, row: dict | None = None):
+def enrich_asset_db_row(asset, fingerprint: dict | None = None, row: dict | None = None):
     """
     Enrich an ORM Asset object with CSV data in-place.
-    Called after crypto results are saved, before risk assessment.
+    Only applies when the live scan confirmed the host was reachable.
     """
+    if not was_reachable(asset.hostname or "", fingerprint):
+        return
     if row is None:
         csv = _csv_data()
         row = csv.get((asset.hostname or "").lower())
@@ -283,11 +373,13 @@ def enrich_asset_db_row(asset, row: dict | None = None):
         asset.asset_type = csv_type
 
 
-def enrich_certificate_db_rows(hostname: str, cert_rows: list, row: dict | None = None):
+def enrich_certificate_db_rows(hostname: str, cert_rows: list, fingerprint: dict | None = None, row: dict | None = None):
     """
     Enrich ORM Certificate objects with CSV data in-place.
-    Updates tls_version and key-type when CSV has stronger data.
+    Only applies when the live scan confirmed the host was reachable.
     """
+    if not was_reachable(hostname, fingerprint):
+        return
     if row is None:
         csv = _csv_data()
         row = csv.get((hostname or "").lower())
@@ -304,11 +396,13 @@ def enrich_certificate_db_rows(hostname: str, cert_rows: list, row: dict | None 
             cert.key_type = csv_cert_key
 
 
-def enrich_risk_score(hostname: str, risk_score_obj):
+def enrich_risk_score(hostname: str, risk_score_obj, fingerprint: dict | None = None):
     """
-    If the CSV has a risk score / classification for this host, and the live
-    computed score is weaker (higher/worse) than CSV, adopt CSV values.
+    Override computed risk score / classification with CSV curated values.
+    Only applies when the live scan confirmed the host was reachable.
     """
+    if not was_reachable(hostname, fingerprint):
+        return
     csv = _csv_data()
     row = csv.get(hostname.lower())
     if not row:

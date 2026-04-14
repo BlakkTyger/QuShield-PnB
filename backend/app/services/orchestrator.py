@@ -413,9 +413,9 @@ class ScanOrchestrator:
                 if fp:
                     enrich_fingerprint(asset.hostname, fp)
                     csv_enriched += 1
-                enrich_asset_db_row(asset)
+                enrich_asset_db_row(asset, fingerprint=fp)
                 cert_rows = db.query(CertModelEnrich).filter(CertModelEnrich.asset_id == asset.id).all()
-                enrich_certificate_db_rows(asset.hostname, cert_rows)
+                enrich_certificate_db_rows(asset.hostname, cert_rows, fingerprint=fp)
             db.commit()
             logger.info(f"{TAG} P2: CSV enrichment applied to {csv_enriched} fingerprints")
 
@@ -614,7 +614,8 @@ class ScanOrchestrator:
             for rs in risk_rows:
                 hn = asset_hostname_map.get(str(rs.asset_id))
                 if hn:
-                    enrich_risk_score(hn, rs)
+                    fp = asset_crypto_map.get(str(rs.asset_id))
+                    enrich_risk_score(hn, rs, fingerprint=fp)
             db.commit()
             logger.info(f"{TAG} P4: CSV risk enrichment applied to {len(risk_rows)} scores")
 
