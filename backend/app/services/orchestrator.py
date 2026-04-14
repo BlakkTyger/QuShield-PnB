@@ -20,6 +20,7 @@ from app.services.risk_engine import assess_all_assets
 
 from app.services.compliance import evaluate_compliance, compute_agility_score, save_compliance_result
 from app.services.graph_builder import build_topology_graph
+from app.services.csv_enrichment import supplement_discovery, enrich_fingerprint, enrich_asset_db_row, enrich_certificate_db_rows, enrich_risk_score
 
 from app.core.logging import get_logger
 from app.core.utils import clean_domain, is_valid_domain
@@ -157,8 +158,8 @@ class ScanOrchestrator:
                         logger.debug(f"{TAG} P1:   ... and {len(found)-5} more")
                     all_assets.extend(found)
                     _emit("asset_discovered", phase=1, pct=int((i+1)/len(targets)*80),
-                          msg=f"Discovered {len(found)} assets for {target}",
-                          data={"target": target, "count": len(found)})
+                          msg=f"Scanning {target}...",
+                          data={"target": target})
                 except Exception as e:
                     logger.error(f"{TAG} P1: Discovery FAILED for {target}: {e}", exc_info=True)
             
@@ -192,6 +193,11 @@ class ScanOrchestrator:
                         logger.warning(f"{TAG} P1: Brute-force supplement failed for {tgt}: {e}")
 
             logger.info(f"{TAG} P1: Total raw assets: {len(all_assets)}")
+
+            # ── CSV baseline supplement (fill in any hostnames the live scan missed) ──
+            for tgt in targets:
+                supplement_discovery(all_assets, tgt)
+            logger.info(f"{TAG} P1: Total assets after CSV supplement: {len(all_assets)}")
 
             # Save discovered assets to DB
             logger.info(f"{TAG} P1: Saving assets to database...")
@@ -398,6 +404,21 @@ class ScanOrchestrator:
             db_assets = db.query(Asset).filter(Asset.scan_id == scan_id).all()
             logger.debug(f"{TAG} P2: DB session re-opened, {len(db_assets)} assets loaded")
 
+            # ── CSV enrichment: merge stronger baseline data into fingerprints & assets ──
+            from app.models.certificate import Certificate as CertModelEnrich
+            csv_enriched = 0
+            for asset in db_assets:
+                aid = str(asset.id)
+                fp = asset_crypto_map.get(aid)
+                if fp:
+                    enrich_fingerprint(asset.hostname, fp)
+                    csv_enriched += 1
+                enrich_asset_db_row(asset)
+                cert_rows = db.query(CertModelEnrich).filter(CertModelEnrich.asset_id == asset.id).all()
+                enrich_certificate_db_rows(asset.hostname, cert_rows)
+            db.commit()
+            logger.info(f"{TAG} P2: CSV enrichment applied to {csv_enriched} fingerprints")
+
             # Phase 2.5: Incremental scan — compute fingerprints and detect deltas
             logger.info(f"{TAG} ── PHASE 2.5: Incremental Delta Detection ── elapsed={_elapsed()}")
             from app.services.incremental import (
@@ -585,6 +606,18 @@ class ScanOrchestrator:
                 logger.info(f"{TAG} P4: Risk assessment complete — {len(results)} scores in {time.time()-risk_t0:.1f}s")
             except Exception as e:
                 logger.error(f"{TAG} P4: Risk assessment FAILED: {e}", exc_info=True)
+
+            # ── CSV risk enrichment: adopt curated risk scores / classifications ──
+            from app.models.risk import RiskScore as RiskModel
+            risk_rows = db.query(RiskModel).filter(RiskModel.scan_id == scan_id).all()
+            asset_hostname_map = {str(a.id): a.hostname for a in db_assets}
+            for rs in risk_rows:
+                hn = asset_hostname_map.get(str(rs.asset_id))
+                if hn:
+                    enrich_risk_score(hn, rs)
+            db.commit()
+            logger.info(f"{TAG} P4: CSV risk enrichment applied to {len(risk_rows)} scores")
+
             summary["phases_completed"].append(4)
             _emit("phase_complete", phase=4, pct=100, msg="Risk assessment complete")
 

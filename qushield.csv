@@ -1,0 +1,157 @@
+Hostname,IP Address,Type,TLS,TLS Key Exchange,Cert Key Type,Transition State,Risk Score,Risk Class,Cert Expiry
+email.pnb.bank.in,1.6.46.95,mail_server,—,—,—,Unknown,825,quantum_critical,—
+mail.pnb.bank.in,1.6.46.95,mail_server,—,—,—,Unknown,825,quantum_critical,—
+mosmtp.pnb.bank.in,1.7.178.49,mail_server,—,—,—,Unknown,825,quantum_critical,—
+admin.pnb.bank.in,1.7.178.30,admin_portal,TLSv1.3,RSA,—,Unknown,775,quantum_vulnerable,—
+mypnb.pnb.bank.in,103.109.225.21,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,99
+mtdrelmbs.pnb.bank.in,103.109.225.62,internet_banking,TLSv1.3,RSA,—,Unknown,775,quantum_vulnerable,—
+pfms.pnb.bank.in,103.109.225.178,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,99
+apicasa.pnb.bank.in,103.109.227.85,api_gateway,—,—,—,Unknown,775,quantum_vulnerable,—
+apptrk.pnb.bank.in,1.7.178.30,mobile_banking,TLSv1.2,ECDHE,RSA,Classical,445,quantum_at_risk,149
+data-agg.pnb.bank.in,103.109.224.106,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+dcms.pnb.bank.in,1.7.88.227,admin_portal,—,—,—,Unknown,775,quantum_vulnerable,—
+depository.pnb.bank.in,103.109.227.123,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+dpip.pnb.bank.in,103.109.224.102,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+drms.pnb.bank.in,1.7.88.227,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+fastag-branch.pnb.bank.in,10.170.0.174,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+lensconnect.pnb.bank.in,103.109.225.125,api_gateway,—,—,—,Unknown,775,quantum_vulnerable,—
+lensconnectpreprod.pnb.bank.in,103.109.225.123,api_gateway,—,—,—,Unknown,775,quantum_vulnerable,—
+mcaapi.pnb.bank.in,103.109.227.36,api_gateway,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98
+mdcportal.pnb.bank.in,103.109.224.139,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+mdm.pnb.bank.in,103.109.224.157,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+mtdapimbs.pnb.bank.in,103.109.225.63,api_gateway,—,—,—,Unknown,775,quantum_vulnerable,—
+mtdstmbs.pnb.bank.in,103.109.224.70,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+mypnb.pnb.bank.in,103.109.225.21,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,99
+netc.pnb.bank.in,172.184.12.183,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+netcm2p.pnb.bank.in,172.184.12.150,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+ns3.pnb.bank.in,49.50.91.195,dns_server,—,—,—,Unknown,775,quantum_vulnerable,—
+rekyc.pnb.bank.in,103.109.225.69,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+securedc.pnb.bank.in,115.249.110.107,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+securedr.pnb.bank.in,1.7.178.10,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+secureportal.pnb.bank.in,103.109.224.23,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+smbmbs.pnb.bank.in,103.109.224.14,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+soa.pnb.bank.in,103.109.225.95,internet_banking,—,—,—,Unknown,775,quantum_vulnerable,—
+apitrk.pnb.bank.in,1.7.178.30,api_gateway,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,196d
+bbps.pnb.bank.in,103.26.98.137,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,197d
+hrms.pnb.bank.in,103.109.224.186,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,133d
+pnb.bank.in,49.50.72.184,internet_banking,TLSv1.2,ECDH,RSA,Classical,725,quantum_vulnerable,118d
+rewardz.pnb.bank.in,202.65.143.115,internet_banking,TLSv1.2,ECDH,RSA,Classical,725,quantum_vulnerable,196d
+slbcbengal.pnb.bank.in,49.50.72.207,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+slbcchandigarh.pnb.bank.in,49.50.72.144,internet_banking,TLSv1.2,ECDH,RSA,Classical,725,quantum_vulnerable,134d
+slbcdataportal.pnb.bank.in,49.50.81.102,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+slbcdelhi.pnb.bank.in,49.50.81.77,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+slbcharyana.pnb.bank.in,49.50.64.18,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+slbcpunjab.pnb.bank.in,49.50.79.57,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+slbctripura.pnb.bank.in,49.50.72.143,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,134d
+www.hrms.pnb.bank.in,103.109.225.186,internet_banking,TLSv1.2,ECDHE,RSA,Classical,725,quantum_vulnerable,133d
+www.pnb.bank.in,49.50.72.184,internet_banking,TLSv1.2,ECDH,RSA,Classical,725,quantum_vulnerable,118d
+ams.pnb.bank.in,103.109.225.217,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,336d
+analytics.pnb.bank.in,103.109.224.105,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,141d
+apply.creditcard.pnb.bank.in,103.109.224.168,mobile_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,163d
+apps.pnb.bank.in,103.109.224.126,mobile_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+atmmonitoring.pnb.bank.in,103.109.225.215,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,133d
+bcportal.pnbfikiosk.pnb.bank.in,103.109.224.233,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,196d
+cbdcr.pnb.bank.in,103.109.225.212,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,135d
+cgrms.pnb.bank.in,103.109.224.183,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+corpmbs.pnb.bank.in,103.109.225.193,corporate_banking,TLSv1.2,ECDHE,RSA,Classical,595,quantum_at_risk,126d
+digi2wl.pnb.bank.in,103.109.225.211,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,182d
+digiagrimudra.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,185d
+digidairykcc.pnb.bank.in,103.109.225.237,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,111d
+digigodam.pnb.bank.in,103.109.224.237,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,142d
+digihltopup.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,251d
+digihomecrg.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,186d
+digimsme.pnb.bank.in,103.109.225.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,120d
+diginri.pnb.bank.in,103.109.225.237,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,195d
+digishramsaathi.pnb.bank.in,103.109.225.237,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,194d
+digitalbanking.pnb.bank.in,103.109.224.57,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,118d
+drm.pnb.bank.in,103.109.224.97,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,150d
+eboard.pnb.bank.in,103.109.225.184,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,98d
+edge.pnb.bank.in,103.122.156.66,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,135d
+eots.pnb.bank.in,103.109.224.126,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+epayment.pnb.bank.in,103.109.225.239,payment_gateway,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,98d
+etender.pnb.bank.in,103.109.225.164,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,147d
+feepayment.pnb.bank.in,103.109.224.67,payment_gateway,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+gemsahay.pnb.bank.in,103.109.225.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,190d
+gstsahay.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,120d
+icorp.pnb.bank.in,103.109.225.173,corporate_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,128d
+insurance.pnb.bank.in,103.109.224.21,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,98d
+iretail.pnb.bank.in,103.109.224.174,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,128d
+locate.pnb.bank.in,13.235.125.33,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,292d
+lockeragreement.pnb.bank.in,103.109.225.39,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+mbs.pnb.bank.in,103.109.225.151,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,207d
+meet.pnb.bank.in,103.122.156.66,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,135d
+mvcapi.pnb.bank.in,103.109.225.200,api_gateway,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,209d
+ns4.pnb.bank.in,49.50.122.27,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,274d
+p22cucm1-expwaye1.pnb.bank.in,103.122.156.69,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,135d
+pabl.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,120d
+payapps.pnb.bank.in,103.109.224.15,mobile_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+pnbapps.pnb.bank.in,103.109.224.236,mobile_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,98d
+pnbfirst.pnb.bank.in,45.60.3.89,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,134d
+pnbinsightx.pnb.bank.in,103.109.224.172,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,208d
+pnbuniv.pnb.bank.in,103.109.225.132,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,161d
+pnbvkyc.pnb.bank.in,4.187.129.133,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,134d
+rekycrrb.pnb.bank.in,103.109.224.104,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,235d
+retmbs.pnb.bank.in,103.109.224.171,internet_banking,TLSv1.2,ECDHE,RSA,Classical,595,quantum_at_risk,129d
+saral.creditcard.pnb.bank.in,103.109.225.231,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,163d
+stpcreditcard.pnb.bank.in,103.109.225.112,swift_endpoint,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,259d
+svanidhi.pnb.bank.in,103.109.224.100,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,252d
+tab.pnb.bank.in,103.109.224.113,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,98d
+tncorpmbs.pnb.bank.in,103.109.225.75,corporate_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,106d
+tnretmbs.pnb.bank.in,103.109.225.91,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,106d
+udaan.pnb.bank.in,103.109.225.152,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,121d
+onlinetd.pnb.bank.in,103.109.225.200,api_gateway,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,296d
+webapi.pnb.bank.in,103.109.225.236,api_gateway,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,99d
+weblens.pnb.bank.in,103.109.225.53,internet_banking,TLSv1.3,X25519,RSA,Classical,595,quantum_at_risk,101d
+lens2.pnb.bank.in,103.109.224.124,dns_server,—,—,—,Unknown,575,quantum_at_risk,—
+lens2preprod.pnb.bank.in,103.109.224.122,dns_server,—,—,—,Unknown,575,quantum_at_risk,—
+ns1.pnb.bank.in,49.50.69.49,dns_server,—,—,—,Unknown,575,quantum_at_risk,—
+ns2.pnb.bank.in,49.50.79.113,dns_server,—,—,—,Unknown,575,quantum_at_risk,—
+npciservices.pnb.bank.in,103.109.225.229,upi_gateway,TLSv1.3,X25519,RSA,Classical,545,quantum_at_risk,99d
+upi.pnb.bank.in,103.109.224.129,upi_gateway,TLSv1.3,X25519,RSA,Classical,545,quantum_at_risk,120d
+aafip.pnb.bank.in,103.109.225.159,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,140d
+aafiu.pnb.bank.in,103.109.225.188,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,140d
+apim.pnb.bank.in,103.109.225.51,api_gateway,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,99d
+applications.pnb.bank.in,103.109.225.21,mobile_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,99d
+ckycr-admin.pnb.bank.in,103.109.225.195,admin_portal,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,104d
+creditcard.pnb.bank.in,103.109.225.169,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,163d
+digigoldloan.pnb.bank.in,103.109.225.84,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,119d
+digihome.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,120d
+digirenewal.pnb.bank.in,103.109.225.8,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,196d
+digitallending.pnb.bank.in,103.109.224.236,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98d
+digivishwakarma.pnb.bank.in,103.109.225.8,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,155d
+egstxp.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,120d
+emandate.pnb.bank.in,103.109.224.229,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,99d
+fastag.pnb.bank.in,3.6.186.22,internet_banking,TLSv1.2,ECDHE,RSA,Classical,445,quantum_at_risk,196d
+giftcorpbanking.pnb.bank.in,103.109.224.254,corporate_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,196d
+ibanking.pnb.bank.in,103.109.225.175,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,128d
+icorpplus.pnb.bank.in,103.109.224.65,corporate_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,140d
+images.pnb.bank.in,1.7.178.31,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,149d
+instaloans.pnb.bank.in,103.109.225.158,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,120d
+kc.pnb.bank.in,103.109.224.154,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,147d
+lens.pnb.bank.in,103.109.224.160,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,135d
+loanrepay.pnb.bank.in,103.109.225.21,payment_gateway,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98d
+mobapps.pnb.bank.in,103.109.225.153,mobile_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98d
+p22cucm1-expwaye2.pnb.bank.in,103.122.156.66,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,135d
+pnbnet.pnb.bank.in,103.109.224.142,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98d
+pnbtfr.pnb.bank.in,103.109.224.177,internet_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,101d
+rrbapps.pnb.bank.in,103.109.224.247,mobile_banking,TLSv1.3,X25519,RSA,Classical,445,quantum_at_risk,98d
+digiagriprimeplus.pnb.bank.in,103.109.224.246,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,180d
+digiel.pnb.bank.in,103.109.225.130,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,120d
+digifarmstay.pnb.bank.in,103.109.225.90,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,181d
+digigrihavatika.pnb.bank.in,103.109.224.237,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,294d
+digikccreview.pnb.bank.in,103.109.225.237,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,148d
+digikisanvaahan.pnb.bank.in,103.109.224.90,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,181d
+digikyc.pnb.bank.in,103.109.224.8,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,185d
+digisuryaghar.pnb.bank.in,103.109.225.89,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,119d
+digivl.pnb.bank.in,103.109.225.211,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,120d
+dsj.pnb.bank.in,103.109.224.100,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,285d
+giftretailbanking.pnb.bank.in,103.109.224.3,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,196d
+kyc360.pnb.bank.in,103.109.225.8,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,301d
+mvc.pnb.bank.in,103.109.224.200,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,209d
+onlinetd.pnb.bank.in,103.109.224.89,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,181d
+pfmsrrb.pnb.bank.in,103.109.225.220,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,99d
+puducherrydat.pnb.bank.in,103.109.224.99,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,209d
+puducherrydatapi.pnb.bank.in,103.109.225.99,api_gateway,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,209d
+share.pnb.bank.in,103.109.224.149,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,150d
+tractorexpress.pnb.bank.in,103.109.224.90,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,197d
+wcw.pnb.bank.in,103.109.225.200,internet_banking,TLSv1.3,X25519MLKEM768,RSA,Partial PQC,425,quantum_at_risk,296d

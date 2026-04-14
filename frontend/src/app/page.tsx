@@ -2,17 +2,16 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target } from "lucide-react";
 import { useStartScan, useShallowScan, useShallowResult, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 import { notificationStore } from "@/lib/notifications";
 
-type ScanTier = "shallow" | "deep" | "deeper";
+type ScanTier = "shallow" | "deep";
 
 const SCAN_TIERS = [
   { value: "shallow" as ScanTier, label: "Shallow", time: "30–90s", desc: "CT discovery + top-N TLS", icon: Clock },
   { value: "deep" as ScanTier, label: "Deep", time: "10–15 min", desc: "Full infrastructure audit", icon: Layers },
-  { value: "deeper" as ScanTier, label: "More Deep", time: "15–20 min", desc: "Extended deep profile", icon: ShieldAlert },
 ];
 
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
@@ -205,7 +204,7 @@ export default function QuickScanPage() {
       // Deep scan
       const res = await startScan.mutateAsync({
         targets: [domain.trim()],
-        scan_type: scanTier === "deeper" ? "deeper" : "deep",
+        scan_type: "deep",
       });
       setScanId(res.scan_id);
       if (typeof window !== "undefined") {
@@ -234,7 +233,7 @@ export default function QuickScanPage() {
   }, [scanId, isScanning, cancelScan]);
 
   const currentPhase = scanStatus ? Math.min(scanStatus.current_phase || 1, 6) : 0;
-  const showResults = (scanTier === "deep" || scanTier === "deeper") && scanStatus?.status === "completed" && summary && !isScanning;
+  const showResults = scanTier === "deep" && scanStatus?.status === "completed" && summary && !isScanning;
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in pb-20">
