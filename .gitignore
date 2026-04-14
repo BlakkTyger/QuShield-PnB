@@ -1,6 +1,8 @@
 # === QuShield-PnB Project Specific ===
 logs/
 /data/
+backend/data/
+!backend/data/*.mmdb
 discovery/bin/
 node_modules/
 frontend/.next/
