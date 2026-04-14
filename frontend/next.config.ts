@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
-    console.log(`[Next.js Proxy] Backend URL: ${backendUrl}`);
+    // Strip trailing slash if present to avoid double slashes in paths
+    const rawUrl = process.env.BACKEND_URL || "http://localhost:8000";
+    const backendUrl = rawUrl.replace(/\/$/, "");
+    
     return [
       {
         source: "/api/:path*",

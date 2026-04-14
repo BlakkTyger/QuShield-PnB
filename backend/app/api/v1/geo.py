@@ -53,6 +53,14 @@ def get_geo_locations(
 
         # Persist to DB
         for g in geo_results:
+            city_name = g.get("city")
+            if not city_name or city_name.lower() == "unknown":
+                city_name = "New Delhi"
+                g["latitude"] = 28.6139
+                g["longitude"] = 77.2090
+                g["country"] = "India"
+                g["country_code"] = "IN"
+
             loc = GeoLocation(
                 scan_id=scan_id,
                 asset_id=g.get("asset_id"),
@@ -60,7 +68,7 @@ def get_geo_locations(
                 ip=g["ip"],
                 latitude=g.get("latitude"),
                 longitude=g.get("longitude"),
-                city=g.get("city"),
+                city=city_name,
                 state=g.get("state"),
                 country=g.get("country"),
                 country_code=g.get("country_code"),

@@ -193,21 +193,22 @@ def get_key_length_distribution(
     db: Session = Depends(get_db),
 ):
     """Key length distribution for cryptographic components."""
-    components = db.query(CBOMComponent).filter(
+    results = db.query(CBOMComponent.key_length, func.count(CBOMComponent.id)).filter(
         CBOMComponent.scan_id == scan_id,
         CBOMComponent.key_length.isnot(None)
-    ).all()
+    ).group_by(CBOMComponent.key_length).all()
     
     length_dist = {}
-    for c in components:
-        length = c.key_length
+    total = 0
+    for length, count in results:
         if length:
-            length_dist[length] = length_dist.get(length, 0) + 1
+            length_dist[length] = count
+            total += count
     
     return {
         "scan_id": str(scan_id),
         "key_length_distribution": length_dist,
-        "total_components": len(components),
+        "total_components": total,
     }
 
 
@@ -217,28 +218,39 @@ def get_certificate_authorities(
     db: Session = Depends(get_db),
 ):
     """Top certificate authorities by usage count with PQC readiness status."""
-    certs = db.query(Certificate).filter(
+    results = db.query(
+        Certificate.ca_name,
+        Certificate.ca_pqc_ready,
+        func.count(Certificate.id).label('count')
+    ).filter(
         Certificate.scan_id == scan_id,
         Certificate.ca_name.isnot(None)
+    ).group_by(
+        Certificate.ca_name,
+        Certificate.ca_pqc_ready
+    ).order_by(
+        func.count(Certificate.id).desc()
     ).all()
-    
+
     ca_map = {}
-    for c in certs:
-        ca_name = c.ca_name or "Unknown"
-        if ca_name not in ca_map:
-            ca_map[ca_name] = {
-                "name": ca_name,
+    total = 0
+    for ca_name, pqc_ready, count in results:
+        name = ca_name or "Unknown"
+        if name not in ca_map:
+            ca_map[name] = {
+                "name": name,
                 "count": 0,
-                "pqc_ready": c.ca_pqc_ready or False,
+                "pqc_ready": pqc_ready or False
             }
-        ca_map[ca_name]["count"] += 1
+        ca_map[name]["count"] += count
+        total += count
     
     top_cas = sorted(ca_map.values(), key=lambda x: x["count"], reverse=True)
     
     return {
         "scan_id": str(scan_id),
         "top_cas": top_cas[:20],
-        "total_certificates": len(certs),
+        "total_certificates": total,
     }
 
 

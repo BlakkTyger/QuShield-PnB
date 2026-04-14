@@ -44,6 +44,29 @@ class OllamaEmbedder(EmbeddingProvider):
             return [[] for _ in texts]
 
 
+class ChromaDefaultEmbedder(EmbeddingProvider):
+    """Local, secure embeddings via ChromaDB built-in (sentence-transformers / all-MiniLM-L6-v2)."""
+    def __init__(self):
+        try:
+            from chromadb.utils import embedding_functions
+            self.ef = embedding_functions.DefaultEmbeddingFunction()
+        except ImportError:
+            logger.warning("chromadb not installed. ChromaDefaultEmbedder will fail.")
+            self.ef = None
+
+    def embed(self, texts: List[str]) -> List[List[float]]:
+        if not self.ef:
+            return [[] for _ in texts]
+        try:
+            logger.info("Chroma Default Embedding [Model: all-MiniLM-L6-v2]")
+            embeddings = self.ef(texts)
+            # Ensure it is a list of lists of floats
+            return [list(map(float, emb)) for emb in embeddings]
+        except Exception as e:
+            logger.error(f"Chroma default embedding failed: {e}")
+            return [[] for _ in texts]
+
+
 class OpenAIEmbedder(EmbeddingProvider):
     """Cloud embeddings via OpenAI."""
     def __init__(self, api_key: str, model_override: str = None):
@@ -136,12 +159,12 @@ def get_embedding_provider(user: Optional[User] = None) -> EmbeddingProvider:
         if jina_key:
             return JinaEmbedder(api_key=jina_key)
             
-        # Last resort: Try local Ollama if configured
-        return OllamaEmbedder()
+        # Last resort: Try local reliable Chroma Default (sentence-transformers)
+        return ChromaDefaultEmbedder()
 
     # 2. Secure (Local) Mode Routing
     if mode == "secure":
-        return OllamaEmbedder()
+        return ChromaDefaultEmbedder()
 
     # 3. Global Default
-    return OllamaEmbedder()
+    return ChromaDefaultEmbedder()

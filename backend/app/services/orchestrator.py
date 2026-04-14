@@ -97,15 +97,14 @@ class ScanOrchestrator:
             """Helper to emit events to the async SSE manager safely from this sync thread."""
             from app.services.scan_events import scan_events
             logger.debug(f"{TAG} SSE emit: {event_type} phase={phase} pct={pct} msg={msg}")
-            if loop and loop.is_running():
-                try:
-                    scan_events.broadcast_sync(
-                        scan_id, event_type, phase, pct, msg, data, loop=loop
-                    )
-                except Exception as e:
-                    logger.warning(f"{TAG} SSE emit failed ({event_type}): {e}")
-            else:
-                logger.debug(f"{TAG} SSE skipped (no event loop): {event_type}")
+            try:
+                # ALWAYS call broadcast_sync so polling log buffer is populated.
+                # scan_events.broadcast_sync handles missing loop gracefully.
+                scan_events.broadcast_sync(
+                    scan_id, event_type, phase, pct, msg, data, loop=loop
+                )
+            except Exception as e:
+                logger.warning(f"{TAG} SSE emit failed ({event_type}): {e}")
 
         try:
             import uuid

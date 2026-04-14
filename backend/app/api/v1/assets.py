@@ -94,16 +94,21 @@ def _resolve_tls_key_exchange(
     asset_id: UUID,
     cert: Certificate | None,
     compliance: ComplianceResult | None,
+    cbom_kex_name: str | None = None,
 ) -> str | None:
     """Prefer CBOM key_exchange evidence; fallback to cert-cipher-derived display."""
-    cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset_id).order_by(CBOMRecord.id.desc()).first()
-    if cbom_rec:
-        kex_comp = db.query(CBOMComponent).filter(
-            CBOMComponent.cbom_id == cbom_rec.id,
-            CBOMComponent.component_type == "key_exchange",
-        ).first()
-        if kex_comp and kex_comp.name and kex_comp.name.strip():
-            return kex_comp.name
+    if cbom_kex_name:
+        return cbom_kex_name
+    elif cbom_kex_name is None and db:
+        # Fallback for older signatures
+        cbom_rec = db.query(CBOMRecord).filter(CBOMRecord.asset_id == asset_id).order_by(CBOMRecord.id.desc()).first()
+        if cbom_rec:
+            kex_comp = db.query(CBOMComponent).filter(
+                CBOMComponent.cbom_id == cbom_rec.id,
+                CBOMComponent.component_type == "key_exchange",
+            ).first()
+            if kex_comp and kex_comp.name and kex_comp.name.strip():
+                return kex_comp.name
 
     kex = _derive_key_exchange_from_cipher(cert.negotiated_cipher if cert else None)
     if compliance and (compliance.hybrid_mode_active or compliance.fips_203_deployed):
@@ -154,12 +159,8 @@ def list_assets(
             RiskScore.risk_classification == risk_class
         )
 
-    # Prioritize assets with non-empty CBOM records first (for CBOM Explorer UX).
-    has_populated_cbom = db.query(CBOMRecord.id).filter(
-        and_(CBOMRecord.asset_id == Asset.id, CBOMRecord.total_components > 0)
-    ).exists()
-    query = query.order_by(case((has_populated_cbom, 0), else_=1).asc())
-
+    # Prioritize assets with non-empty CBOM records first logic was removed for performance reasons.
+    
     # Sorting
     sort_col = getattr(Asset, sort_by, Asset.hostname)
     if sort_dir == "desc":
@@ -169,20 +170,72 @@ def list_assets(
 
     total = query.count()
     assets = query.offset(offset).limit(limit).all()
+    
+    asset_ids = [a.id for a in assets]
+    
+    # Bulk load associations to prevent N+1 timeout issue
+    ports_map = {}
+    if asset_ids:
+        for p in db.query(AssetPort).filter(AssetPort.asset_id.in_(asset_ids)).all():
+            ports_map.setdefault(p.asset_id, []).append(p)
+            
+    risk_map = {}
+    if asset_ids:
+        all_risks = db.query(RiskScore).filter(RiskScore.asset_id.in_(asset_ids)).all()
+        all_risks.sort(key=lambda r: (r.computed_at or datetime.min).timestamp(), reverse=True)
+        for r in all_risks:
+            if r.asset_id not in risk_map:
+                risk_map[r.asset_id] = r
+                
+    cert_map = {}
+    if asset_ids:
+        for c in db.query(Certificate).filter(Certificate.asset_id.in_(asset_ids)).all():
+            if c.asset_id not in cert_map:
+                cert_map[c.asset_id] = c
+                
+    comp_map = {}
+    if asset_ids:
+        all_comps = db.query(ComplianceResult).filter(ComplianceResult.asset_id.in_(asset_ids)).all()
+        all_comps.sort(key=lambda c: (c.computed_at or datetime.min).timestamp(), reverse=True)
+        for c in all_comps:
+            if c.asset_id not in comp_map:
+                comp_map[c.asset_id] = c
+                
+    cbom_kex_map = {}
+    if asset_ids:
+        # Pre-fetch key exchange names
+        latest_cboms = {}
+        all_cboms = db.query(CBOMRecord).filter(CBOMRecord.asset_id.in_(asset_ids)).all()
+        all_cboms.sort(key=lambda c: (c.id or ""), reverse=True)
+        for c in all_cboms:
+            if c.asset_id not in latest_cboms:
+                latest_cboms[c.asset_id] = c.id
+        
+        if latest_cboms.values():
+            kex_comps = db.query(CBOMComponent).filter(
+                CBOMComponent.cbom_id.in_(list(latest_cboms.values())),
+                CBOMComponent.component_type == "key_exchange"
+            ).all()
+            
+            cbom_id_to_asset = {c.id: c.asset_id for c in all_cboms if c.id in latest_cboms.values()}
+            for comp in kex_comps:
+                if comp.name and comp.name.strip():
+                    aid = cbom_id_to_asset.get(comp.cbom_id)
+                    cbom_kex_map[aid] = comp.name
 
     items = []
     for a in assets:
-        ports = db.query(AssetPort).filter(AssetPort.asset_id == a.id).all()
-        risk = db.query(RiskScore).filter(RiskScore.asset_id == a.id).order_by(RiskScore.computed_at.desc()).first()
-        cert = db.query(Certificate).filter(Certificate.asset_id == a.id).first()
+        ports = ports_map.get(a.id, [])
+        risk = risk_map.get(a.id)
+        cert = cert_map.get(a.id)
         
         cert_expiry_days = None
         if cert and cert.valid_to:
             delta = cert.valid_to - datetime.now(timezone.utc)
             cert_expiry_days = max(0, delta.days)
 
-        compliance = db.query(ComplianceResult).filter(ComplianceResult.asset_id == a.id).order_by(ComplianceResult.computed_at.desc()).first()
-        kex = _resolve_tls_key_exchange(db, a.id, cert, compliance)
+        compliance = comp_map.get(a.id)
+        kex = _resolve_tls_key_exchange(db, a.id, cert, compliance, cbom_kex_name=cbom_kex_map.get(a.id))
         posture = _derive_crypto_transition_state(cert.key_type if cert else None, kex, compliance)
 
         table_trace = {
