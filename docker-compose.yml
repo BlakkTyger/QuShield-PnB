@@ -37,9 +37,13 @@ services:
       - APP_ENV=production
       - LOG_LEVEL=DEBUG
       - GEOIP_DB_PATH=/app/geoip/GeoLite2-City.mmdb
+      - REPORTS_DIR=/app/data/reports
+      - MPLBACKEND=Agg
     ports:
       - "8000:8000"
     volumes:
+      - qushield_chroma:/app/data/chroma
+      - qushield_reports:/app/data/reports
       - qushield_data:/app/data
 
   frontend:
@@ -60,3 +64,5 @@ services:
 volumes:
   postgres_data:
   qushield_data:
+  qushield_chroma:
+  qushield_reports:

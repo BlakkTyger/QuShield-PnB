@@ -25,9 +25,10 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH="/root/.local/bin:$PATH"
+    PATH="/root/.local/bin:$PATH" \
+    MPLBACKEND=Agg
 
-# Install runtime dependencies (scanning tools)
+# Install runtime dependencies (scanning tools + matplotlib)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     nmap \
@@ -39,6 +40,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
     libffi-dev \
     shared-mime-info \
+    libfreetype6 \
+    libpng16-16 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed python packages from py-builder
@@ -52,6 +55,15 @@ COPY backend/ .
 
 # Copy GeoIP database (to /app/geoip/ — outside /app/data volume mount)
 COPY data/geolite/GeoLite2-City.mmdb /app/geoip/GeoLite2-City.mmdb
+
+# Copy knowledge base files to /app/knowledge (outside the /app/data volume mount)
+# so they survive the volume overlay at runtime
+COPY backend/data/knowledge/ /app/knowledge/
+
+# Pre-create data subdirs so they exist before volume mounts
+RUN mkdir -p /app/data/chroma /app/data/reports /app/data/graphs \
+             /app/data/cbom /app/data/discovery /app/data/subdomains \
+             /app/data/crypto_traces
 
 # Ensure scripts and binary are executable
 RUN chmod +x scripts/*.py scripts/*.sh discovery/bin/discovery-engine 2>/dev/null || true

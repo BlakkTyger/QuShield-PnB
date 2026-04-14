@@ -188,12 +188,11 @@ def list_ai_models(current_user: User = Depends(get_current_user)):
 def generate_roadmap(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Generate a structured, 4-phase PQC migration roadmap for a completed scan."""
     from app.services.roadmap_agent import generate_migration_roadmap
-    
-    # Auth isolation check
+
     scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
     if not scan_job or scan_job.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Scan not found or access denied")
-        
+
     try:
         roadmap = generate_migration_roadmap(str(scan_id), db, current_user)
         return {"scan_id": str(scan_id), "roadmap": roadmap}
@@ -201,4 +200,60 @@ def generate_roadmap(scan_id: UUID, current_user: User = Depends(get_current_use
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to generate AI roadmap")
+
+
+# ─── ReAct Agent — Streaming Chat ─────────────────────────────────────────────
+
+class AgentChatRequest(BaseModel):
+    message: str
+    history: Optional[List[dict]] = None  # [{"role": "user"|"assistant", "content": "..."}]
+
+
+@router.post("/agent/chat")
+def agent_chat_stream(
+    request: AgentChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Stream a ReAct agent response with reasoning trace.
+    Returns Server-Sent Events (text/event-stream).
+    Each SSE data line is JSON: {"type": "thought"|"tool"|"answer"|"error"|"done", "content": "..."}
+    """
+    from fastapi.responses import StreamingResponse
+    from app.services.react_agent import stream_agent_response
+
+    def _gen():
+        try:
+            yield from stream_agent_response(
+                user=current_user,
+                db=db,
+                query=request.message,
+                chat_history=request.history,
+            )
+        except Exception as e:
+            import json as _json
+            yield f"data: {_json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+
+    return StreamingResponse(
+        _gen(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
+
+@router.get("/agent/status")
+def agent_status(current_user: User = Depends(get_current_user)):
+    """Check whether the ReAct agent is available (Groq API key configured)."""
+    available = bool(getattr(__import__('app.config', fromlist=['settings']).settings, 'GROQ_API_KEY', ''))
+    return {
+        "available": available,
+        "mode": "cloud_groq" if available else "unavailable",
+        "model": "llama-3.3-70b-versatile",
+        "features": ["rag", "sql", "report_json", "web_search"],
+    }
 

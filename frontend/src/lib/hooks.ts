@@ -388,11 +388,123 @@ export function useGenerateReport() {
       const { data } = await api.post(
         `/reports/generate/${params.scanId}`,
         { report_type: params.reportType, format: params.format || "pdf", password: params.password || null },
-        {
-        responseType: "blob",
-        }
+        { responseType: "blob" }
       );
       return data;
+    },
+  });
+}
+
+export function useSavedReports() {
+  return useQuery({
+    queryKey: ["saved-reports"],
+    queryFn: async () => {
+      const { data } = await api.get("/reports/saved");
+      return data as Array<{
+        id: string;
+        scan_id: string;
+        report_type: string;
+        format: string;
+        title: string | null;
+        file_size_kb: number | null;
+        generated_at: string;
+        targets: string | null;
+      }>;
+    },
+  });
+}
+
+export function useDeleteSavedReport() {
+  return useMutation({
+    mutationFn: async (reportId: string) => {
+      const { data } = await api.delete(`/reports/saved/${reportId}`);
+      return data;
+    },
+  });
+}
+
+export function useChartData(scanId: string | null) {
+  return useQuery({
+    queryKey: ["chart-data", scanId],
+    queryFn: async () => {
+      const { data } = await api.get(`/reports/chart-data/${scanId}`);
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+/* ─── ReAct Agent ────────────────────────────────────── */
+
+export function useAgentStatus() {
+  return useQuery({
+    queryKey: ["agent-status"],
+    queryFn: async () => {
+      const { data } = await api.get("/ai/agent/status");
+      return data as { available: boolean; mode: string; model: string; features: string[] };
+    },
+    staleTime: 60_000,
+  });
+}
+
+export type AgentEventType = "thought" | "tool" | "answer" | "error" | "done";
+export interface AgentEvent {
+  type: AgentEventType;
+  content: string;
+}
+
+export function useAgentStream() {
+  return useMutation({
+    mutationFn: async ({
+      message,
+      history,
+      onEvent,
+    }: {
+      message: string;
+      history?: Array<{ role: string; content: string }>;
+      onEvent: (event: AgentEvent) => void;
+    }) => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/ai/agent/chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ message, history }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Agent request failed: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) throw new Error("No response body");
+
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("data: ")) {
+            try {
+              const event: AgentEvent = JSON.parse(trimmed.slice(6));
+              onEvent(event);
+              if (event.type === "done") return;
+            } catch {
+              // skip malformed SSE lines
+            }
+          }
+        }
+      }
     },
   });
 }

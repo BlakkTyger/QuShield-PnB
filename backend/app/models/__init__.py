@@ -13,6 +13,8 @@ from app.models.risk import RiskScore, RiskFactor
 from app.models.compliance import ComplianceResult
 from app.models.auth import User, EmailVerification, ScanCache
 from app.models.report import ReportSchedule
+from app.models.generated_report import GeneratedReport
+from app.models.geo import GeoLocation
 
 __all__ = [
     "Base",
@@ -23,5 +25,7 @@ __all__ = [
     "RiskScore", "RiskFactor",
     "ComplianceResult",
     "User", "EmailVerification", "ScanCache",
-    "ReportSchedule"
+    "ReportSchedule",
+    "GeneratedReport",
+    "GeoLocation",
 ]

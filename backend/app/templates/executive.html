@@ -1,71 +1,214 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>QuShield Executive Summary</title>
-    <style>
-        @page { size: A4; margin: 20mm; }
-        body { font-family: Inter, Arial, sans-serif; color: #0f172a; font-size: 12px; }
-        .header { border-bottom: 2px solid #7d002c; padding-bottom: 12px; margin-bottom: 18px; }
-        .title { font-size: 22px; font-weight: 800; color: #7d002c; margin: 0; }
-        .subtitle { color: #475569; margin-top: 4px; }
-        .meta { color: #64748b; font-size: 11px; margin-top: 6px; }
-        .grid { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 16px; }
-        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
-        .card h4 { margin: 0; color: #64748b; font-size: 10px; text-transform: uppercase; }
-        .card p { margin: 6px 0 0; font-size: 20px; font-weight: 700; color: #0f172a; }
-        .section-title { font-size: 14px; margin: 18px 0 8px; color: #1e293b; font-weight: 700; }
-        .panel { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px; line-height: 1.5; white-space: pre-wrap; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
-        th { background: #f8fafc; text-align: left; font-size: 10px; text-transform: uppercase; color: #64748b; }
-        .critical { color: #b91c1c; font-weight: 700; }
-        .footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 10px; text-align: center; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Quantum Risk Executive Summary</title>
+  <style>
+    @page { margin: 18mm 15mm; @bottom-center { content: "CONFIDENTIAL — QuShield-PnB | Page " counter(page) " of " counter(pages); font-size: 9px; color: #64748b; } }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f1a; color: #e2e8f0; margin: 0; padding: 0; font-size: 12px; line-height: 1.55; }
+    /* Cover */
+    .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #0b0f1a 0%, #1e293b 100%); padding: 60px 40px; text-align: center; page-break-after: always; }
+    .cover-logo { font-size: 56px; margin-bottom: 16px; }
+    .cover-title { font-size: 32px; font-weight: 900; color: #f59e0b; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .cover-subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 32px; }
+    .cover-meta { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px 32px; display: inline-block; text-align: left; font-size: 12px; color: #cbd5e1; line-height: 2; }
+    .cover-meta strong { color: #f59e0b; display: inline-block; width: 140px; }
+    .cover-class { margin-top: 32px; padding: 8px 24px; border: 2px solid #ef4444; border-radius: 4px; color: #ef4444; font-size: 12px; font-weight: 700; letter-spacing: 2px; display: inline-block; }
+    /* Page content */
+    .page { padding: 32px 40px; }
+    .section { margin-bottom: 32px; page-break-inside: avoid; }
+    h2 { font-size: 15px; font-weight: 700; color: #f59e0b; border-bottom: 1px solid #334155; padding-bottom: 6px; margin: 0 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+    h3 { font-size: 13px; font-weight: 600; color: #cbd5e1; margin: 16px 0 8px 0; }
+    /* KPI row */
+    .kpi-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .kpi { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 100px; text-align: center; }
+    .kpi .val { font-size: 28px; font-weight: 900; color: #f59e0b; line-height: 1.1; }
+    .kpi .val.red { color: #ef4444; }
+    .kpi .val.green { color: #22c55e; }
+    .kpi .val.blue { color: #60a5fa; }
+    .kpi .lbl { font-size: 10px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Narrative */
+    .narrative { background: #1e293b; border-left: 3px solid #f59e0b; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.75; color: #cbd5e1; white-space: pre-wrap; }
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { background: #0f172a; color: #f59e0b; padding: 7px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
+    td { padding: 7px 10px; border-bottom: 1px solid #1e293b; color: #cbd5e1; vertical-align: top; }
+    tr:hover td { background: #1e293b40; }
+    /* Badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge-critical { background: #7f1d1d; color: #fca5a5; }
+    .badge-vulnerable { background: #7c2d12; color: #fdba74; }
+    .badge-at_risk { background: #78350f; color: #fde68a; }
+    .badge-aware { background: #1e3a5f; color: #93c5fd; }
+    .badge-ready { background: #14532d; color: #86efac; }
+    .badge-yes { background: #7f1d1d; color: #fca5a5; }
+    .badge-no { background: #14532d; color: #86efac; }
+    /* Charts */
+    .chart-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .chart-box { flex: 1; min-width: 240px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px; text-align: center; }
+    .chart-box img { max-width: 100%; height: auto; border-radius: 4px; }
+    .chart-box .chart-title { font-size: 10px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Risk bar */
+    .risk-bar-row { display: flex; gap: 0; height: 16px; border-radius: 8px; overflow: hidden; margin: 8px 0; }
+    .risk-seg { display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: white; }
+    /* Roadmap table */
+    .roadmap-phase { background: #0f172a; border-left: 3px solid #f59e0b; padding: 10px 14px; margin: 8px 0; border-radius: 0 6px 6px 0; }
+    .roadmap-phase .phase-label { font-size: 10px; font-weight: 700; color: #f59e0b; text-transform: uppercase; margin-bottom: 4px; }
+    /* Footer */
+    .footer { margin-top: 40px; border-top: 1px solid #334155; padding-top: 12px; font-size: 9px; color: #475569; text-align: center; }
+    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1 class="title">QuShield-PnB Executive Summary</h1>
-        <div class="subtitle">Board-level quantum risk and migration overview</div>
-        <div class="meta">Scan {{ scan_id }} | Targets: {{ targets | join(", ") }} | Generated: {{ generation_date }}</div>
+
+<!-- ═══ COVER PAGE ═══ -->
+<div class="cover">
+  <div class="cover-logo">⚛</div>
+  <div class="cover-title">Quantum Risk Executive Summary</div>
+  <div class="cover-subtitle">Post-Quantum Cryptography Infrastructure Assessment</div>
+  <div class="cover-meta">
+    <div><strong>Organization:</strong> {{ targets | join(', ') or 'N/A' }}</div>
+    <div><strong>Report Date:</strong> {{ generation_date_long }}</div>
+    <div><strong>Scan Completed:</strong> {{ completed_at }}</div>
+    <div><strong>Scan ID:</strong> {{ scan_id[:8] | upper }}</div>
+    <div><strong>Scan Type:</strong> {{ scan_type | upper }}</div>
+    <div><strong>Assets Scanned:</strong> {{ stats.total }}</div>
+    <div><strong>Prepared by:</strong> QuShield-PnB Quantum Security Platform</div>
+  </div>
+  <div class="cover-class">CONFIDENTIAL — RESTRICTED DISTRIBUTION</div>
+</div>
+
+<!-- ═══ PAGE 1: KPIs + AI Summary ═══ -->
+<div class="page">
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">{{ stats.total }}</div><div class="lbl">Assets Scanned</div></div>
+    <div class="kpi"><div class="val red">{{ stats.critical_count }}</div><div class="lbl">Quantum Critical</div></div>
+    <div class="kpi"><div class="val red">{{ stats.vulnerable_count }}</div><div class="lbl">Vulnerable</div></div>
+    <div class="kpi"><div class="val red">{{ stats.hndl_count }}</div><div class="lbl">HNDL Exposed</div></div>
+    <div class="kpi"><div class="val">{{ stats.avg_readiness }}</div><div class="lbl">Avg Readiness /10</div></div>
+    <div class="kpi"><div class="val blue">{{ stats.avg_compliance_pct }}%</div><div class="lbl">Compliance</div></div>
+    <div class="kpi"><div class="val green">{{ stats.tls_13_assets }}</div><div class="lbl">TLS 1.3 Assets</div></div>
+    <div class="kpi"><div class="val green">{{ stats.hybrid_assets }}</div><div class="lbl">Hybrid PQC Mode</div></div>
+  </div>
+
+  <!-- Risk Distribution Bar -->
+  {% set total_r = risk_counts.values() | sum or 1 %}
+  <div class="section">
+    <h2>Risk Distribution</h2>
+    <div class="risk-bar-row">
+      {% if risk_counts.get('quantum_critical', 0) %}<div class="risk-seg" style="width:{{ (risk_counts.get('quantum_critical',0)/total_r*100)|round }}%;background:#b91c1c;">CRIT</div>{% endif %}
+      {% if risk_counts.get('quantum_vulnerable', 0) %}<div class="risk-seg" style="width:{{ (risk_counts.get('quantum_vulnerable',0)/total_r*100)|round }}%;background:#ea580c;">VULN</div>{% endif %}
+      {% if risk_counts.get('quantum_at_risk', 0) %}<div class="risk-seg" style="width:{{ (risk_counts.get('quantum_at_risk',0)/total_r*100)|round }}%;background:#d97706;">RISK</div>{% endif %}
+      {% if risk_counts.get('quantum_aware', 0) %}<div class="risk-seg" style="width:{{ (risk_counts.get('quantum_aware',0)/total_r*100)|round }}%;background:#2563eb;">AWARE</div>{% endif %}
+      {% if risk_counts.get('quantum_ready', 0) %}<div class="risk-seg" style="width:{{ (risk_counts.get('quantum_ready',0)/total_r*100)|round }}%;background:#16a34a;">READY</div>{% endif %}
     </div>
+    <div style="font-size:10px;color:#64748b;margin-top:4px;">
+      {% for cls, cnt in risk_counts.items() %}<span style="margin-right:12px;">{{ cls.replace('quantum_','') | upper }}: <strong>{{ cnt }}</strong></span>{% endfor %}
+    </div>
+  </div>
 
-    <table class="grid">
-        <tr>
-            <td class="card"><h4>Total Assets</h4><p>{{ stats.total }}</p></td>
-            <td class="card"><h4>Critical + Vulnerable</h4><p>{{ stats.high_count }}</p></td>
-            <td class="card"><h4>Avg Readiness</h4><p>{{ stats.avg_readiness }}/10</p></td>
-            <td class="card"><h4>Compliance</h4><p>{{ stats.avg_compliance_pct }}%</p></td>
-        </tr>
-    </table>
+  <!-- Charts -->
+  {% if charts %}
+  <div class="chart-row">
+    {% if charts.risk_distribution %}<div class="chart-box"><div class="chart-title">Risk Distribution</div><img src="data:image/png;base64,{{ charts.risk_distribution }}" alt="Risk Distribution"/></div>{% endif %}
+    {% if charts.quantum_readiness_gauge %}<div class="chart-box"><div class="chart-title">Quantum Readiness</div><img src="data:image/png;base64,{{ charts.quantum_readiness_gauge }}" alt="Readiness Gauge"/></div>{% endif %}
+    {% if charts.hndl_exposure_timeline %}<div class="chart-box"><div class="chart-title">HNDL Exposure &amp; CRQC Timeline</div><img src="data:image/png;base64,{{ charts.hndl_exposure_timeline }}" alt="HNDL Timeline"/></div>{% endif %}
+  </div>
+  {% endif %}
 
-    <div class="section-title">AI Executive Narrative</div>
-    <div class="panel">{{ ai_narrative }}</div>
+  <!-- Board Summary -->
+  <div class="section">
+    <h2>Board-Level Executive Summary</h2>
+    <div class="narrative">{{ ai.board_summary or 'AI narrative unavailable.' }}</div>
+  </div>
 
-    <div class="section-title">Top High-Risk Assets</div>
+  <!-- Risk Posture Analysis -->
+  <div class="section">
+    <h2>Quantum Risk Posture Analysis</h2>
+    <div class="narrative">{{ ai.risk_posture or 'Risk posture analysis unavailable.' }}</div>
+  </div>
+
+  <!-- Top Threats -->
+  <div class="section">
+    <h2>Top Quantum Threats</h2>
+    <div class="narrative">{{ ai.top_threats or 'Threat analysis unavailable.' }}</div>
+  </div>
+
+  <!-- Compliance Summary -->
+  <div class="section">
+    <h2>Regulatory Compliance Snapshot</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Hostname/IP</th>
-                <th>Type</th>
-                <th>Risk</th>
-                <th>Finding</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asset in critical_assets[:20] %}
-            <tr>
-                <td>{{ asset.hostname }}<br><small>{{ asset.ip_address }}</small></td>
-                <td>{{ asset.asset_type }}</td>
-                <td class="critical">{{ asset.risk_score }} ({{ asset.classification }})</td>
-                <td>{{ asset.weakness }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4">No critical or vulnerable assets were identified.</td></tr>
-            {% endfor %}
-        </tbody>
+      <thead><tr><th>Framework</th><th>Compliant Assets</th><th>Total</th><th>Coverage %</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>RBI IT Framework 2023</td><td>{{ stats.rbi_compliant_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.rbi_compliant_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.rbi_compliant_assets / (stats.total or 1) >= 0.8 %}badge-ready{% elif stats.rbi_compliant_assets / (stats.total or 1) >= 0.5 %}badge-aware{% else %}badge-critical{% endif %}">{% if stats.rbi_compliant_assets / (stats.total or 1) >= 0.8 %}COMPLIANT{% elif stats.rbi_compliant_assets / (stats.total or 1) >= 0.5 %}PARTIAL{% else %}NON-COMPLIANT{% endif %}</span></td></tr>
+        <tr><td>SEBI CSCRF</td><td>{{ stats.sebi_compliant_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.sebi_compliant_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.sebi_compliant_assets / (stats.total or 1) >= 0.8 %}badge-ready{% elif stats.sebi_compliant_assets / (stats.total or 1) >= 0.5 %}badge-aware{% else %}badge-critical{% endif %}">{% if stats.sebi_compliant_assets / (stats.total or 1) >= 0.8 %}COMPLIANT{% elif stats.sebi_compliant_assets / (stats.total or 1) >= 0.5 %}PARTIAL{% else %}NON-COMPLIANT{% endif %}</span></td></tr>
+        <tr><td>PCI DSS 4.0</td><td>{{ stats.pci_compliant_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.pci_compliant_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.pci_compliant_assets / (stats.total or 1) >= 0.8 %}badge-ready{% else %}badge-vulnerable{% endif %}">{% if stats.pci_compliant_assets / (stats.total or 1) >= 0.8 %}COMPLIANT{% else %}REVIEW{% endif %}</span></td></tr>
+        <tr><td>NIST FIPS 203 (ML-KEM)</td><td>{{ stats.fips_203_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.fips_203_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.fips_203_assets > 0 %}badge-aware{% else %}badge-critical{% endif %}">{% if stats.fips_203_assets > 0 %}IN PROGRESS{% else %}NOT STARTED{% endif %}</span></td></tr>
+        <tr><td>NIST FIPS 204 (ML-DSA)</td><td>{{ stats.fips_204_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.fips_204_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.fips_204_assets > 0 %}badge-aware{% else %}badge-critical{% endif %}">{% if stats.fips_204_assets > 0 %}IN PROGRESS{% else %}NOT STARTED{% endif %}</span></td></tr>
+        <tr><td>Hybrid PQC (X25519MLKEM768)</td><td>{{ stats.hybrid_assets }}</td><td>{{ stats.total }}</td><td>{{ (stats.hybrid_assets / (stats.total or 1) * 100) | round(1) }}%</td><td><span class="badge {% if stats.hybrid_assets > 0 %}badge-aware{% else %}badge-vulnerable{% endif %}">{% if stats.hybrid_assets > 0 %}ACTIVE{% else %}NOT DEPLOYED{% endif %}</span></td></tr>
+      </tbody>
     </table>
+  </div>
 
-    <div class="footer">Confidential internal report generated by QuShield-PnB.</div>
+  <!-- Top Critical Assets -->
+  <div class="section">
+    <h2>Top Critical &amp; Vulnerable Assets</h2>
+    <table>
+      <thead><tr><th>#</th><th>Hostname</th><th>Type</th><th>Risk Score</th><th>Risk Class</th><th>HNDL</th><th>TLS</th><th>Key Weaknesses</th></tr></thead>
+      <tbody>
+      {% for a in critical_assets[:25] %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td style="font-family:monospace;font-size:10px;">{{ a.hostname }}</td>
+          <td>{{ a.asset_type }}</td>
+          <td><strong style="color:{% if a.risk_score >= 800 %}#ef4444{% elif a.risk_score >= 600 %}#f97316{% elif a.risk_score >= 400 %}#eab308{% else %}#22c55e{% endif %};">{{ a.risk_score }}</strong></td>
+          <td><span class="badge badge-{{ a.classification | lower }}">{{ a.classification }}</span></td>
+          <td><span class="badge {% if a.hndl_exposed %}badge-yes{% else %}badge-no{% endif %}">{% if a.hndl_exposed %}YES{% else %}NO{% endif %}</span></td>
+          <td>{{ a.tls_version }}</td>
+          <td style="font-size:10px;color:#94a3b8;">{{ a.weakness[:120] }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" style="text-align:center;color:#64748b;padding:20px;">No critical assets identified in this scan.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Immediate Actions -->
+  <div class="section">
+    <h2>Immediate Actions — Next 30 Days</h2>
+    <div class="narrative">{{ ai.immediate_actions or 'Action plan unavailable.' }}</div>
+  </div>
+
+  <!-- 90-Day Roadmap -->
+  <div class="section">
+    <h2>90-Day Quick-Win Roadmap</h2>
+    <div class="narrative">{{ ai.roadmap_90d or 'Roadmap unavailable.' }}</div>
+  </div>
+
+  <!-- CBOM Summary -->
+  <div class="section">
+    <h2>Cryptographic Inventory (CBOM) Summary</h2>
+    <div class="kpi-row">
+      <div class="kpi"><div class="val">{{ stats.total_cbom_components }}</div><div class="lbl">Total Components</div></div>
+      <div class="kpi"><div class="val red">{{ stats.vulnerable_cbom_components }}</div><div class="lbl">Vulnerable</div></div>
+      <div class="kpi"><div class="val green">{{ stats.quantum_ready_pct }}%</div><div class="lbl">Quantum Ready</div></div>
+      <div class="kpi"><div class="val red">{{ stats.vulnerable_certs }}</div><div class="lbl">Vulnerable Certs</div></div>
+    </div>
+    {% if charts.cbom_algorithm_bar %}
+    <div class="chart-box" style="max-width:100%;margin-top:12px;">
+      <div class="chart-title">Top CBOM Algorithms — Quantum Vulnerability Distribution</div>
+      <img src="data:image/png;base64,{{ charts.cbom_algorithm_bar }}" alt="CBOM Algorithms"/>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="footer">
+    QuShield-PnB Quantum Security Platform &nbsp;|&nbsp; CONFIDENTIAL — FOR INTERNAL USE ONLY &nbsp;|&nbsp; {{ generation_date }} &nbsp;|&nbsp; Scan {{ scan_id[:8] | upper }}
+  </div>
+</div>
 </body>
 </html>

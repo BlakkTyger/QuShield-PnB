@@ -14,14 +14,15 @@ from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models.auth import User
 from app.models.report import ReportSchedule
+from app.models.generated_report import GeneratedReport
 from app.services.report_generator import ReportGenerator
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 class ReportRequest(BaseModel):
-    report_type: Literal["executive", "cbom_audit", "rbi_submission", "migration_progress", "full_scan"] = "executive"
-    format: Literal["pdf", "csv", "json"] = "pdf"
+    report_type: Literal["executive", "cbom_audit", "rbi_submission", "migration_progress", "full_scan", "pqc_migration_plan"] = "executive"
+    format: Literal["pdf", "csv", "json", "html"] = "pdf"
     password: Optional[str] = None
 
 class ScheduleCreate(BaseModel):
@@ -123,3 +124,105 @@ def delete_schedule(
     db.delete(schedule)
     db.commit()
     return {"status": "deleted", "id": str(schedule_id)}
+
+
+# ─── Saved Reports ────────────────────────────────────────────────────────────
+
+class SavedReportResponse(BaseModel):
+    id: UUID
+    scan_id: UUID
+    report_type: str
+    format: str
+    title: Optional[str] = None
+    file_size_kb: Optional[int] = None
+    generated_at: datetime
+    targets: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+@router.get("/saved", response_model=List[SavedReportResponse])
+def list_saved_reports(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """List all previously generated reports for the current user."""
+    reports = (
+        db.query(GeneratedReport)
+        .filter(GeneratedReport.user_id == current_user.id)
+        .order_by(GeneratedReport.generated_at.desc())
+        .limit(100)
+        .all()
+    )
+    return reports
+
+
+@router.get("/saved/{report_id}/download")
+def download_saved_report(
+    report_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Download a previously generated report file."""
+    import os
+    record = db.query(GeneratedReport).filter(
+        GeneratedReport.id == report_id,
+        GeneratedReport.user_id == current_user.id,
+    ).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Report not found")
+    if not record.file_path or not os.path.exists(record.file_path):
+        raise HTTPException(status_code=410, detail="Report file no longer available on disk")
+
+    with open(record.file_path, "rb") as f:
+        content = f.read()
+
+    media_map = {"pdf": "application/pdf", "csv": "text/csv",
+                 "json": "application/json", "html": "text/html"}
+    fmt = record.format or "pdf"
+    filename = f"qushield_{record.report_type}_{str(record.id)[:8]}.{fmt}"
+    return Response(
+        content=content,
+        media_type=media_map.get(fmt, "application/octet-stream"),
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@router.delete("/saved/{report_id}")
+def delete_saved_report(
+    report_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Delete a saved report record (and its file if it exists)."""
+    import os
+    record = db.query(GeneratedReport).filter(
+        GeneratedReport.id == report_id,
+        GeneratedReport.user_id == current_user.id,
+    ).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Report not found")
+    if record.file_path and os.path.exists(record.file_path):
+        try:
+            os.remove(record.file_path)
+        except OSError:
+            pass
+    db.delete(record)
+    db.commit()
+    return {"status": "deleted", "id": str(report_id)}
+
+
+@router.get("/chart-data/{scan_id}")
+def get_chart_data(
+    scan_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Return raw chart data JSON for frontend rendering (no base64 images)."""
+    try:
+        generator = ReportGenerator(db, current_user)
+        return generator.get_chart_data(str(scan_id))
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Chart data error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve chart data")

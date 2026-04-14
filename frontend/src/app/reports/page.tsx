@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useScans, useGenerateReport } from "@/lib/hooks";
+import { useScans, useGenerateReport, useSavedReports, useDeleteSavedReport } from "@/lib/hooks";
 import { EmptyState, Skeleton } from "@/components/ui";
 import { FileText, Download, Loader2, CheckCircle, AlertTriangle, CalendarDays, ExternalLink, Link, Clock, Plus, Folder, MessageSquare, BarChart2, Trash2, RefreshCw } from "lucide-react";
 import api from "@/lib/api";
@@ -154,6 +154,7 @@ export default function ReportsPage() {
       }
       
       setSuccessMsg("Report generated and downloaded successfully!");
+      refetchSaved();
     } catch (err) {
       setErrorMsg("Failed to generate report. Please try again.");
     } finally {
@@ -187,12 +188,43 @@ export default function ReportsPage() {
     }
   };
 
+  const { data: savedReports, refetch: refetchSaved } = useSavedReports();
+  const deleteSaved = useDeleteSavedReport();
+
+  const handleDeleteSaved = async (id: string) => {
+    try {
+      await deleteSaved.mutateAsync(id);
+      refetchSaved();
+    } catch {
+      setErrorMsg("Failed to delete saved report.");
+    }
+  };
+
+  const handleDownloadSaved = (reportId: string, reportType: string, format: string) => {
+    const token = localStorage.getItem("token");
+    const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/reports/saved/${reportId}/download`;
+    const a = document.createElement("a");
+    a.href = url;
+    if (token) {
+      fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.blob())
+        .then(blob => {
+          const blobUrl = URL.createObjectURL(blob);
+          a.href = blobUrl;
+          a.download = `qushield_${reportType}.${format}`;
+          a.click();
+          URL.revokeObjectURL(blobUrl);
+        });
+    }
+  };
+
   const reportOptions: { value: string; label: string; disabled?: boolean }[] = [
     { value: "executive", label: "Quantum Risk Executive Summary" },
     { value: "full_scan", label: "Full Infrastructure Scan" },
     { value: "rbi_submission", label: "RBI Crypto Governance" },
     { value: "cbom_audit", label: "CBOM Audit Package" },
     { value: "migration_progress", label: "PQC Migration Progress" },
+    { value: "pqc_migration_plan", label: "PQC Migration Plan" },
   ];
 
   return (
@@ -585,6 +617,72 @@ export default function ReportsPage() {
         </div>
       </div>
       
+      {/* ─── Saved Reports ─── */}
+      <div className="glass-card-static w-full max-w-5xl rounded-2xl overflow-hidden mt-6" style={{ background: "var(--bg-card)" }}>
+        <div className="p-6 border-b flex justify-between items-center" style={{ borderColor: "var(--border-subtle)" }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+              <Folder size={20} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Saved Reports</h2>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Previously generated reports — download or delete</p>
+            </div>
+          </div>
+          <button onClick={() => refetchSaved()} className="text-xs text-gray-400 hover:text-blue-400 flex items-center gap-1 transition">
+            <RefreshCw size={12} /> Refresh
+          </button>
+        </div>
+        <div className="p-6">
+          {!savedReports || savedReports.length === 0 ? (
+            <div className="text-sm text-gray-500 py-6 text-center">
+              No saved reports yet. Generate a report above — it will appear here automatically.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {savedReports.map((r) => {
+                const label = reportOptions.find(o => o.value === r.report_type)?.label || r.report_type;
+                const fmtBadge: Record<string, string> = { pdf: "bg-red-500/20 text-red-400", csv: "bg-green-500/20 text-green-400", json: "bg-blue-500/20 text-blue-400", html: "bg-purple-500/20 text-purple-400" };
+                return (
+                  <div key={r.id} className="flex items-center justify-between bg-white/5 border rounded-xl p-4 group hover:border-blue-400/30 transition" style={{ borderColor: "var(--border-subtle)" }}>
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className="p-2 rounded-lg bg-blue-500/15 text-blue-400 shrink-0">
+                        <FileText size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--text-primary)" }}>{r.title || label}</p>
+                        <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-400">
+                          <span className="flex items-center gap-1"><Clock size={10} />{new Date(r.generated_at).toLocaleString()}</span>
+                          <span className={`px-1.5 py-0.5 rounded font-bold uppercase ${fmtBadge[r.format] || "bg-gray-500/20 text-gray-400"}`}>{r.format}</span>
+                          {r.file_size_kb != null && <span>{r.file_size_kb} KB</span>}
+                          {r.targets && <span className="truncate max-w-[200px]">📍 {r.targets}</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-4">
+                      <button
+                        onClick={() => handleDownloadSaved(r.id, r.report_type, r.format)}
+                        className="p-2 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-400/10 transition"
+                        title="Download"
+                      >
+                        <Download size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSaved(r.id)}
+                        className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition opacity-0 group-hover:opacity-100"
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
       {currentTime && (
         <div className="fixed bottom-4 left-4 flex flex-col gap-1 items-start text-[10px] uppercase font-bold tracking-widest opacity-50 z-50">
           <span className="flex items-center gap-1.5"><Clock size={10} /> Local System Time</span>

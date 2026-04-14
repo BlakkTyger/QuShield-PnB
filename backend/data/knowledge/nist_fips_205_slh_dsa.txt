@@ -1,0 +1,58 @@
+NIST FIPS 205 — Stateless Hash-Based Digital Signature Algorithm Standard (SLH-DSA)
+Source: National Institute of Standards and Technology, August 2024
+Tags: pqc, digital_signature, sphincs, hash_based, fips205, nist, quantum_safe
+
+OVERVIEW
+NIST FIPS 205 standardizes SLH-DSA (formerly SPHINCS+), a stateless hash-based digital signature scheme. Unlike ML-DSA (lattice-based), SLH-DSA's security rests solely on the collision resistance of hash functions (SHA-256, SHAKE-256), which have been studied for decades with high confidence. SLH-DSA is considered the most conservative PQC signature choice.
+
+WHY SLH-DSA MATTERS
+SLH-DSA provides a diversity hedge: if lattice-based cryptography (ML-DSA, ML-KEM) is broken by future advances, hash-based signatures remain secure. NIST recommends deploying both ML-DSA and SLH-DSA for critical infrastructure with the highest long-term data sensitivity.
+
+PARAMETER SETS
+SLH-DSA has 12 parameter sets combining:
+- Hash function: SHA-256 (faster) or SHAKE-256 (smaller)
+- Category: "s" (small signature, slower) or "f" (fast signing, larger signature)
+- Security level: 1, 3, or 5
+
+Key recommended variants:
+- SLH-DSA-SHA2-128s: Smallest signatures. Signing: slow (~100ms). Signature: 7856 bytes.
+- SLH-DSA-SHA2-128f: Fast signing. Signature: 17088 bytes.
+- SLH-DSA-SHA2-192s: Level 3 security. Signature: 16224 bytes.
+- SLH-DSA-SHA2-256s: Highest security. Signature: 29792 bytes. Very slow signing (~1-2s).
+
+SECURITY PROPERTIES
+- Security based only on cryptographic hash functions (no number theory or algebraic structure)
+- Quantum-safe: Grover's algorithm provides at most quadratic speedup — neutralized by doubled hash output length
+- Stateless: No per-signer state required (unlike XMSS, LMS which are stateful)
+- Side-channel resistant (minimal secret-dependent operations)
+- Extremely well-understood security model
+
+LIMITATIONS
+- Large signature sizes (7KB to 30KB) — unsuitable for high-frequency transaction signing
+- Slow signing (especially "s" variants) — unsuitable for real-time payment authorization
+- Not recommended as primary signing algorithm for high-throughput systems
+
+BANKING USE CASES (APPROPRIATE)
+- Long-lived root CA certificate signatures (sign once, verify many times)
+- Software release signing (firmware, core banking software updates) — sign infrequently
+- Regulatory audit log signing and timestamping
+- Cross-border settlement finality receipts (SWIFT MT messages, SEPA)
+- Legal document notarization
+
+BANKING USE CASES (INAPPROPRIATE)
+- TLS handshake authentication (too slow, too large)
+- Real-time payment transaction signing (RTGS, NEFT, UPI)
+- JWT token generation at high rates
+- API authentication
+
+HYBRID DEPLOYMENT STRATEGY
+For maximum security coverage:
+1. Use ML-DSA-65 as the primary signature algorithm (performance-first)
+2. Add SLH-DSA-SHA2-128s as a secondary "backup" signature for root CA and long-lived certificates
+3. This provides dual-algorithm protection against both lattice and hash-function vulnerabilities
+
+REGULATORY AND COMPLIANCE
+- NIST SP 800-208: Hash-based signatures (LMS, XMSS, SLH-DSA) are approved for all federal applications
+- RBI: SLH-DSA recommended for root CA and PKI trust anchor signatures
+- SEBI CSCRF: Audit log integrity protection may use SLH-DSA-SHA2-128s for long-term verifiability
+- ISO/IEC 14888-3: Hash-based signature standards (SLH-DSA is compliant)

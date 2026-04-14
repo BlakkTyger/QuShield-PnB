@@ -30,6 +30,18 @@ async def lifespan(app: FastAPI):
         start_scheduler()
     except Exception as e:
         logger.error(f"Database init failed: {e}")
+
+    # Seed global knowledge base in background (non-blocking)
+    def _seed_kb():
+        try:
+            from app.services.knowledge_seeder import seed_knowledge_base
+            count = seed_knowledge_base()
+            if count:
+                logger.info(f"Knowledge base seeded: {count} chunks embedded.")
+        except Exception as e:
+            logger.warning(f"Knowledge base seeding failed (non-fatal): {e}")
+
+    threading.Thread(target=_seed_kb, daemon=True, name="kb-seeder").start()
     yield
     stop_scheduler()
     logger.info("QuShield-PnB shutting down...")

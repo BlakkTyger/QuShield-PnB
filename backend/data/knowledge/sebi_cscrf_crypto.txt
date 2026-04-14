@@ -1,0 +1,43 @@
+SEBI CSCRF — Cybersecurity and Cyber Resilience Framework Cryptographic Requirements
+Source: SEBI Circular SEBI/HO/ITD/ITD-PoD-2/P/CIR/2023/169, November 2023
+Tags: sebi, cscrf, compliance, india, capital_markets, crypto, pqc
+
+OVERVIEW
+SEBI's Cybersecurity and Cyber Resilience Framework (CSCRF) applies to Regulated Entities (REs) including Stock Brokers, Depository Participants, Portfolio Managers, Investment Advisers, and Market Infrastructure Institutions (stock exchanges, depositories, clearing corporations).
+
+KEY CRYPTOGRAPHIC REQUIREMENTS
+
+ENCRYPTION STANDARDS
+- Data in transit: Minimum TLS 1.2 (TLS 1.3 strongly recommended), cipher suites must support forward secrecy
+- Data at rest: AES-256 minimum for sensitive data; AES-128 acceptable for less sensitive data
+- Database encryption: Tablespace or column-level encryption for PII and financial data
+- Key length: RSA minimum 2048-bit; ECDSA minimum P-256; planning for PQC migration required
+
+PQC TRANSITION REQUIREMENTS
+- All REs must conduct cryptographic risk assessment by Q2 2024
+- Identify quantum-vulnerable algorithms in use across trading systems, settlement infrastructure, and client data stores
+- Submit PQC migration plan to SEBI by Q4 2024
+- Implement hybrid PQC on critical trading APIs by Q2 2026
+- Full PQC deployment for all externally-facing systems by Q4 2027
+
+CERTIFICATE MANAGEMENT
+- Certificates must use SHA-256 or stronger hash algorithms (SHA-1 disallowed)
+- Certificate validity: maximum 397 days for public certificates (aligned with CA/Browser Forum)
+- Internal certificates: maximum 5 years
+- Certificate Transparency (CT) logging mandatory for all public-facing trading platform certificates
+- Wildcard certificates prohibited for trading and settlement API endpoints
+
+TRADING SYSTEM SPECIFIC REQUIREMENTS
+- Order management system (OMS) API authentication: HMAC-SHA256 minimum; migrate to PQC-compatible MACs
+- Market data feeds: TLS 1.3 mandatory by 2025
+- FIX protocol connections: Upgrade to TLS 1.3 with forward secrecy
+- Algorithmic trading: API keys must use cryptographically secure random generation (CSPRNG)
+- Settlement messages: Digital signatures required; migrate to ML-DSA by 2026
+
+AUDIT AND REPORTING
+- Annual cryptographic audit by CERT-In empanelled auditor
+- Quarterly internal cryptographic posture review
+- Report any cryptographic weakness to SEBI within 24 hours of discovery
+- CBOM submission as part of annual IT audit
+
+PENALTIES: Non-compliance may result in trading license suspension, financial penalties, and mandatory security audits.
