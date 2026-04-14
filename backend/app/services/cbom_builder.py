@@ -248,7 +248,10 @@ def build_cbom(asset_id: str, crypto_fingerprint: dict) -> dict:
 
     for cs in tls_data.get("cipher_suites") or []:
         cs_name = cs.get("name", "")
-        if cs_name in seen_algos:
+        # Handle legacy (NONE) values from OpenSSL
+        if cs_name == "(NONE)":
+            cs_name = "UNKNOWN"
+        if not cs_name or cs_name in seen_algos:
             continue
         seen_algos.add(cs_name)
 

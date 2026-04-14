@@ -188,6 +188,32 @@ export function useCBOMAlgorithms(scanId: string | null) {
   });
 }
 
+export function useCBOMKeyLengths(scanId: string | null) {
+  return useQuery({
+    queryKey: ["cbom-keylengths", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{ scan_id: string; key_length_distribution: Record<string, number>; total_components: number }>(
+        `/cbom/scan/${scanId}/key-lengths`
+      );
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+export function useCertificateAuthorities(scanId: string | null) {
+  return useQuery({
+    queryKey: ["cert-authorities", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{ scan_id: string; top_cas: { name: string; count: number; pqc_ready: boolean }[]; total_certificates: number }>(
+        `/cbom/certificates/scan/${scanId}/authorities`
+      );
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
 /* ─── Risk ───────────────────────────────────────────── */
 export function useRiskHeatmap(scanId: string | null) {
   return useQuery({
@@ -401,7 +427,7 @@ export function useTopology(scanId: string | null) {
 
 /* ─── GeoIP ──────────────────────────────────────────── */
 export function useGeoMapData(scanId: string | null) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["geo-map", scanId],
     queryFn: async () => {
       // First trigger geolocation (lazy-loads if not present)
@@ -412,6 +438,16 @@ export function useGeoMapData(scanId: string | null) {
     },
     enabled: !!scanId,
   });
+
+  const refreshGeo = async () => {
+    if (!scanId) return;
+    // Clear cached geo data on backend and re-resolve
+    await api.get(`/geo/scan/${scanId}?refresh=true`);
+    // Refetch map data with the freshly resolved locations
+    await query.refetch();
+  };
+
+  return { ...query, refreshGeo };
 }
 
 /* ─── AI Assistant ───────────────────────────────────── */
@@ -518,6 +554,69 @@ export function useChartData(scanId: string | null) {
     queryKey: ["chart-data", scanId],
     queryFn: async () => {
       const { data } = await api.get(`/reports/chart-data/${scanId}`);
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+/* ─── Dashboard Charts ───────────────────────────────── */
+export function useAssetTypeDistribution(scanId: string | null) {
+  return useQuery({
+    queryKey: ["asset-type-distribution", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{ scan_id: string; distribution: Record<string, number>; total_assets: number }>(
+        `/assets/scan/${scanId}/type-distribution`
+      );
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+export function useCertificateExpiryTimeline(scanId: string | null) {
+  return useQuery({
+    queryKey: ["cert-expiry-timeline", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{
+        scan_id: string;
+        timeline: { month: string; count: number; critical: number; warning: number }[];
+        total_certificates: number;
+        expiring_30_days: number;
+        expiring_90_days: number;
+      }>(`/cbom/certificates/scan/${scanId}/expiry-timeline`);
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+export function useIPVersionDistribution(scanId: string | null) {
+  return useQuery({
+    queryKey: ["ip-version-distribution", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{
+        scan_id: string;
+        ipv4_only: number;
+        ipv6_only: number;
+        dual_stack: number;
+        total_assets: number;
+      }>(`/assets/scan/${scanId}/ip-distribution`);
+      return data;
+    },
+    enabled: !!scanId,
+  });
+}
+
+export function useNameserverRecords(scanId: string | null) {
+  return useQuery({
+    queryKey: ["nameserver-records", scanId],
+    queryFn: async () => {
+      const { data } = await api.get<{
+        scan_id: string;
+        nameservers: { hostname: string; ns_records: string[]; ip_addresses: string[] }[];
+        total_zones: number;
+      }>(`/assets/dns/scan/${scanId}/nameservers`);
       return data;
     },
     enabled: !!scanId,

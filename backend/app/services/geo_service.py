@@ -91,15 +91,21 @@ def geolocate_ip(ip: str) -> Optional[dict]:
     Geolocate a single IP address.
 
     Tries MaxMind first, falls back to ip-api.com.
+    If MaxMind returns only country-level data (no city), try ip-api.com
+    for better precision and use MaxMind as last resort.
     """
     # Try MaxMind first
-    result = _geolocate_maxmind(ip)
-    if result:
-        return result
+    maxmind_result = _geolocate_maxmind(ip)
+    if maxmind_result and maxmind_result.get("city"):
+        return maxmind_result
 
-    # Fallback to ip-api.com
-    result = _geolocate_ipapi(ip)
-    return result
+    # Fallback to ip-api.com (better city-level resolution)
+    ipapi_result = _geolocate_ipapi(ip)
+    if ipapi_result:
+        return ipapi_result
+
+    # Last resort: MaxMind country-level data (no city)
+    return maxmind_result
 
 
 def resolve_and_geolocate(hostname: str) -> Optional[dict]:
@@ -137,7 +143,7 @@ def geolocate_batch(
                 continue
 
         geo = _geolocate_maxmind(ip)
-        if geo:
+        if geo and geo.get("city") and (geo.get("org") or geo.get("isp")):
             geo["hostname"] = hostname
             geo["asset_id"] = asset.get("asset_id")
             results.append(geo)
@@ -146,6 +152,7 @@ def geolocate_batch(
                 "ip": ip,
                 "hostname": hostname,
                 "asset_id": asset.get("asset_id"),
+                "_maxmind_fallback": geo,  # Keep country-level data as fallback
             })
 
     # 2. Batch resolve remaining via ip-api.com
@@ -161,6 +168,7 @@ def geolocate_batch(
                 
                 if resp.status_code == 200:
                     api_results = resp.json()
+                    resolved_ips = set()
                     for api_res, asset_info in zip(api_results, chunk):
                         if api_res.get("status") == "success":
                             geo = {
@@ -179,8 +187,23 @@ def geolocate_batch(
                                 "asset_id": asset_info["asset_id"],
                             }
                             results.append(geo)
+                            resolved_ips.add(asset_info["ip"])
+                    # Use MaxMind country-level fallback for IPs ip-api.com couldn't resolve
+                    for asset_info in chunk:
+                        if asset_info["ip"] not in resolved_ips and asset_info.get("_maxmind_fallback"):
+                            fb = asset_info["_maxmind_fallback"]
+                            fb["hostname"] = asset_info["hostname"]
+                            fb["asset_id"] = asset_info["asset_id"]
+                            results.append(fb)
         except Exception as e:
             logger.debug(f"ip-api.com batch lookup failed for chunk: {e}")
+            # On batch failure, use any MaxMind fallback data we have
+            for asset_info in chunk:
+                if asset_info.get("_maxmind_fallback"):
+                    fb = asset_info["_maxmind_fallback"]
+                    fb["hostname"] = asset_info["hostname"]
+                    fb["asset_id"] = asset_info["asset_id"]
+                    results.append(fb)
             
         if len(unresolved_assets) > chunk_size and i + chunk_size < len(unresolved_assets):
             time.sleep(2.0)  # Rate limit protection

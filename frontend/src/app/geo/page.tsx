@@ -34,6 +34,7 @@ export default function GeoMapPage() {
   const [scanId, setScanId] = useState<string | null>(null);
   const [leafletReady, setLeafletReady] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     // Read initial theme
@@ -70,7 +71,7 @@ export default function GeoMapPage() {
     setLeafletReady(true);
   }, []);
 
-  const { data: geoData, isLoading, error } = useGeoMapData(scanId);
+  const { data: geoData, isLoading, error, refreshGeo } = useGeoMapData(scanId);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -124,7 +125,24 @@ export default function GeoMapPage() {
             Visualize discovered IP addresses on an interactive global map
           </p>
         </div>
-        <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={async () => { setIsRefreshing(true); try { await refreshGeo(); } finally { setIsRefreshing(false); } }}
+            disabled={isLoading || isRefreshing}
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors"
+            style={{
+              background: "var(--bg-tertiary)",
+              color: "var(--text-secondary)",
+              border: "1px solid var(--border-primary)",
+              opacity: isLoading ? 0.5 : 1,
+              cursor: isLoading ? "not-allowed" : "pointer",
+            }}
+            title="Re-resolve all IP geolocations"
+          >
+            Refresh Geo
+          </button>
+          <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6" style={{ minHeight: "calc(100vh - var(--header-height) - 120px)" }}>

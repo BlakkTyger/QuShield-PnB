@@ -215,6 +215,9 @@ def _scan_with_openssl(hostname: str, port: int, timeout: int = 20, connect_host
         cipher_match = re.search(r"Cipher is\s*([^\n\r]+)", output)
         if cipher_match:
             cipher = cipher_match.group(1).strip()
+            # Replace OpenSSL's (NONE) with UNKNOWN
+            if cipher == "(NONE)":
+                cipher = "UNKNOWN"
             result["negotiated_cipher"] = cipher
             result["cipher_suites"].append(
                 {"name": cipher, "tls_version": result["negotiated_protocol"], "key_size": None}
