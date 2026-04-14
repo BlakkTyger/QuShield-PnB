@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Search,
   LayoutDashboard,
   Server,
   Shield,
@@ -16,8 +14,6 @@ import {
   History,
   FileText,
   Bot,
-  ChevronLeft,
-  ChevronRight,
   Activity,
 } from "lucide-react";
 
@@ -27,7 +23,7 @@ const NAV_ITEMS = [
   { href: "/assets", label: "Assets", icon: Server },
   { href: "/cbom", label: "CBOM Explorer", icon: Shield },
   { href: "/risk", label: "Risk Intelligence", icon: AlertTriangle },
-  { href: "/risk/monte-carlo", label: "↳ Monte Carlo Sim", icon: Activity },
+  { href: "/risk/monte-carlo", label: "Monte Carlo Sim", icon: Activity },
   { href: "/compliance", label: "Compliance", icon: CheckCircle },
   { href: "/topology", label: "Topology Map", icon: Network },
   { href: "/geo", label: "GeoIP Map", icon: Globe },
@@ -36,28 +32,13 @@ const NAV_ITEMS = [
   { href: "/ai", label: "AI Assistant", icon: Bot },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+  searchQuery: string;
+}
+
+export default function Sidebar({ collapsed, searchQuery }: SidebarProps) {
   const pathname = usePathname();
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("sidebar_collapsed");
-    if (saved === "true") {
-      setCollapsed(true);
-      document.documentElement.style.setProperty("--sidebar-width", "80px");
-    } else {
-      document.documentElement.style.setProperty("--sidebar-width", "260px");
-    }
-  }, []);
-
-  const toggleSidebar = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem("sidebar_collapsed", String(next));
-    document.documentElement.style.setProperty("--sidebar-width", next ? "80px" : "260px");
-  };
 
   const filteredNavItems = NAV_ITEMS.filter((item) =>
     item.label.toLowerCase().includes(searchQuery.toLowerCase())
@@ -65,28 +46,17 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen flex flex-col py-6 z-40 transition-all duration-300 ${collapsed ? "px-2" : "px-4"
+      className={`fixed left-0 h-screen flex flex-col py-6 z-30 transition-all duration-300 ${collapsed ? "px-2" : "px-4"
         }`}
       style={{
+        top: "var(--header-height)",
+        height: "calc(100vh - var(--header-height))",
         width: "var(--sidebar-width)",
         background: "var(--sidebar-bg)",
         borderRight: "1px solid var(--border-subtle)",
         boxShadow: "0 0 40px rgba(0,0,0,0.1)",
       }}
     >
-      <button
-        onClick={toggleSidebar}
-        className="absolute -right-3 top-8 w-6 h-6 rounded-full flex items-center justify-center border transition-colors hover:bg-[var(--accent-gold)] hover:text-black z-50 shadow-lg"
-        style={{
-          background: "var(--sidebar-active-bg)",
-          borderColor: "var(--accent-gold)",
-          color: "var(--accent-gold)",
-        }}
-        title="Toggle Sidebar"
-      >
-        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-      </button>
-
       {/* Logo / Brand */}
       <Link href="/" className={`flex items-center gap-3 mb-8 transition-all ${collapsed ? "justify-center px-0" : "px-3"}`}>
         <div
@@ -111,35 +81,16 @@ export default function Sidebar() {
         )}
       </Link>
 
-      {/* Search */}
-      {!collapsed && (
-        <div className="relative mb-6 px-1">
-          <Search
-            size={14}
-            className="absolute left-4 top-1/2 -translate-y-1/2"
-            style={{ color: "var(--sidebar-text-hover)" }}
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full py-2.5 pl-9 pr-3 text-sm rounded-lg transition-colors"
-            style={{
-              background: "var(--sidebar-hover-bg)",
-              border: "1px solid transparent",
-              color: "var(--sidebar-text-hover)",
-              outline: "none",
-            }}
-          />
-        </div>
-      )}
-
       {/* Navigation */}
       <nav className={`flex-1 flex flex-col gap-1 overflow-x-hidden ${collapsed ? "px-1" : "px-1"}`}>
         {filteredNavItems.map(({ href, label, icon: Icon }) => {
+          // Check if this route is active - only highlight the most specific (longest) match
           const isActive =
-            href === "/" ? pathname === "/" : pathname.startsWith(href);
+            href === "/"
+              ? pathname === "/"
+              : pathname === href ||
+                (pathname.startsWith(href + "/") &&
+                 !NAV_ITEMS.some(item => item.href !== href && item.href.startsWith(href) && pathname.startsWith(item.href)));
           return (
             <Link
               key={href}

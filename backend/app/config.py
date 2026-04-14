@@ -74,6 +74,11 @@ class Settings(BaseSettings):
     # --- NVD API Key (optional) ---
     NVD_API_KEY: str = ""
 
+    # --- testssl.sh (TLS Deep Inspection) ---
+    TESTSSL_BIN: str = str(PROJECT_ROOT / "testssl.sh" / "testssl.sh")
+    TESTSSL_TIMEOUT: int = 600
+    TESTSSL_DEBUG_DIR: str = str(PROJECT_ROOT / "data" / "testssl")
+
     # --- PQCscan (Anvil) TLS PQC/hybrid probe — binaries in backend/bin/ ---
     PQCSCAN_ENABLED: bool = True
     PQCSCAN_TIMEOUT_SEC: int = 45

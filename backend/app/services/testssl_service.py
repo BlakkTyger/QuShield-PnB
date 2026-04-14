@@ -9,18 +9,18 @@ import subprocess
 import tempfile
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Optional
 
 from sqlalchemy.orm import Session
 
 from app.models.tls_inspection import TLSInspection, TLSInspectionStatus
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-TESTSSL_BIN = os.environ.get("TESTSSL_BIN", "/app/testssl.sh/testssl.sh")
-TESTSSL_TIMEOUT = int(os.environ.get("TESTSSL_TIMEOUT", "600"))  # 10 min default
-TESTSSL_DEBUG_DIR = os.environ.get("TESTSSL_DEBUG_DIR", "/app/data/testssl")
+TESTSSL_BIN = settings.TESTSSL_BIN
+TESTSSL_TIMEOUT = settings.TESTSSL_TIMEOUT
+TESTSSL_DEBUG_DIR = settings.TESTSSL_DEBUG_DIR
 
 
 # ─── Categories for classifying testssl.sh finding IDs ─────────────────────────
@@ -331,7 +331,7 @@ def run_testssl(hostname: str, port: str = "443") -> tuple[list[dict], Optional[
     try:
         cmd = [
             TESTSSL_BIN,
-            "--jsonfile-pretty", json_path,
+            "--jsonfile", json_path,
             "--warnings", "batch",
             "--openssl-timeout", "120",
             "--socket-timeout", "120",
@@ -354,13 +354,32 @@ def run_testssl(hostname: str, port: str = "443") -> tuple[list[dict], Optional[
             file_size = os.path.getsize(json_path)
             logger.info(f"[testssl] JSON file: {json_path}, size={file_size} bytes")
 
-            with open(json_path, "r") as f:
-                raw = json.load(f)
+            with open(json_path, "r", encoding="utf-8", errors="replace") as f:
+                raw_text = f.read()
+
+            # Save raw text immediately before any parsing
+            try:
+                os.makedirs(TESTSSL_DEBUG_DIR, exist_ok=True)
+                ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+                safe_host = hostname.replace(".", "_").replace("/", "_")
+                debug_raw_path = os.path.join(TESTSSL_DEBUG_DIR, f"{safe_host}_{ts}_raw.txt")
+                with open(debug_raw_path, "w", encoding="utf-8") as df:
+                    df.write(raw_text)
+                logger.info(f"[testssl] Raw text saved: {debug_raw_path}")
+            except Exception as save_err:
+                logger.warning(f"[testssl] Could not save raw text: {save_err}")
+
+            try:
+                raw = json.loads(raw_text)
+            except json.JSONDecodeError as je:
+                logger.error(f"[testssl] JSON parse error at char {je.pos}: {je.msg}")
+                logger.error(f"[testssl] Context around error: {repr(raw_text[max(0,je.pos-80):je.pos+80])}")
+                return [], f"testssl.sh produced invalid JSON: {je.msg} (char {je.pos})"
 
             logger.info(f"[testssl] Parsed JSON type={type(raw).__name__}" +
                         (f", keys={list(raw.keys())}" if isinstance(raw, dict) else f", len={len(raw)}"))
 
-            # Save debug copy
+            # Save structured debug copy
             _save_debug_json(hostname, raw, "raw")
 
             # --jsonfile (flat list)
