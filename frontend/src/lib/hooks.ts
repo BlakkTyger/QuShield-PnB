@@ -534,7 +534,7 @@ export function useAgentStatus() {
   });
 }
 
-export type AgentEventType = "thought" | "tool" | "answer" | "error" | "done";
+export type AgentEventType = "thought" | "tool" | "answer" | "error" | "done" | "status";
 export interface AgentEvent {
   type: AgentEventType;
   content: string;

@@ -146,7 +146,7 @@ func verifyDNS(candidates []string) []string {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	sema := make(chan struct{}, 100) // Max 100 concurrent lookups
+	sema := make(chan struct{}, 150) // Max 100 concurrent lookups
 
 	for _, host := range candidates {
 		wg.Add(1)
@@ -175,7 +175,7 @@ func verifyDNS(candidates []string) []string {
 // queryCrtSh queries the crt.sh Certificate Transparency API.
 func queryCrtSh(domain string) ([]string, error) {
 	url := fmt.Sprintf("https://crt.sh/?q=%%25.%s&output=json", domain)
-	client := &http.Client{Timeout: 25 * time.Second}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func queryCrtSh(domain string) ([]string, error) {
 // queryCertSpotter queries the CertSpotter API for subdomains.
 func queryCertSpotter(domain string) ([]string, error) {
 	url := fmt.Sprintf("https://api.certspotter.com/v1/issuances?domain=%s&include_subdomains=true&expand=dns_names", domain)
-	client := &http.Client{Timeout: 25 * time.Second}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
@@ -242,7 +242,7 @@ func queryCertSpotter(domain string) ([]string, error) {
 // queryHackerTarget queries the HackerTarget hostsearch API.
 func queryHackerTarget(domain string) ([]string, error) {
 	url := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", domain)
-	client := &http.Client{Timeout: 25 * time.Second}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err

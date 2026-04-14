@@ -28,6 +28,7 @@ interface TraceStep {
 interface ExtendedMessage extends ChatMessage {
   trace?: TraceStep[];
   isStreaming?: boolean;
+  liveStatus?: string;
 }
 
 type ChatMode = "agent" | "rag" | "sql";
@@ -75,7 +76,7 @@ export default function AIAssistantPage() {
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "", isStreaming: true, trace: [], timestamp: new Date().toISOString() },
+        { role: "assistant", content: "", isStreaming: true, trace: [], liveStatus: "🤔 Initialising agent…", timestamp: new Date().toISOString() },
       ]);
 
       const history = messages
@@ -88,13 +89,25 @@ export default function AIAssistantPage() {
           history,
           scan_id: scanId,
           onEvent: (event: AgentEvent) => {
-            if (event.type === "thought" || event.type === "tool") {
+            if (event.type === "status") {
+              setMessages((prev) => {
+                const copy = [...prev];
+                const last = copy[copy.length - 1];
+                if (last && last.role === "assistant") {
+                  copy[copy.length - 1] = { ...last, liveStatus: event.content };
+                }
+                return copy;
+              });
+            } else if (event.type === "thought" || event.type === "tool") {
               traceSteps.push({ type: event.type, content: event.content });
               setMessages((prev) => {
                 const copy = [...prev];
                 const last = copy[copy.length - 1];
                 if (last && last.role === "assistant") {
-                  copy[copy.length - 1] = { ...last, trace: [...traceSteps] };
+                  // auto-expand the trace accordion for the streaming message
+                  const idx = copy.length - 1;
+                  setExpandedTraces((et) => { const n = new Set(et); n.add(idx); return n; });
+                  copy[copy.length - 1] = { ...last, trace: [...traceSteps], liveStatus: event.content.slice(0, 60) };
                 }
                 return copy;
               });
@@ -113,7 +126,7 @@ export default function AIAssistantPage() {
                 const copy = [...prev];
                 const last = copy[copy.length - 1];
                 if (last && last.role === "assistant") {
-                  copy[copy.length - 1] = { ...last, isStreaming: false };
+                  copy[copy.length - 1] = { ...last, isStreaming: false, liveStatus: undefined };
                 }
                 return copy;
               });
@@ -122,7 +135,7 @@ export default function AIAssistantPage() {
                 const copy = [...prev];
                 const last = copy[copy.length - 1];
                 if (last && last.role === "assistant") {
-                  copy[copy.length - 1] = { ...last, content: `Error: ${event.content}`, isStreaming: false };
+                  copy[copy.length - 1] = { ...last, content: `Error: ${event.content}`, isStreaming: false, liveStatus: undefined };
                 }
                 return copy;
               });
@@ -453,6 +466,14 @@ export default function AIAssistantPage() {
                   </div>
                 )}
 
+                {/* Live status pill — shown while agent is working */}
+                {msg.role === "assistant" && msg.isStreaming && msg.liveStatus && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-medium bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 w-fit max-w-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse shrink-0" />
+                    <span className="truncate">{msg.liveStatus}</span>
+                  </div>
+                )}
+
                 {/* Message bubble */}
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
@@ -467,7 +488,14 @@ export default function AIAssistantPage() {
                   }}
                 >
                   <div className="whitespace-pre-wrap break-words">{msg.content}</div>
-                  {msg.isStreaming && (
+                  {msg.isStreaming && !msg.content && (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{animationDelay:"0ms"}}/>
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{animationDelay:"150ms"}}/>
+                      <span className="w-1 h-1 rounded-full bg-gray-500 animate-bounce" style={{animationDelay:"300ms"}}/>
+                    </span>
+                  )}
+                  {msg.isStreaming && msg.content && (
                     <span className="inline-block w-1.5 h-4 bg-yellow-400 animate-pulse ml-0.5 align-middle" />
                   )}
                 </div>

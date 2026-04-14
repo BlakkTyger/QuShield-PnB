@@ -31,6 +31,27 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Database init failed: {e}")
 
+    # Pre-warm ChromaDB default embedding model (downloads all-MiniLM-L6-v2 ONNX once)
+    # so the first AI request doesn't stall on a cold model download.
+    def _warm_embeddings():
+        try:
+            import chromadb
+            from chromadb.config import Settings as ChromaSettings
+            from app.config import settings as app_settings
+            db_path = str(app_settings.data_dir_abs / "chroma")
+            client = chromadb.PersistentClient(
+                path=db_path,
+                settings=ChromaSettings(anonymized_telemetry=False),
+            )
+            col = client.get_or_create_collection("__warmup__")
+            col.add(ids=["__warmup__"], documents=["QuShield embedding warmup"])
+            col.query(query_texts=["warmup"], n_results=1)
+            logger.info("ChromaDB embedding model warmed up successfully.")
+        except Exception as e:
+            logger.warning(f"Embedding warmup failed (non-fatal): {e}")
+
+    threading.Thread(target=_warm_embeddings, daemon=True, name="embed-warmup").start()
+
     # Seed global knowledge base in background (non-blocking)
     def _seed_kb():
         try:

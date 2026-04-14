@@ -211,7 +211,7 @@ class AgentChatRequest(BaseModel):
 
 
 @router.post("/agent/chat")
-def agent_chat_stream(
+async def agent_chat_stream(
     request: AgentChatRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -224,15 +224,16 @@ def agent_chat_stream(
     from fastapi.responses import StreamingResponse
     from app.services.react_agent import stream_agent_response
 
-    def _gen():
+    async def _gen():
         try:
-            yield from stream_agent_response(
+            async for chunk in stream_agent_response(
                 user=current_user,
                 db=db,
                 query=request.message,
                 chat_history=request.history,
                 scan_id=request.scan_id,
-            )
+            ):
+                yield chunk
         except Exception as e:
             import json as _json
             yield f"data: {_json.dumps({'type': 'error', 'content': str(e)})}\n\n"

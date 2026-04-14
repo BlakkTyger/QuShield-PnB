@@ -30,7 +30,7 @@ func main() {
 	output := flag.String("output", "", "Output JSON file path (required)")
 	scanID := flag.String("scan-id", "standalone", "Scan ID for tracking")
 	portMode := flag.String("ports", "top20", "Port scan mode: top20 or top100")
-	timeout := flag.Int("timeout", 6, "Timeout per connection in seconds")
+	timeout := flag.Int("timeout", 10, "Timeout per connection in seconds")
 	flag.Parse()
 
 	if *domain == "" || *output == "" {
@@ -128,7 +128,7 @@ func main() {
 		ips = append(ips, ip)
 	}
 
-	portResults := portscan.Scan(ips, ports, 100, time.Duration(*timeout)*time.Second)
+	portResults := portscan.Scan(ips, ports, 150, time.Duration(*timeout)*time.Second)
 
 	// Attach ports to assets
 	portsByIP := make(map[string][]dedup.PortInfo)

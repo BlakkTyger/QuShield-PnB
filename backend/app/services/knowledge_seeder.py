@@ -79,12 +79,37 @@ def seed_knowledge_base() -> int:
             path=db_path,
             settings=Settings(anonymized_telemetry=False)
         )
+    except Exception as e:
+        logger.error(f"Failed to initialize ChromaDB for seeding: {e}")
+        return 0
+
+    # Determine whether we can use Jina (1024-dim) or must fall back to ChromaDB default (384-dim)
+    embedder, jina_available = _get_embedder()
+    expected_dim = 1024 if jina_available else 384
+
+    # Detect and resolve dimension mismatch: if collection exists with wrong dim, delete it
+    try:
+        existing_col = client.get_collection(GLOBAL_COLLECTION)
+        # Probe the dimension by checking any stored embedding
+        probe = existing_col.get(limit=1, include=["embeddings"])
+        stored_embs = probe.get("embeddings") or []
+        if stored_embs and len(stored_embs[0]) != expected_dim:
+            logger.warning(
+                f"Knowledge collection dimension mismatch "
+                f"(stored={len(stored_embs[0])}, expected={expected_dim}) — "
+                "deleting stale collection and reseeding."
+            )
+            client.delete_collection(GLOBAL_COLLECTION)
+    except Exception:
+        pass  # collection doesn't exist yet, or probe failed — proceed normally
+
+    try:
         collection = client.get_or_create_collection(
             GLOBAL_COLLECTION,
             metadata={"hnsw:space": "cosine"}
         )
     except Exception as e:
-        logger.error(f"Failed to initialize ChromaDB for seeding: {e}")
+        logger.error(f"Failed to get/create ChromaDB collection: {e}")
         return 0
 
     # Check if already seeded
@@ -95,9 +120,6 @@ def seed_knowledge_base() -> int:
             return 0
     except Exception:
         pass
-
-    # Get embedding provider — use Jina if available, else simple hash-based fallback
-    embedder = _get_embedder()
 
     all_texts, all_metas, all_ids = [], [], []
 
@@ -130,23 +152,27 @@ def seed_knowledge_base() -> int:
         batch_ids = all_ids[i:i + batch_size]
 
         try:
-            embeddings = embedder(batch_texts)
-            if embeddings and all(len(e) > 0 for e in embeddings):
+            if jina_available:
+                embeddings = embedder(batch_texts)
+                valid = embeddings and all(len(e) > 0 for e in embeddings)
+            else:
+                valid = False
+
+            if valid:
                 collection.add(
                     ids=batch_ids,
                     documents=batch_texts,
                     embeddings=embeddings,
                     metadatas=batch_metas,
                 )
-                total_stored += len(batch_texts)
             else:
-                # Store without embeddings (ChromaDB will use its default)
+                # Let ChromaDB use its built-in default embedder (all-MiniLM-L6-v2)
                 collection.add(
                     ids=batch_ids,
                     documents=batch_texts,
                     metadatas=batch_metas,
                 )
-                total_stored += len(batch_texts)
+            total_stored += len(batch_texts)
         except Exception as e:
             logger.error(f"Failed to embed/store knowledge batch {i}: {e}")
 
@@ -186,18 +212,26 @@ def search_knowledge_base(query: str, n_results: int = 5, tag_filter: str = None
         logger.error(f"Knowledge base search init failed: {e}")
         return []
 
-    embedder = _get_embedder()
-    query_emb = embedder([query])
-    if not query_emb or not query_emb[0]:
-        return []
+    embedder, jina_available = _get_embedder()
 
     try:
         where_filter = {"source_type": "compliance_doc"}
-        results = collection.query(
-            query_embeddings=query_emb,
-            n_results=min(n_results, 20),
-            where=where_filter,
-        )
+        if jina_available:
+            query_emb = embedder([query])
+            if not query_emb or not query_emb[0]:
+                return []
+            results = collection.query(
+                query_embeddings=query_emb,
+                n_results=min(n_results, 20),
+                where=where_filter,
+            )
+        else:
+            # Let ChromaDB's built-in embedder handle the query
+            results = collection.query(
+                query_texts=[query],
+                n_results=min(n_results, 20),
+                where=where_filter,
+            )
         docs = results.get("documents", [[]])[0]
         metas = results.get("metadatas", [[]])[0]
         dists = results.get("distances", [[]])[0]
@@ -239,7 +273,12 @@ def list_knowledge_documents() -> List[dict]:
 
 
 def _get_embedder():
-    """Return a callable that embeds a list of texts. Falls back to dummy embeddings."""
+    """
+    Return (callable, jina_available: bool).
+    If jina_available is True the callable produces 1024-dim Jina v3 vectors.
+    Otherwise returns (dummy, False) and callers should omit embeddings= so
+    ChromaDB uses its built-in all-MiniLM-L6-v2 (384-dim) embedder.
+    """
     from app.config import settings
     jina_key = settings.JINA_API_KEY
 
@@ -260,11 +299,11 @@ def _get_embedder():
                 logger.error(f"Jina embedding failed during seeding: {e}")
                 return [[] for _ in texts]
 
-        return jina_embed
+        return jina_embed, True
 
-    # No embedding key — return empty embeddings (ChromaDB will use its own default embedder)
+    # No embedding key — ChromaDB will use its own default embedder
     def dummy_embed(texts: List[str]) -> List[List[float]]:
         return [[] for _ in texts]
 
     logger.warning("No JINA_API_KEY found — knowledge base will use ChromaDB default embeddings.")
-    return dummy_embed
+    return dummy_embed, False

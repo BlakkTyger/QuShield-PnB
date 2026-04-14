@@ -75,8 +75,11 @@ class GroqProvider(AIProvider):
         self.model = model_override or self.FREE_MODEL
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
 
-    def generate(self, prompt: str, system: str = None, temperature: float = 0.7) -> str:
+    def generate(self, prompt: str, system: str = None, temperature: float = 0.7,
+                 _status_sink=None) -> str:
+        """Generate a response. _status_sink is an optional queue.SimpleQueue for live status messages."""
         import time
+        import queue as _queue
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -86,11 +89,22 @@ class GroqProvider(AIProvider):
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
+        def _push(msg: str):
+            if _status_sink is not None:
+                try:
+                    _status_sink.put_nowait(msg)
+                except Exception:
+                    pass
+
         # Build model attempt list: primary model first, then fallbacks
         models_to_try = [self.model] + [m for m in self.FALLBACK_MODELS if m != self.model]
-        backoff_delays = [1, 2, 4, 8, 16]
+        # Exponential backoff: 8 attempts per model before moving to next fallback
+        _MAX_ATTEMPTS = 10
+        backoff_delays = [1, 2, 4, 8, 15, 20, 30, 45, 60, 60]
 
         for model_idx, model in enumerate(models_to_try):
+            if model_idx > 0:
+                _push(f"🔄 Switching to fallback model: {model}")
             payload = {
                 "model": model,
                 "messages": messages,
@@ -98,21 +112,30 @@ class GroqProvider(AIProvider):
                 "max_tokens": 4096,
             }
             rate_limited_attempts = 0
-            for attempt in range(3):
+            for attempt in range(_MAX_ATTEMPTS):
                 try:
-                    logger.info(f"Groq Cloud Request [Model: {model}, attempt {attempt + 1}]")
+                    logger.info(f"Groq Cloud Request [Model: {model}, attempt {attempt + 1}/{_MAX_ATTEMPTS}]")
+                    _push(f"🧠 Calling {model} (attempt {attempt + 1}/{_MAX_ATTEMPTS})…")
                     response = requests.post(self.base_url, headers=headers, json=payload, timeout=120)
                     if response.status_code in (429, 503):
                         rate_limited_attempts += 1
-                        wait = backoff_delays[min(rate_limited_attempts - 1, len(backoff_delays) - 1)]
+                        # Honour Retry-After header if Groq sends one
+                        retry_after = response.headers.get("Retry-After") or response.headers.get("x-ratelimit-reset-requests")
+                        if retry_after:
+                            try:
+                                wait = max(int(float(retry_after)), 1)
+                            except (ValueError, TypeError):
+                                wait = backoff_delays[min(attempt, len(backoff_delays) - 1)]
+                        else:
+                            wait = backoff_delays[min(attempt, len(backoff_delays) - 1)]
                         logger.warning(
                             f"Groq rate limit ({response.status_code}) on {model} — "
-                            f"waiting {wait}s (attempt {attempt + 1}/3)"
+                            f"waiting {wait}s (attempt {attempt + 1}/{_MAX_ATTEMPTS})"
                         )
+                        _push(f"⏳ Rate limited on {model} — retrying in {wait}s (attempt {attempt + 1}/{_MAX_ATTEMPTS})")
                         time.sleep(wait)
-                        if attempt == 2:
-                            # This model is exhausted, try next fallback
-                            logger.warning(f"Groq model {model} rate-limited after 3 attempts — trying fallback")
+                        if attempt == _MAX_ATTEMPTS - 1:
+                            logger.warning(f"Groq model {model} rate-limited after {_MAX_ATTEMPTS} attempts — trying fallback")
                             break
                         continue
                     response.raise_for_status()
@@ -127,8 +150,9 @@ class GroqProvider(AIProvider):
                         raise RuntimeError(f"Groq API error ({e.response.status_code})") from e
                     break
                 except Exception as e:
-                    if attempt < 2:
-                        time.sleep(2 ** attempt)
+                    if attempt < _MAX_ATTEMPTS - 1:
+                        _push(f"⚠️ Connection error on {model}, retrying…")
+                        time.sleep(min(2 ** attempt, 30))
                         continue
                     logger.error(f"Groq API generation failed on {model}: {e}")
                     break

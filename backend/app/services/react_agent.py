@@ -13,12 +13,14 @@ Architecture:
   - Streaming via sync generator that yields SSE lines
   - Reasoning trace included in stream
 """
+import asyncio
 import json
 import logging
+import queue
 import sqlite3
 import os
 from pathlib import Path
-from typing import Generator, List, Optional
+from typing import AsyncGenerator, Generator, List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -325,29 +327,28 @@ def build_react_agent(user: User, db: Session, scan_id: Optional[str] = None):
         f"Be precise, technical, and actionable. Cite data sources in your response.{scan_scope_note}"
     )
 
-    agent = ReActAgent.from_tools(
+    agent = ReActAgent(
         tools=tools,
         llm=llm,
         max_iterations=8,
         verbose=True,
         system_prompt=system_prompt,
+        timeout=120.0,
     )
     return agent
 
 
 # ─── Streaming response generator ─────────────────────────────────────────────
 
-def stream_agent_response(
+async def stream_agent_response(
     user: User, db: Session, query: str,
     chat_history: Optional[List[dict]] = None,
     scan_id: Optional[str] = None,
-) -> Generator[str, None, None]:
+) -> AsyncGenerator[str, None]:
     """
-    Generator that yields SSE-formatted lines for streaming to the frontend.
-    Each line is a JSON object: {"type": "thought"|"tool"|"answer"|"error", "content": "..."}
-
-    Usage in FastAPI:
-        return StreamingResponse(stream_agent_response(...), media_type="text/event-stream")
+    Async generator that yields SSE-formatted lines for streaming to the frontend.
+    Events: thought | tool | status | answer | error | done
+    Trace and status events are emitted in real time via concurrent drain tasks.
     """
     import io
     import sys
@@ -364,11 +365,20 @@ def stream_agent_response(
         yield _sse("error", f"Agent initialization failed: {e}")
         return
 
-    # Capture verbose output (reasoning trace) from LlamaIndex
+    # ─── Central SSE event bus ────────────────────────────────────────────────
+    # All concurrent tasks PUT events here; the generator consumes and yields them.
+    event_bus: asyncio.Queue = asyncio.Queue()
+    _DONE = object()   # sentinel: agent finished
+    _SENTINEL = object()  # sentinel for thread-safe queues
+
+    # Thread-safe queues that sync code (LlamaIndex internals) writes into;
+    # async drain tasks poll them and forward to event_bus.
+    trace_tq: queue.SimpleQueue = queue.SimpleQueue()
+
+    # ─ Redirect stdout → trace queue ─────────────────────────────────────────
     class _TraceCapture(io.StringIO):
-        def __init__(self, callback):
+        def __init__(self):
             super().__init__()
-            self._cb = callback
             self._buf = ""
 
         def write(self, s: str):
@@ -378,36 +388,87 @@ def stream_agent_response(
                 for line in lines[:-1]:
                     stripped = line.strip()
                     if stripped:
-                        self._cb(stripped)
+                        trace_tq.put_nowait(stripped)
                 self._buf = lines[-1]
 
-    reasoning_lines = []
-
-    def _on_trace(line: str):
-        reasoning_lines.append(line)
+        def flush(self):
+            pass
 
     old_stdout = sys.stdout
-    sys.stdout = _TraceCapture(_on_trace)
+    sys.stdout = _TraceCapture()
 
+    # ─ Async task: drain stdout trace into event_bus ─────────────────────────
+    async def _drain_trace():
+        while True:
+            await asyncio.sleep(0.05)
+            try:
+                while True:
+                    line = trace_tq.get_nowait()
+                    if line is _SENTINEL:
+                        return
+                    if line.startswith("Thought:") or line.startswith("> "):
+                        await event_bus.put(_sse("thought", line))
+                    elif (line.startswith("Action:") or line.startswith("Observation:")
+                          or line.startswith("Tool:")):
+                        await event_bus.put(_sse("tool", line))
+                    elif line.strip():
+                        await event_bus.put(_sse("thought", line))
+            except queue.Empty:
+                pass
+
+    # ─ Async task: run the agent, put DONE/error when finished ───────────────
+    async def _run_agent():
+        try:
+            result = await agent.run(user_msg=query)
+            await event_bus.put((_DONE, result))
+        except Exception as exc:
+            await event_bus.put((_DONE, exc))
+        finally:
+            trace_tq.put_nowait(_SENTINEL)
+
+    # ─ Start background tasks ─────────────────────────────────────────────────
+    drain_task = asyncio.create_task(_drain_trace())
+    agent_task = asyncio.create_task(_run_agent())
+
+    # Yield initial status immediately
+    yield _sse("status", "🤔 Agent is thinking…")
+
+    agent_result = None
     try:
-        # LlamaIndex ReActAgent.chat is synchronous
-        response = agent.chat(query)
-        response_text = str(response)
+        while True:
+            item = await event_bus.get()
+            if isinstance(item, tuple) and len(item) == 2 and item[0] is _DONE:
+                agent_result = item[1]
+                break
+            yield item  # real-time SSE line
     except Exception as e:
         sys.stdout = old_stdout
+        drain_task.cancel()
+        agent_task.cancel()
         yield _sse("error", f"Agent execution failed: {str(e)}")
         return
     finally:
         sys.stdout = old_stdout
+        # Wait for drain to flush remaining lines
+        try:
+            await asyncio.wait_for(drain_task, timeout=1.0)
+        except Exception:
+            drain_task.cancel()
 
-    # Yield reasoning trace
-    for line in reasoning_lines:
-        if line.startswith("Thought:"):
-            yield _sse("thought", line)
-        elif line.startswith("Action:") or line.startswith("Observation:"):
-            yield _sse("tool", line)
-        elif line.strip():
-            yield _sse("thought", line)
+    # Flush any remaining events that arrived after _DONE
+    while not event_bus.empty():
+        try:
+            item = event_bus.get_nowait()
+            if not (isinstance(item, tuple) and item[0] is _DONE):
+                yield item
+        except asyncio.QueueEmpty:
+            break
+
+    if isinstance(agent_result, Exception):
+        yield _sse("error", f"Agent execution failed: {str(agent_result)}")
+        return
+
+    response_text = str(getattr(agent_result, "response", agent_result) or "")
 
     # Yield final answer in chunks for streaming feel
     chunk_size = 80
