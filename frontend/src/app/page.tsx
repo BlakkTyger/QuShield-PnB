@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target } from "lucide-react";
+import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
 import { useStartScan, useShallowScan, useShallowResult, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import api from "@/lib/api";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
