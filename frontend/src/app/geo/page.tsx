@@ -127,18 +127,19 @@ export default function GeoMapPage() {
         <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6" style={{ minHeight: "calc(100vh - var(--header-height) - 120px)" }}>
         {/* Map */}
-        <div className="lg:col-span-3 glass-card-static overflow-hidden" style={{ minHeight: 550 }}>
+        <div className="lg:col-span-3 glass-card-static overflow-hidden flex flex-col" style={{ minHeight: "100%" }}>
           {isLoading || !leafletReady ? (
-            <Skeleton height={550} />
+            <Skeleton height={400} />
           ) : error ? (
             <EmptyState message="Failed to load geo data. Ensure a scan has been completed." />
           ) : geoData && geoData.markers.length > 0 ? (
             <MapContainer
               center={[20.5937, 78.9629]} // India center
               zoom={5}
-              style={{ height: 550, width: "100%", borderRadius: 12 }}
+              className="flex-1 h-full"
+              style={{ height: "100%", width: "100%", borderRadius: 12 }}
               scrollWheelZoom={true}
             >
               <TileLayer

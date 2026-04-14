@@ -48,6 +48,7 @@ services:
       - SECURITYTRAILS_API_KEY=${SECURITYTRAILS_API_KEY:-}
       - SHODAN_API_KEY=${SHODAN_API_KEY:-}
       - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY:-}
+      - TESTSSL_TIMEOUT=${TESTSSL_TIMEOUT:-600}
     logging:
       driver: "json-file"
       options:

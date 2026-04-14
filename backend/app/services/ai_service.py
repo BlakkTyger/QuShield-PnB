@@ -27,6 +27,16 @@ class AIProvider(abc.ABC):
         pass
 
 
+def _is_ollama_available() -> bool:
+    """Quick check whether Ollama is reachable (non-blocking, 2s timeout)."""
+    try:
+        url = f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/tags"
+        resp = requests.get(url, timeout=2)
+        return resp.status_code == 200
+    except Exception:
+        return False
+
+
 class OllamaProvider(AIProvider):
     """Local, secure generation via Ollama (Local Mode — Coming Soon)."""
     def __init__(self, model_override: str = None):
@@ -235,15 +245,28 @@ def get_ai_provider(user: Optional[User] = None) -> AIProvider:
         return GroqProvider(api_key=groq_key, model_override=GroqProvider.FREE_MODEL)
 
     if mode == "secure":
-        # Local mode — Ollama required
-        tier_models = {
-            "enterprise": "llama3.1:70b",
-            "professional": "llama3.1:8b",
-            "free": "llama3.1:8b",
-        }
-        return OllamaProvider(model_override=tier_models.get(tier, "llama3.1:8b"))
+        # Local mode — Ollama preferred, Groq fallback when Ollama is not running
+        if _is_ollama_available():
+            tier_models = {
+                "enterprise": "llama3.1:70b",
+                "professional": "llama3.1:8b",
+                "free": "llama3.1:8b",
+            }
+            logger.info("Ollama is available — using local provider")
+            return OllamaProvider(model_override=tier_models.get(tier, "llama3.1:8b"))
+        else:
+            logger.warning("Ollama is not running — falling back to Groq cloud provider")
+            if groq_key:
+                return GroqProvider(api_key=groq_key, model_override=GroqProvider.FREE_MODEL)
+            raise AIConfigurationError(
+                "Ollama is not running and no GROQ_API_KEY is set. "
+                "Either start Ollama (ollama serve) or set GROQ_API_KEY in .env."
+            )
 
-    # Hard fallback — should not reach here in normal operation
+    # Unknown mode — try Groq if key is present, otherwise fail clearly
+    if groq_key:
+        logger.warning(f"Unknown deployment mode '{mode}' — falling back to Groq")
+        return GroqProvider(api_key=groq_key, model_override=GroqProvider.FREE_MODEL)
     raise AIConfigurationError(
         f"Unknown deployment mode '{mode}'. Set GROQ_API_KEY in .env to use Cloud mode."
     )
