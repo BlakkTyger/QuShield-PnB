@@ -1,0 +1,39 @@
+name: Deploy QuShield Backend to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GCP VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "Starting Deployment..."
+            cd ~/QuShield-PnB
+            
+            # 1. Pull latest code
+            git pull origin main
+            
+            # 2. Update Backend Dependencies
+            cd backend
+            source venv/bin/activate
+            pip install -r requirements.txt
+            
+            # 3. Rebuild Discovery Engine
+            cd discovery
+            go build -o bin/discovery-engine .
+            cd ..
+            
+            # 4. Restart Backend Service
+            pm2 restart qushield-backend
+            
+            echo "Deployment Complete!"
