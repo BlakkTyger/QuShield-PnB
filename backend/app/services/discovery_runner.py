@@ -20,7 +20,7 @@ logger = get_logger("discovery_runner")
 
 # Path to the Go binary
 _BIN_NAME = "discovery-engine.exe" if sys.platform == "win32" else "discovery-engine"
-DISCOVERY_BINARY = PROJECT_ROOT.parent / "discovery" / "bin" / _BIN_NAME
+DISCOVERY_BINARY = PROJECT_ROOT / "discovery" / "bin" / _BIN_NAME
 
 
 @timed

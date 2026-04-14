@@ -107,6 +107,18 @@ export function useShallowScan() {
   });
 }
 
+export function useShallowResult(scanId: string | null, enabled = false) {
+  return useQuery({
+    queryKey: ["shallow-result", scanId],
+    queryFn: async () => {
+      const { data } = await api.get(`/scans/${scanId}/result`);
+      return data as Record<string, unknown>;
+    },
+    enabled: !!scanId && enabled,
+    retry: false,
+  });
+}
+
 /* ─── Assets ─────────────────────────────────────────── */
 export function useAssets(
   scanId: string | null,
@@ -164,7 +176,7 @@ export function useCBOMAlgorithms(scanId: string | null) {
   return useQuery({
     queryKey: ["cbom-algorithms", scanId],
     queryFn: async () => {
-      const { data } = await api.get<{ scan_id: string; algorithms: Record<string, number> }>(
+      const { data } = await api.get<{ scan_id: string; algorithms: { name: string; count: number; nist_quantum_level: number; is_quantum_vulnerable: boolean; component_type: string }[]; total_unique: number }>(
         `/cbom/scan/${scanId}/algorithms`
       );
       return data;

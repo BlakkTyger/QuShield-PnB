@@ -40,10 +40,18 @@ def validate_targets(targets: list[str]) -> list[str]:
         if not is_valid_domain(clean_tgt):
             logger.warning(f"Invalid target (format): {tgt} (cleaned: {clean_tgt})")
             continue
-        try:
-            socket.gethostbyname(clean_tgt)
+        resolved = False
+        for attempt in range(3):
+            try:
+                socket.gethostbyname(clean_tgt)
+                resolved = True
+                break
+            except socket.gaierror:
+                if attempt < 2:
+                    time.sleep(1)
+        if resolved:
             valid_targets.append(clean_tgt)
-        except socket.gaierror:
+        else:
             logger.warning(f"Invalid target (DNS resolution failed for {clean_tgt}): {tgt}")
     return valid_targets
 
@@ -154,8 +162,37 @@ class ScanOrchestrator:
                 except Exception as e:
                     logger.error(f"{TAG} P1: Discovery FAILED for {target}: {e}", exc_info=True)
             
+            logger.info(f"{TAG} P1: Total raw assets from Go binary: {len(all_assets)}")
+
+            # ── Supplemental DNS brute-force (runs if Go binary under-discovers) ──
+            if len(all_assets) < 10 * len(targets):
+                logger.info(f"{TAG} P1: Supplementing with DNS brute-force discovery...")
+                from app.services.shallow_scanner import discover_subdomains, resolve_subdomains_parallel
+                existing_hostnames = {a.get("hostname", "").lower() for a in all_assets}
+                for tgt in targets:
+                    try:
+                        _emit("phase_progress", phase=1, pct=50,
+                              msg=f"Running supplemental DNS discovery for {tgt}")
+                        brute_subs = discover_subdomains(tgt)
+                        brute_live = resolve_subdomains_parallel(brute_subs)
+                        added = 0
+                        for asset in brute_live:
+                            hn = asset.get("hostname", "").lower()
+                            if hn and hn not in existing_hostnames:
+                                all_assets.append({
+                                    "hostname": hn,
+                                    "ip_v4": asset.get("ip", ""),
+                                    "discovery_methods": ["dns_brute"],
+                                    "confidence_score": 0.5,
+                                })
+                                existing_hostnames.add(hn)
+                                added += 1
+                        logger.info(f"{TAG} P1: Brute-force added {added} new assets for {tgt}")
+                    except Exception as e:
+                        logger.warning(f"{TAG} P1: Brute-force supplement failed for {tgt}: {e}")
+
             logger.info(f"{TAG} P1: Total raw assets: {len(all_assets)}")
-            
+
             # Save discovered assets to DB
             logger.info(f"{TAG} P1: Saving assets to database...")
             db_assets = save_discovered_assets(scan_id, all_assets, db)

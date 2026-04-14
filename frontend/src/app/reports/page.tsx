@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useScans, useGenerateReport } from "@/lib/hooks";
-import { EmptyState, Skeleton, Toggle } from "@/components/ui";
+import { EmptyState, Skeleton } from "@/components/ui";
 import { FileText, Download, Loader2, CheckCircle, AlertTriangle, CalendarDays, ExternalLink, Link, Clock, Plus, Folder, MessageSquare, BarChart2, Trash2, RefreshCw } from "lucide-react";
 import api from "@/lib/api";
 
@@ -123,7 +123,7 @@ export default function ReportsPage() {
         runPassword = Math.random().toString(36).slice(-8);
       }
       
-      const blob = await generateReport.mutateAsync({ scanId: selectedScanId, reportType, format: fileFormat.toLowerCase(), password: runPassword });
+      const blob = await generateReport.mutateAsync({ scanId: selectedScanId, reportType, format: fileFormat.toLowerCase(), password: runPassword ?? undefined });
       
       const mimeTypes: Record<string, string> = {
         pdf: "application/pdf",
@@ -187,7 +187,7 @@ export default function ReportsPage() {
     }
   };
 
-  const reportOptions = [
+  const reportOptions: { value: string; label: string; disabled?: boolean }[] = [
     { value: "executive", label: "Quantum Risk Executive Summary" },
     { value: "full_scan", label: "Full Infrastructure Scan" },
     { value: "rbi_submission", label: "RBI Crypto Governance" },

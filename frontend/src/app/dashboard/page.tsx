@@ -70,23 +70,11 @@ export default function DashboardPage() {
     fill: RISK_COLORS[key] || "#888",
   }));
 
-  const algoData = (() => {
-    const raw = algorithms?.algorithms;
-    if (!raw) return [];
-    if (Array.isArray(raw)) {
-      return (raw as any[]).map((entry) => ({
-        name: (entry.name as string) || "Unknown",
-        value: (entry.count as number) || 0,
-        vulnerable: (entry.is_quantum_vulnerable as boolean) || false,
-      }));
-    }
-    // fallback: dict {name: count | object}
-    return Object.entries(raw).map(([name, entry]) => {
-      const count = typeof entry === "object" && entry !== null ? ((entry as any).count ?? 1) : (entry as number);
-      const vulnerable = typeof entry === "object" && entry !== null ? (entry as any).is_quantum_vulnerable : false;
-      return { name, value: count, vulnerable };
-    });
-  })();
+  const algoData = (algorithms?.algorithms ?? []).map((entry) => ({
+    name: entry.name || "Unknown",
+    value: entry.count || 0,
+    vulnerable: entry.is_quantum_vulnerable || false,
+  }));
 
   const ALGO_COLORS = ["#ef4444", "#f97316", "#eab308", "#3b82f6", "#22c55e", "#8b5cf6", "#ec4899", "#14b8a6"];
 

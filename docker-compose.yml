@@ -36,6 +36,7 @@ services:
       - JINA_API_KEY=${JINA_API_KEY}
       - APP_ENV=production
       - LOG_LEVEL=DEBUG
+      - GEOIP_DB_PATH=/app/geoip/GeoLite2-City.mmdb
     ports:
       - "8000:8000"
     volumes:

@@ -41,6 +41,9 @@ class ScanJob(Base):
     total_certificates = Column(Integer, default=0)
     total_vulnerable = Column(Integer, default=0)
     
+    # Full result payload (used for shallow scans to avoid re-querying)
+    result_data = Column(JSON, nullable=True)
+
     # Relationships
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True) # nullable for back-compat
     user = relationship("User", back_populates="scan_jobs")

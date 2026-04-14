@@ -5,6 +5,7 @@
 node_modules
 .next
 data
+!data/geolite
 logs
 *.pyc
 __pycache__

@@ -161,46 +161,62 @@ def run_quick_scan(request: QuickScanRequest, user: Optional[User] = Depends(get
     return result
 
 
-@router.post("/shallow")
+@router.post("/shallow", status_code=201)
 def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Run a shallow scan (CT discovery + top-N TLS). Returns results synchronously in 30–90s."""
-    # Check cache for existing shallow or deep scan
-    # cached = check_scan_cache(db, request.domain, ["shallow", "deep"])
-    # if cached:
-    #     scan_job = db.query(ScanJob).filter(ScanJob.id == cached.scan_id).first()
-    #     if scan_job:
-    #         return {
-    #             "domain": request.domain,
-    #             "scan_type": scan_job.scan_type,
-    #             "cached": True,
-    #             "scan_id": str(scan_job.id),
-    #             "summary": "Returned from cache (Check /summary endpoint for details)"
-    #         }
+    """
+    Start a shallow scan (CT discovery + top-N TLS) asynchronously.
+    Returns scan_id immediately; poll GET /scans/{scan_id} for status,
+    then GET /scans/{scan_id}/result for the full result.
+    """
+    from datetime import timezone as tz
 
     clean_tgt = clean_domain(request.domain)
-    try:
-        result = shallow_scan(clean_tgt, top_n=request.top_n, port=request.port)
-        if result and not result.get("error"):
-            # Create a shallow ScanJob (for history)
-            scan_job = ScanJob(
-                targets=[request.domain],
-                scan_type="shallow",
-                status="completed",
-                user_id=current_user.id,
-                total_assets=result.get("summary", {}).get("scanned", 0),
-                total_certificates=result.get("summary", {}).get("scanned", 0),
-                total_vulnerable=result.get("summary", {}).get("quantum_vulnerable", 0)
-            )
-            db.add(scan_job)
-            db.commit()
-            db.refresh(scan_job)
-            
-            # --- MAP ASSETS FOR GEO AND TOPOLOGY ---
-            try:
-                from app.services.asset_manager import save_discovered_assets
-                from app.models.certificate import Certificate
-                from datetime import timezone
 
+    # Create ScanJob immediately so client gets a scan_id to poll
+    scan_job = ScanJob(
+        targets=[request.domain],
+        scan_type="shallow",
+        status="running",
+        user_id=current_user.id,
+    )
+    db.add(scan_job)
+    db.commit()
+    db.refresh(scan_job)
+    scan_id = str(scan_job.id)
+
+    top_n = request.top_n
+    port = request.port
+
+    def _run_shallow():
+        from app.core.database import SessionLocal as _SL
+        from app.services.asset_manager import save_discovered_assets as _save
+        _db = _SL()
+        try:
+            result = shallow_scan(clean_tgt, top_n=top_n, port=port)
+
+            _job = _db.query(ScanJob).filter(ScanJob.id == scan_job.id).first()
+            if not _job:
+                return
+
+            if result.get("error") and not result.get("assets"):
+                _job.status = "failed"
+                _job.error_message = result["error"]
+                _db.commit()
+                return
+
+            # Persist summary stats
+            summary = result.get("summary") or {}
+            _job.status = "completed"
+            _job.completed_at = datetime.now(tz.utc)
+            _job.total_assets = summary.get("scanned", len(result.get("assets", [])))
+            _job.total_certificates = _job.total_assets
+            _job.total_vulnerable = summary.get("quantum_vulnerable", 0)
+            _job.result_data = result
+            _db.commit()
+            _db.refresh(_job)
+
+            # Persist assets, certs, risk scores
+            try:
                 mapped_assets = []
                 for a in result.get("assets", []):
                     mapped_assets.append({
@@ -210,18 +226,17 @@ def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(g
                             "tls_version": a.get("tls", {}).get("negotiated_protocol") if a.get("tls") else None
                         }
                     })
-                
-                saved_assets = save_discovered_assets(str(scan_job.id), mapped_assets, db)
-                
-                # Assign certificates and risk scores
+                saved_assets = _save(scan_id, mapped_assets, _db)
+
                 for ix, db_a in enumerate(saved_assets):
+                    if ix >= len(result.get("assets", [])):
+                        break
                     orig_a = result["assets"][ix]
-                    
-                    # Persist Certificate if available
+
                     cert_data = orig_a.get("certificate")
                     if cert_data:
                         cert_record = Certificate(
-                            scan_id=scan_job.id,
+                            scan_id=_job.id,
                             asset_id=db_a.id,
                             common_name=cert_data.get("common_name"),
                             issuer=cert_data.get("issuer"),
@@ -232,32 +247,62 @@ def run_shallow_scan(request: ShallowScanRequest, current_user: User = Depends(g
                             chain_valid=cert_data.get("chain_valid"),
                             is_quantum_vulnerable=orig_a.get("quantum_assessment", {}).get("is_quantum_vulnerable", False)
                         )
-                        db.add(cert_record)
-                        
-                    # Persist RiskScore if available
+                        _db.add(cert_record)
+
                     r = orig_a.get("risk")
                     if r:
                         db_r = RiskScore(
-                            scan_id=scan_job.id,
+                            scan_id=_job.id,
                             asset_id=db_a.id,
                             quantum_risk_score=r.get("score", 0),
                             risk_classification=r.get("classification"),
                             hndl_exposed=r.get("mosca_exposed", False),
-                            computed_at=datetime.now(timezone.utc)
+                            computed_at=datetime.now(tz.utc)
                         )
-                        db.add(db_r)
-                        
-                db.commit()
+                        _db.add(db_r)
+
+                _db.commit()
             except Exception as e:
-                logger.error(f"Failed to persist shallow scan entities to db: {e}")
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Shallow scan failed: {e}")
+                logger.error(f"Shallow scan [{scan_id}]: failed to persist entities: {e}")
+        except Exception as e:
+            logger.error(f"Shallow scan [{scan_id}] background error: {e}", exc_info=True)
+            try:
+                _job = _db.query(ScanJob).filter(ScanJob.id == scan_job.id).first()
+                if _job:
+                    _job.status = "failed"
+                    _job.error_message = str(e)
+                    _db.commit()
+            except Exception:
+                pass
+        finally:
+            _db.close()
 
-    if result.get("error") and not result.get("assets"):
-        raise HTTPException(status_code=502, detail=result["error"])
+    thread = threading.Thread(target=_run_shallow, daemon=True, name=f"shallow-{scan_id}")
+    thread.start()
 
-    return result
+    return {
+        "scan_id": scan_id,
+        "status": "running",
+        "scan_type": "shallow",
+        "domain": request.domain,
+        "message": "Shallow scan started. Poll GET /api/v1/scans/{scan_id} for status.",
+    }
+
+
+@router.get("/{scan_id}/result")
+def get_scan_result(scan_id: UUID, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get the full result payload for a completed shallow scan."""
+    import uuid as _uuid
+    scan_job = db.query(ScanJob).filter(ScanJob.id == _uuid.UUID(str(scan_id))).first()
+    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+        raise HTTPException(status_code=404, detail="Scan not found")
+    if scan_job.status == "running":
+        raise HTTPException(status_code=202, detail="Scan still running")
+    if scan_job.status == "failed":
+        raise HTTPException(status_code=500, detail=scan_job.error_message or "Scan failed")
+    if not scan_job.result_data:
+        raise HTTPException(status_code=404, detail="No result data available for this scan")
+    return scan_job.result_data
 
 
 @router.get("/{scan_id}", response_model=ScanStatus)

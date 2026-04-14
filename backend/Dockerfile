@@ -50,6 +50,9 @@ COPY --from=go-builder /app/discovery/bin/discovery-engine /app/discovery/bin/di
 # Copy application code
 COPY backend/ .
 
+# Copy GeoIP database (to /app/geoip/ — outside /app/data volume mount)
+COPY data/geolite/GeoLite2-City.mmdb /app/geoip/GeoLite2-City.mmdb
+
 # Ensure scripts and binary are executable
 RUN chmod +x scripts/*.py scripts/*.sh discovery/bin/discovery-engine 2>/dev/null || true
 

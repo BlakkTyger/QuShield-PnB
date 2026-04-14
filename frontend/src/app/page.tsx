@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target, ShieldAlert } from "lucide-react";
-import { useStartScan, useShallowScan, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
+import { useStartScan, useShallowScan, useShallowResult, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 import { notificationStore } from "@/lib/notifications";
 
@@ -34,7 +34,9 @@ export default function QuickScanPage() {
   const [logsOpen, setLogsOpen] = useState(true);
   const [scanTier, setScanTier] = useState<ScanTier>("deep");
   const [quickResult, setQuickResult] = useState<Record<string, unknown> | null>(null);
+  const [isShallowScan, setIsShallowScan] = useState(false);
   const logsContainerRef = useRef<HTMLDivElement>(null);
+  const esRef = useRef<EventSource | null>(null);
   // Guard: prevent firing the "scan finished" notification more than once per scan
   const notifiedRef = useRef(false);
 
@@ -45,10 +47,14 @@ export default function QuickScanPage() {
 
   const { data: scanStatus, isError, error } = useScanStatus(scanId, isScanning);
   const { data: summary } = useScanSummary(
-    scanStatus?.status === "completed" ? scanId : null
+    scanStatus?.status === "completed" && !isShallowScan ? scanId : null
   );
   const { data: rating } = useEnterpriseRating(
-    scanStatus?.status === "completed" ? scanId : null
+    scanStatus?.status === "completed" && !isShallowScan ? scanId : null
+  );
+  const { data: shallowResult } = useShallowResult(
+    scanId,
+    isShallowScan && scanStatus?.status === "completed"
   );
 
   // Automatic cleanup of stale scans (e.g. 404 on poll)
@@ -67,7 +73,24 @@ export default function QuickScanPage() {
   // Stop polling when done
   useEffect(() => {
     if (scanStatus?.status === "completed" && isScanning) {
-      if (summary) {
+      if (isShallowScan) {
+        // Shallow scan: result is fetched via useShallowResult
+        if (shallowResult) {
+          setQuickResult(shallowResult);
+          setIsScanning(false);
+          if (scanId && typeof window !== "undefined") {
+            localStorage.setItem("qushield_scan_id", scanId);
+          }
+          if (!notifiedRef.current) {
+            notifiedRef.current = true;
+            notificationStore.addNotification({
+              title: "Shallow Scan Finished",
+              message: `Scanned ${(shallowResult.summary as any)?.total_subdomains_discovered || (shallowResult.summary as any)?.scanned || 1} assets`,
+              scanId: scanId || undefined,
+            });
+          }
+        }
+      } else if (summary) {
         setIsScanning(false);
         notifiedRef.current = true;
       }
@@ -76,35 +99,63 @@ export default function QuickScanPage() {
       setIsScanning(false);
       notifiedRef.current = true;
     }
-  }, [scanStatus, isScanning, summary]);
+  }, [scanStatus, isScanning, summary, isShallowScan, shallowResult, scanId]);
 
-  // Hook up SSE stream
+  // Hook up SSE stream — only depends on scanId (NOT scanStatus) to avoid reconnect on every poll
   useEffect(() => {
-    if (!scanId || scanStatus?.status === "completed" || scanStatus?.status === "failed") return;
+    // Skip SSE for shallow scans (they emit nothing via SSE)
+    if (!scanId || isShallowScan) return;
 
-    // Explicitly hit the proxy endpoint on Next.js matching the FastApi
-    const token = localStorage.getItem("qushield_access_token") || "";
-    // Directly target the FastAPI backend on port 8000 to bypass Next.js proxy buffering
+    // Close any prior connection
+    if (esRef.current) {
+      esRef.current.close();
+      esRef.current = null;
+    }
+
+    const token = (typeof window !== "undefined" ? localStorage.getItem("qushield_access_token") : "") || "";
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
     const es = new EventSource(`${backendUrl}/api/v1/scans/${scanId}/stream?token=${token}`);
+    esRef.current = es;
+
+    const PHASE_NAMES: Record<number, string> = {
+      1: "Discovery", 2: "Crypto Inspection", 3: "CBOM Build",
+      4: "Risk Assessment", 5: "Compliance", 6: "Topology",
+    };
 
     es.onmessage = (event) => {
+      const ts = new Date().toISOString().split("T")[1].slice(0, 12);
       try {
-        const data = JSON.parse(event.data);
-        if (data.message) {
-          setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${data.message}`]);
+        const d = JSON.parse(event.data);
+        const phaseName = d.phase ? PHASE_NAMES[d.phase] ?? `Phase ${d.phase}` : null;
+        const pct = d.progress_pct != null ? ` ${d.progress_pct}%` : "";
+        const prefix = phaseName ? `[${phaseName}${pct}]` : "";
+        const msg = d.message || d.event_type || event.data;
+        setLogs((prev) => [...prev, `[${ts}] ${prefix} ${msg}`.trim()]);
+        // Close stream on terminal events
+        if (d.event_type === "scan_complete" || d.event_type === "scan_failed") {
+          es.close();
+          esRef.current = null;
         }
       } catch {
-        setLogs((prev) => [...prev, `[${new Date().toISOString().split("T")[1].slice(0, -1)}] ${event.data}`]);
+        setLogs((prev) => [...prev, `[${ts}] ${event.data}`]);
       }
     };
 
     es.onerror = () => {
-      es.close();
+      // Don't close on transient errors — browser will auto-reconnect EventSource
+      // Only close if scan is already in terminal state
+      if (scanStatus?.status === "completed" || scanStatus?.status === "failed") {
+        es.close();
+        esRef.current = null;
+      }
     };
 
-    return () => es.close();
-  }, [scanId, scanStatus?.status]);
+    return () => {
+      es.close();
+      esRef.current = null;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanId, isShallowScan]);
 
   // Auto scroll logs
   useEffect(() => {
@@ -131,6 +182,7 @@ export default function QuickScanPage() {
     setIsScanning(true);
     setLogs([]);
     setQuickResult(null);
+    setIsShallowScan(false);
     notifiedRef.current = false; // reset for new scan
     setScanId(null);
     if (typeof window !== "undefined") {
@@ -141,19 +193,12 @@ export default function QuickScanPage() {
       // if (scanTier === "quick") { ... }
       if (scanTier === "shallow") {
         const res = await shallowScan.mutateAsync({ domain: domain.trim() });
-        setQuickResult(res);
-        setIsScanning(false);
-        notificationStore.addNotification({
-          title: "Shallow Scan Finished",
-          message: `Scanned ${(res.summary as any)?.total_subdomains_discovered || 1} assets on ${domain.trim()}`,
-          scanId: res.scan_id || undefined,
-        });
-        if (res.cached && res.scan_id) {
-          setScanId(res.scan_id);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("qushield_active_scan", res.scan_id);
-            localStorage.setItem("qushield_active_domain", domain.trim());
-          }
+        const sid = res.scan_id || res.scan_id;
+        setIsShallowScan(true);
+        setScanId(sid);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("qushield_active_scan", sid);
+          localStorage.setItem("qushield_active_domain", domain.trim());
         }
         return;
       }
@@ -553,16 +598,16 @@ export default function QuickScanPage() {
 
           <h3 className="text-sm font-bold uppercase tracking-wider mb-8 flex justify-between items-center" style={{ color: "var(--text-muted)" }}>
             Shallow Scan Results
-            <span className="text-xs font-mono" style={{ color: "var(--text-secondary)" }}>{quickResult.duration_ms}ms</span>
+            <span className="text-xs font-mono" style={{ color: "var(--text-secondary)" }}>{String(quickResult.duration_ms ?? "")}ms</span>
           </h3>
 
-          {quickResult.scan_type === "shallow" && quickResult.summary && (
+          {quickResult.scan_type === "shallow" && !!quickResult.summary && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <MetricCard
                 title="Average Risk Score"
                 value={String((quickResult.summary as any).avg_risk_score || 0)}
                 subtitle={(quickResult.summary as any).avg_risk_classification?.replace("quantum_", "") || ""}
-                icon={<ScoreGauge score={(quickResult.summary as any).avg_risk_score || 0} size={0} label="" /> && <Layers size={16} />}
+                icon={<Layers size={16} />}
                 color={(quickResult.summary as any).avg_risk_score < 700 ? "var(--risk-vulnerable)" : "var(--risk-ready)"}
               />
               <MetricCard
@@ -594,7 +639,7 @@ export default function QuickScanPage() {
             </div>
           )}
 
-          {quickResult.error && (
+          {!!quickResult.error && (
             <div className="mt-4 p-4 border border-[var(--risk-critical)] rounded-lg text-[var(--risk-critical)] text-sm font-mono text-center">
               Error: {String(quickResult.error)}
             </div>
