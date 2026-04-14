@@ -132,6 +132,10 @@ class GroqProvider(AIProvider):
                             f"Groq rate limit ({response.status_code}) on {model} — "
                             f"waiting {wait}s (attempt {attempt + 1}/{_MAX_ATTEMPTS})"
                         )
+                        if wait > 55:
+                            _push(f"⏭ {model} rate-limited (retry in {wait}s) — switching to fallback model")
+                            logger.warning(f"{model} rate-limit wait {wait}s > cap — switching model")
+                            break  # skip to next fallback model immediately
                         _push(f"⏳ Rate limited on {model} — retrying in {wait}s (attempt {attempt + 1}/{_MAX_ATTEMPTS})")
                         time.sleep(wait)
                         if attempt == _MAX_ATTEMPTS - 1:

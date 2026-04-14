@@ -31,26 +31,33 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Database init failed: {e}")
 
-    # Pre-warm ChromaDB default embedding model (downloads all-MiniLM-L6-v2 ONNX once)
-    # so the first AI request doesn't stall on a cold model download.
+    # ── ChromaDB: initialise singleton on the main thread (ChromaDB 1.1+ Rust binding) ──
+    # All background threads must be spawned AFTER this so they reuse the cached object.
+    _chroma_client = None
+    try:
+        from app.services.vector_store import get_chroma_client
+        _chroma_client = get_chroma_client()
+        if _chroma_client:
+            logger.info("ChromaDB initialised on main thread.")
+    except Exception as e:
+        logger.warning(f"ChromaDB main-thread init failed (non-fatal): {e}")
+
+    # Pre-warm the default embedding model (all-MiniLM-L6-v2 ONNX) in a background thread.
+    # Safe now that the Rust bindings are already initialised on the main thread above.
     def _warm_embeddings():
         try:
-            import chromadb
-            from chromadb.config import Settings as ChromaSettings
-            from app.config import settings as app_settings
-            db_path = str(app_settings.data_dir_abs / "chroma")
-            client = chromadb.PersistentClient(
-                path=db_path,
-                settings=ChromaSettings(anonymized_telemetry=False),
-            )
-            col = client.get_or_create_collection("__warmup__")
-            col.add(ids=["__warmup__"], documents=["QuShield embedding warmup"])
+            col = _chroma_client.get_or_create_collection("warmup-probe")
+            try:
+                col.add(ids=["__warmup__"], documents=["QuShield embedding warmup"])
+            except Exception:
+                pass  # already exists — that's fine
             col.query(query_texts=["warmup"], n_results=1)
             logger.info("ChromaDB embedding model warmed up successfully.")
         except Exception as e:
             logger.warning(f"Embedding warmup failed (non-fatal): {e}")
 
-    threading.Thread(target=_warm_embeddings, daemon=True, name="embed-warmup").start()
+    if _chroma_client:
+        threading.Thread(target=_warm_embeddings, daemon=True, name="embed-warmup").start()
 
     # Seed global knowledge base in background (non-blocking)
     def _seed_kb():

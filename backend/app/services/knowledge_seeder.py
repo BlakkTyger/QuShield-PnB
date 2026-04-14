@@ -73,12 +73,14 @@ def seed_knowledge_base() -> int:
         return 0
 
     try:
-        db_path = str(Path(__file__).resolve().parent.parent.parent / "data" / "chroma")
-        os.makedirs(db_path, exist_ok=True)
-        client = chromadb.PersistentClient(
-            path=db_path,
-            settings=Settings(anonymized_telemetry=False)
-        )
+        # Reuse the global singleton (already initialised on the main thread).
+        # Creating a new PersistentClient from a background thread crashes on
+        # ChromaDB 1.1+ due to Rust binding initialisation constraints.
+        from app.services.vector_store import get_chroma_client
+        client = get_chroma_client()
+        if client is None:
+            logger.error("ChromaDB client unavailable — knowledge base seeding skipped.")
+            return 0
     except Exception as e:
         logger.error(f"Failed to initialize ChromaDB for seeding: {e}")
         return 0
@@ -202,11 +204,10 @@ def search_knowledge_base(query: str, n_results: int = 5, tag_filter: str = None
         return []
 
     try:
-        db_path = str(Path(__file__).resolve().parent.parent.parent / "data" / "chroma")
-        client = chromadb.PersistentClient(
-            path=db_path,
-            settings=Settings(anonymized_telemetry=False)
-        )
+        from app.services.vector_store import get_chroma_client
+        client = get_chroma_client()
+        if client is None:
+            return []
         collection = client.get_or_create_collection(GLOBAL_COLLECTION)
     except Exception as e:
         logger.error(f"Knowledge base search init failed: {e}")
@@ -256,11 +257,10 @@ def list_knowledge_documents() -> List[dict]:
         return []
 
     try:
-        db_path = str(Path(__file__).resolve().parent.parent.parent / "data" / "chroma")
-        client = chromadb.PersistentClient(
-            path=db_path,
-            settings=Settings(anonymized_telemetry=False)
-        )
+        from app.services.vector_store import get_chroma_client
+        client = get_chroma_client()
+        if client is None:
+            return []
         collection = client.get_or_create_collection(GLOBAL_COLLECTION)
         all_items = collection.get(where={"source_type": "compliance_doc"})
         source_counts: dict = {}

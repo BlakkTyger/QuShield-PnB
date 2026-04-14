@@ -33,13 +33,41 @@ logger = logging.getLogger(__name__)
 
 # Ordered fallback model list — first available model that doesn't rate-limit wins
 _GROQ_MODELS = [
-    "llama-3.3-70b-versatile",
+    "llama-3.1-70b-versatile",
     "llama-3.1-8b-instant",
     "gemma2-9b-it",
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
+    "gemma2-9b-it",
+    "llama-3.1-70b-versatile",
 ]
 
+# Max seconds to wait on a single model before switching to the next one.
+# Groq sometimes returns Retry-After values of 20+ minutes; we don't honour those.
+_MAX_WAIT_BEFORE_FALLBACK = 55  # seconds
 
-def _get_llm():
+
+def _is_rate_limit(exc: Exception) -> tuple:
+    """Returns (is_429, wait_seconds). wait_seconds=0 if not parseable."""
+    import re
+    msg = str(exc)
+    if "429" in msg or "rate_limit_exceeded" in msg or "Rate limit" in msg:
+        m = re.search(r"try again in (\d+)m(\d+\.?\d*)s", msg)
+        if m:
+            return True, int(m.group(1)) * 60 + float(m.group(2))
+        m = re.search(r"try again in (\d+\.?\d*)s", msg)
+        if m:
+            return True, float(m.group(1))
+        return True, 0
+    return False, 0
+
+
+def _get_llm(status_sink=None):
+    """
+    Build a Groq LLM for the first available model.
+    Returns (llm, fallback_models, status_sink) so the caller can
+    pass these to the agent wrapper that handles 429 fallback.
+    """
     key = settings.GROQ_API_KEY
     if not key:
         raise RuntimeError(
@@ -47,46 +75,32 @@ def _get_llm():
             "Get a free key at https://console.groq.com"
         )
 
-    # Try native LlamaIndex Groq integration first
     for model in _GROQ_MODELS:
         try:
             from llama_index.llms.groq import Groq
-            llm = Groq(
-                model=model,
-                api_key=key,
-                temperature=0.1,
-                max_tokens=4096,
-                context_window=32768,
-            )
-            logger.info(f"ReAct agent LLM: Groq/{model} (native)")
+            llm = Groq(model=model, api_key=key, temperature=0.1,
+                       max_tokens=4096, context_window=32768)
+            logger.info(f"ReAct agent LLM: Groq/{model}")
             return llm
         except ImportError:
-            break  # llama-index-llms-groq not installed, try OpenAI-compat
+            break
         except Exception as e:
-            logger.warning(f"Groq/{model} init failed: {e} — trying next model")
+            logger.warning(f"Groq/{model} init failed: {e} — trying next")
             continue
 
-    # Fallback: use llama-index OpenAI provider pointing at Groq's OpenAI-compatible endpoint
     for model in _GROQ_MODELS:
         try:
             from llama_index.llms.openai import OpenAI
-            llm = OpenAI(
-                model=model,
-                api_key=key,
-                api_base="https://api.groq.com/openai/v1",
-                temperature=0.1,
-                max_tokens=4096,
-                context_window=32768,
-            )
-            logger.info(f"ReAct agent LLM: Groq/{model} (OpenAI-compat fallback)")
+            llm = OpenAI(model=model, api_key=key,
+                         api_base="https://api.groq.com/openai/v1",
+                         temperature=0.1, max_tokens=4096, context_window=32768)
+            logger.info(f"ReAct agent LLM: Groq/{model} (OpenAI-compat)")
             return llm
         except Exception as e:
             logger.warning(f"Groq OpenAI-compat/{model} init failed: {e}")
             continue
 
-    raise RuntimeError(
-        "Could not initialise any Groq model. Check GROQ_API_KEY and network connectivity."
-    )
+    raise RuntimeError("Could not initialise any Groq model.")
 
 
 def _get_embed_model():
@@ -340,6 +354,19 @@ def build_react_agent(user: User, db: Session, scan_id: Optional[str] = None):
 
 # ─── Streaming response generator ─────────────────────────────────────────────
 
+def _friendly_error(exc: Exception) -> str:
+    """Return a user-friendly error string, stripping raw Groq API error blobs."""
+    msg = str(exc)
+    if "rate_limit_exceeded" in msg or "429" in msg:
+        import re
+        m = re.search(r"try again in ([^']+)\.?'", msg)
+        wait_hint = f" Try again in {m.group(1)}" if m else ""
+        return f"All AI models are currently rate-limited.{wait_hint} Please wait a moment and try again."
+    if len(msg) > 200:
+        return msg[:200] + "…"
+    return msg
+
+
 async def stream_agent_response(
     user: User, db: Session, query: str,
     chat_history: Optional[List[dict]] = None,
@@ -350,12 +377,19 @@ async def stream_agent_response(
     Events: thought | tool | status | answer | error | done
     Trace and status events are emitted in real time via concurrent drain tasks.
     """
-    import io
-    import sys
-
     def _sse(event_type: str, content: str) -> str:
         payload = json.dumps({"type": event_type, "content": content})
         return f"data: {payload}\n\n"
+
+    # ─── Shared thread-safe queues ─────────────────────────────────────────────
+    event_bus: asyncio.Queue = asyncio.Queue()
+    _DONE = object()
+    _SENTINEL = object()
+    status_tq: queue.SimpleQueue = queue.SimpleQueue()  # status messages
+    trace_tq: queue.SimpleQueue = queue.SimpleQueue()   # written by logger handler
+
+    def _push_status(msg: str):
+        status_tq.put_nowait(msg)
 
     try:
         agent = build_react_agent(user, db, scan_id=scan_id)
@@ -365,39 +399,115 @@ async def stream_agent_response(
         yield _sse("error", f"Agent initialization failed: {e}")
         return
 
-    # ─── Central SSE event bus ────────────────────────────────────────────────
-    # All concurrent tasks PUT events here; the generator consumes and yields them.
-    event_bus: asyncio.Queue = asyncio.Queue()
-    _DONE = object()   # sentinel: agent finished
-    _SENTINEL = object()  # sentinel for thread-safe queues
+    # ─── Intercept LlamaIndex logger for real-time trace ──────────────────────────
+    # LlamaIndex verbose output goes through its own loggers, not sys.stdout.
+    # We attach a temporary handler to capture it.
+    import logging as _logging
 
-    # Thread-safe queues that sync code (LlamaIndex internals) writes into;
-    # async drain tasks poll them and forward to event_bus.
-    trace_tq: queue.SimpleQueue = queue.SimpleQueue()
+    class _TraceHandler(_logging.Handler):
+        def emit(self, record):
+            msg = record.getMessage().strip()
+            if msg:
+                trace_tq.put_nowait(msg)
 
-    # ─ Redirect stdout → trace queue ─────────────────────────────────────────
-    class _TraceCapture(io.StringIO):
-        def __init__(self):
-            super().__init__()
-            self._buf = ""
+    _trace_handler = _TraceHandler()
+    _trace_handler.setLevel(_logging.DEBUG)
+    _li_loggers = [
+        _logging.getLogger("llama_index.core.agent"),
+        _logging.getLogger("llama_index.core.agent.react"),
+        _logging.getLogger("llama_index.core.agent.react.step"),
+        _logging.getLogger("llama_index"),
+    ]
+    for _ll in _li_loggers:
+        _ll.addHandler(_trace_handler)
+        _ll.setLevel(_logging.DEBUG)
 
-        def write(self, s: str):
-            self._buf += s
-            if "\n" in self._buf:
-                lines = self._buf.split("\n")
-                for line in lines[:-1]:
-                    stripped = line.strip()
-                    if stripped:
-                        trace_tq.put_nowait(stripped)
-                self._buf = lines[-1]
+    # ─── Drain tasks ──────────────────────────────────────────────────────────
+    import re as _re
 
-        def flush(self):
-            pass
+    def _parse_trace_line(raw: str):
+        """
+        Convert a raw LlamaIndex log line into (event_type, human_text) or None to skip.
+        Returns None for pure internal workflow noise.
+        """
+        line = raw.strip()
+        if not line:
+            return None
 
-    old_stdout = sys.stdout
-    sys.stdout = _TraceCapture()
+        # ── Skip pure internal workflow machinery ──────────────────────────
+        _noise_patterns = (
+            "[tick]",
+            "[init_run:",
+            "[setup_agent:",
+            "[run_agent_step:",
+            "[aggregate_responses:",
+            "[finalize:",
+            "AgentWorkflowStartEvent",
+            "AgentWorkflow",
+            "complete with no result",
+            "started from AgentInput",
+            "started from AgentSetup",
+            "complete with AgentInput",
+            "complete with AgentSetup",
+            "complete with AgentOutput",
+            "complete with StopEvent",
+        )
+        for pat in _noise_patterns:
+            if pat in line:
+                return None
 
-    # ─ Async task: drain stdout trace into event_bus ─────────────────────────
+        # ── Tool call: "Calling tool X with inputs {…}" ────────────────────
+        m = _re.search(r"[Cc]alling tool[:\s]+['\"]?(\w+)['\"]?\s*(?:with|input)?", line)
+        if m:
+            tool_name = m.group(1)
+            # Try to extract the input summary
+            inp = _re.search(r"input[s]?\s*[=:]\s*['\{](.{0,120})", line, _re.IGNORECASE)
+            inp_text = inp.group(1).strip("'\"{}").strip() if inp else ""
+            text = f"🔧 Calling tool: {tool_name}" + (f" — {inp_text[:80]}" if inp_text else "")
+            return ("tool", text)
+
+        # ── Tool output / observation ──────────────────────────────────────
+        if _re.search(r"[Tt]ool\s+[Oo]utput|[Oo]bservation\s*:", line):
+            # Extract meaningful snippet (first 120 chars after colon)
+            body = _re.sub(r"^.*?[Oo]bservation\s*:\s*", "", line).strip()
+            if not body:
+                body = line
+            return ("tool", f"📋 Observation: {body[:150]}")
+
+        # ── Thought / reasoning ────────────────────────────────────────────
+        if line.startswith("Thought:"):
+            text = line[len("Thought:"):].strip()
+            return ("thought", f"💭 {text}") if text else None
+
+        if line.startswith("Action:"):
+            return ("tool", f"⚡ {line}")
+
+        if line.startswith("Answer:") or line.startswith("Response:"):
+            return None  # Don't leak partial answer here; it comes via answer events
+
+        # ── Extract text= content from workflow event strings ──────────────
+        # e.g. AgentSetup(input=[…TextBlock(block_type='text', text='Thought: …')…])
+        texts = _re.findall(r"text='([^']{10,})'", line)
+        for t in texts:
+            t = t.strip()
+            if t.startswith("Thought:"):
+                return ("thought", f"💭 {t[8:].strip()}")
+            if t.startswith("Action:"):
+                return ("tool", f"⚡ {t}")
+            if t.startswith("Observation:"):
+                return ("tool", f"📋 {t}")
+            if len(t) > 20 and not t.startswith("You are"):
+                return ("thought", f"💭 {t[:160]}")
+
+        # ── Generic: include only lines with substantive content ──────────
+        # Skip lines that are pure Python object repr noise
+        if line.startswith(("<", "block_type=", "role=", "MessageRole", "TextBlock", "ChatMessage")):
+            return None
+        if len(line) < 8:
+            return None
+        # Pass through anything else as a thought
+        return ("thought", line[:200])
+
     async def _drain_trace():
         while True:
             await asyncio.sleep(0.05)
@@ -406,29 +516,82 @@ async def stream_agent_response(
                     line = trace_tq.get_nowait()
                     if line is _SENTINEL:
                         return
-                    if line.startswith("Thought:") or line.startswith("> "):
-                        await event_bus.put(_sse("thought", line))
-                    elif (line.startswith("Action:") or line.startswith("Observation:")
-                          or line.startswith("Tool:")):
-                        await event_bus.put(_sse("tool", line))
-                    elif line.strip():
-                        await event_bus.put(_sse("thought", line))
+                    parsed = _parse_trace_line(line)
+                    if parsed:
+                        evt_type, text = parsed
+                        await event_bus.put(_sse(evt_type, text))
             except queue.Empty:
                 pass
 
-    # ─ Async task: run the agent, put DONE/error when finished ───────────────
+    async def _drain_status():
+        while True:
+            await asyncio.sleep(0.1)
+            try:
+                while True:
+                    msg = status_tq.get_nowait()
+                    if msg is _SENTINEL:
+                        return
+                    await event_bus.put(_sse("status", msg))
+            except queue.Empty:
+                pass
+
     async def _run_agent():
+        """Run agent.run() with 429 retry + model fallback."""
+        nonlocal agent
+        models_remaining = list(_GROQ_MODELS)
+        current_model_idx = 0
         try:
-            result = await agent.run(user_msg=query)
-            await event_bus.put((_DONE, result))
+            while True:
+                try:
+                    model_name = models_remaining[current_model_idx] if current_model_idx < len(models_remaining) else "unknown"
+                    _push_status(f"🧠 Thinking with {model_name}…")
+                    result = await agent.run(user_msg=query)
+                    await event_bus.put((_DONE, result))
+                    return
+                except Exception as exc:
+                    is_rl, wait = _is_rate_limit(exc)
+                    if not is_rl:
+                        raise
+                    model_name = models_remaining[current_model_idx] if current_model_idx < len(models_remaining) else "unknown"
+                    if wait > _MAX_WAIT_BEFORE_FALLBACK or wait == 0:
+                        current_model_idx += 1
+                        if current_model_idx >= len(models_remaining):
+                            raise RuntimeError(
+                                "All Groq models are rate-limited. Please wait a few minutes and try again."
+                            )
+                        next_model = models_remaining[current_model_idx]
+                        _push_status(f"⏭ {model_name} rate-limited — switching to {next_model}")
+                        logger.warning(f"{model_name} rate-limited, switching to {next_model}")
+                        # Rebuild agent with the next model
+                        agent = build_react_agent(user, db, scan_id=scan_id)
+                        # Override the LLM model on the agent
+                        try:
+                            from llama_index.llms.groq import Groq as GroqLLM
+                            agent.llm = GroqLLM(
+                                model=next_model,
+                                api_key=settings.GROQ_API_KEY,
+                                temperature=0.1, max_tokens=4096, context_window=32768,
+                            )
+                        except Exception:
+                            pass  # fall back to default model from build_react_agent
+                    else:
+                        _push_status(f"⏳ {model_name} rate-limited — retrying in {int(wait)}s")
+                        logger.warning(f"{model_name} rate-limited — waiting {wait:.0f}s")
+                        await asyncio.sleep(wait)
         except Exception as exc:
             await event_bus.put((_DONE, exc))
         finally:
             trace_tq.put_nowait(_SENTINEL)
+            status_tq.put_nowait(_SENTINEL)
+            for _ll in _li_loggers:
+                try:
+                    _ll.removeHandler(_trace_handler)
+                except Exception:
+                    pass
 
-    # ─ Start background tasks ─────────────────────────────────────────────────
-    drain_task = asyncio.create_task(_drain_trace())
-    agent_task = asyncio.create_task(_run_agent())
+    drain_trace_task = asyncio.create_task(_drain_trace())
+    drain_status_task = asyncio.create_task(_drain_status())
+    asyncio.create_task(_run_agent())
 
     # Yield initial status immediately
     yield _sse("status", "🤔 Agent is thinking…")
@@ -440,22 +603,23 @@ async def stream_agent_response(
             if isinstance(item, tuple) and len(item) == 2 and item[0] is _DONE:
                 agent_result = item[1]
                 break
-            yield item  # real-time SSE line
+            yield item
     except Exception as e:
-        sys.stdout = old_stdout
-        drain_task.cancel()
-        agent_task.cancel()
-        yield _sse("error", f"Agent execution failed: {str(e)}")
+        drain_trace_task.cancel()
+        drain_status_task.cancel()
+        yield _sse("error", _friendly_error(e))
         return
     finally:
-        sys.stdout = old_stdout
-        # Wait for drain to flush remaining lines
         try:
-            await asyncio.wait_for(drain_task, timeout=1.0)
+            await asyncio.wait_for(drain_trace_task, timeout=1.0)
         except Exception:
-            drain_task.cancel()
+            drain_trace_task.cancel()
+        try:
+            await asyncio.wait_for(drain_status_task, timeout=0.5)
+        except Exception:
+            drain_status_task.cancel()
 
-    # Flush any remaining events that arrived after _DONE
+    # Flush any remaining events
     while not event_bus.empty():
         try:
             item = event_bus.get_nowait()
@@ -465,12 +629,11 @@ async def stream_agent_response(
             break
 
     if isinstance(agent_result, Exception):
-        yield _sse("error", f"Agent execution failed: {str(agent_result)}")
+        yield _sse("error", _friendly_error(agent_result))
         return
 
     response_text = str(getattr(agent_result, "response", agent_result) or "")
 
-    # Yield final answer in chunks for streaming feel
     chunk_size = 80
     for i in range(0, len(response_text), chunk_size):
         yield _sse("answer", response_text[i:i + chunk_size])
