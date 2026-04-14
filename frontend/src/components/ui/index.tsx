@@ -1,5 +1,6 @@
 "use client";
 
+export { ScanSelector } from "./ScanSelector";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
 
 export function RiskBadge({ classification }: { classification: string }) {

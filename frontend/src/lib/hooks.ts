@@ -458,22 +458,22 @@ export function useAgentStream() {
     mutationFn: async ({
       message,
       history,
+      scan_id,
       onEvent,
     }: {
       message: string;
       history?: Array<{ role: string; content: string }>;
+      scan_id?: string | null;
       onEvent: (event: AgentEvent) => void;
     }) => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/ai/agent/chat`,
-        {
+      const token = typeof window !== "undefined" ? localStorage.getItem("qushield_access_token") : null;
+      const response = await fetch("/api/v1/ai/agent/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ message, history }),
+          body: JSON.stringify({ message, history, scan_id: scan_id ?? undefined }),
         }
       );
 

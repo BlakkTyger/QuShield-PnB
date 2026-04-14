@@ -207,6 +207,7 @@ def generate_roadmap(scan_id: UUID, current_user: User = Depends(get_current_use
 class AgentChatRequest(BaseModel):
     message: str
     history: Optional[List[dict]] = None  # [{"role": "user"|"assistant", "content": "..."}]
+    scan_id: Optional[str] = None  # scope agent to a specific scan
 
 
 @router.post("/agent/chat")
@@ -230,6 +231,7 @@ def agent_chat_stream(
                 db=db,
                 query=request.message,
                 chat_history=request.history,
+                scan_id=request.scan_id,
             )
         except Exception as e:
             import json as _json

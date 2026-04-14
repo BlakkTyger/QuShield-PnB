@@ -1,157 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Full Infrastructure Scan Report</title>
-  <style>
-    @page { margin: 18mm 15mm; }
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f1a; color: #e2e8f0; margin: 0; padding: 0; font-size: 11px; line-height: 1.5; }
-    .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #0b0f1a 0%, #1e293b 100%); padding: 60px 40px; text-align: center; page-break-after: always; }
-    .cover-title { font-size: 28px; font-weight: 900; color: #f59e0b; margin-bottom: 8px; }
-    .cover-sub { font-size: 15px; color: #94a3b8; margin-bottom: 28px; }
-    .cover-meta { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 28px; text-align: left; font-size: 11px; color: #cbd5e1; line-height: 2; }
-    .cover-meta strong { color: #f59e0b; display: inline-block; width: 140px; }
-    .page { padding: 28px 36px; }
-    .section { margin-bottom: 28px; page-break-inside: avoid; }
-    h2 { font-size: 13px; font-weight: 700; color: #f59e0b; border-bottom: 1px solid #334155; padding-bottom: 5px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-    .kpi-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
-    .kpi { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; flex: 1; min-width: 90px; text-align: center; }
-    .kpi .val { font-size: 24px; font-weight: 900; color: #f59e0b; }
-    .kpi .val.red { color: #ef4444; } .kpi .val.green { color: #22c55e; } .kpi .val.blue { color: #60a5fa; }
-    .kpi .lbl { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-    .narrative { background: #1e293b; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 11px; line-height: 1.7; color: #cbd5e1; white-space: pre-wrap; margin-bottom: 14px; }
-    table { width: 100%; border-collapse: collapse; font-size: 10px; }
-    th { background: #0f172a; color: #f59e0b; padding: 6px 8px; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
-    td { padding: 6px 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; vertical-align: top; }
-    .badge { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
-    .badge-critical { background: #7f1d1d; color: #fca5a5; } .badge-vulnerable { background: #7c2d12; color: #fdba74; }
-    .badge-at_risk { background: #78350f; color: #fde68a; } .badge-aware { background: #1e3a5f; color: #93c5fd; }
-    .badge-ready { background: #14532d; color: #86efac; } .badge-unknown { background: #1e293b; color: #94a3b8; }
-    .badge-safe { background: #14532d; color: #86efac; }
-    .ok { color: #22c55e; font-weight: 700; } .nok { color: #ef4444; font-weight: 700; }
-    .chart-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
-    .chart-box { flex: 1; min-width: 220px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; }
-    .chart-box img { max-width: 100%; height: auto; } .chart-box .ct { font-size: 9px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
-    .footer { margin-top: 32px; border-top: 1px solid #334155; padding-top: 10px; font-size: 9px; color: #475569; text-align: center; }
-    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-  </style>
+<meta charset="UTF-8">
+<title>Full Infrastructure Scan Report</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #ffffff; color: #1e293b; font-size: 10.5px; line-height: 1.55; }
+.cover { background: #0f172a; color: #fff; padding: 52mm 20mm 40mm 20mm; text-align: center; page-break-after: always; }
+.cover-logo { font-size: 44px; margin-bottom: 10px; color: #f59e0b; }
+.cover-title { font-size: 26px; font-weight: 900; color: #f8fafc; margin-bottom: 6px; }
+.cover-sub { font-size: 13px; color: #94a3b8; margin-bottom: 32px; }
+.cover-rule { width: 60px; height: 3px; background: #f59e0b; margin: 0 auto 28px; }
+.cover-meta { display: inline-block; text-align: left; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 16px 24px; font-size: 10px; line-height: 2.1; }
+.cover-meta .lbl { color: #94a3b8; display: inline-block; width: 130px; }
+.cover-meta .val { color: #f1f5f9; font-weight: 600; }
+.cover-conf { margin-top: 28px; font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; }
+.page { padding: 0; }
+.section { margin-bottom: 20px; }
+h2.section-title { font-size: 10px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid #f59e0b; padding-left: 10px; margin-bottom: 10px; }
+h2.section-title.red { border-color: #ef4444; }
+h2.section-title.blue { border-color: #3b82f6; }
+h2.section-title.green { border-color: #22c55e; }
+h2.section-title.purple { border-color: #8b5cf6; }
+.kpi-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.kpi { flex: 1; min-width: 70px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 6px; text-align: center; border-top: 3px solid #e2e8f0; }
+.kpi.red { border-top-color: #ef4444; }
+.kpi.amber { border-top-color: #f59e0b; }
+.kpi.green { border-top-color: #22c55e; }
+.kpi.blue { border-top-color: #3b82f6; }
+.kpi .val { font-size: 20px; font-weight: 900; color: #0f172a; line-height: 1; }
+.kpi .val.red { color: #ef4444; } .kpi .val.amber { color: #b45309; } .kpi .val.green { color: #16a34a; } .kpi .val.blue { color: #2563eb; }
+.kpi .lbl { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+.chart-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.chart-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; text-align: center; background: #f8fafc; }
+.chart-box img { max-width: 100%; height: auto; }
+.chart-box .ct { font-size: 8.5px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 700; }
+.narrative { border-left: 3px solid #e2e8f0; padding: 10px 14px; background: #f8fafc; border-radius: 0 5px 5px 0; margin-bottom: 10px; font-size: 10.5px; color: #334155; line-height: 1.65; }
+.narrative p { margin-bottom: 7px; } .narrative p:last-child { margin-bottom: 0; }
+.narrative ul, .narrative ol { margin: 6px 0 6px 16px; } .narrative li { margin-bottom: 4px; }
+.narrative h3, .narrative h4 { font-size: 10.5px; font-weight: 700; color: #0f172a; margin: 8px 0 4px; }
+.narrative strong { color: #0f172a; } .narrative code { background: #e2e8f0; padding: 1px 4px; border-radius: 3px; font-family: monospace; font-size: 9.5px; }
+table { width: 100%; border-collapse: collapse; font-size: 9.5px; table-layout: fixed; }
+th { background: #1e293b; color: #f1f5f9; padding: 6px 8px; text-align: left; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #334155; vertical-align: top; word-break: break-word; }
+tr:nth-child(even) td { background: #f8fafc; }
+tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+.badge-critical { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.badge-vulnerable { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.badge-at_risk { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+.badge-aware { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.badge-ready { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.badge-unknown { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+.ok { color: #16a34a; font-weight: 700; } .nok { color: #dc2626; font-weight: 700; } .na { color: #94a3b8; }
+.callout { border-radius: 5px; padding: 10px 14px; margin-bottom: 12px; font-size: 10px; }
+.callout-red { background: #fef2f2; border-left: 4px solid #ef4444; color: #7f1d1d; }
+.callout-amber { background: #fffbeb; border-left: 4px solid #f59e0b; color: #78350f; }
+.callout-green { background: #f0fdf4; border-left: 4px solid #22c55e; color: #14532d; }
+.footer { margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 8.5px; color: #94a3b8; display: flex; justify-content: space-between; }
+.page-break { page-break-before: always; }
+.avoid-break { page-break-inside: avoid; }
+@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
 </head>
 <body>
+
 <div class="cover">
-  <div style="font-size:48px;margin-bottom:12px;">⚛</div>
+  <div class="cover-logo">🔬</div>
   <div class="cover-title">Full Infrastructure Scan Report</div>
   <div class="cover-sub">Comprehensive Post-Quantum Cryptographic Assessment</div>
+  <div class="cover-rule"></div>
   <div class="cover-meta">
-    <div><strong>Organization:</strong> {{ targets | join(', ') or 'N/A' }}</div>
-    <div><strong>Report Date:</strong> {{ generation_date_long }}</div>
-    <div><strong>Scan Completed:</strong> {{ completed_at }}</div>
-    <div><strong>Scan ID:</strong> {{ scan_id[:8] | upper }}</div>
-    <div><strong>Total Assets:</strong> {{ stats.total }}</div>
-    <div><strong>Classification:</strong> CONFIDENTIAL</div>
+    <div><span class="lbl">Organization:</span><span class="val">{{ targets | join(', ') or 'N/A' }}</span></div>
+    <div><span class="lbl">Report Date:</span><span class="val">{{ generation_date_long }}</span></div>
+    <div><span class="lbl">Scan Completed:</span><span class="val">{{ completed_at }}</span></div>
+    <div><span class="lbl">Scan Reference:</span><span class="val">QS-{{ scan_id[:8] | upper }}</span></div>
+    <div><span class="lbl">Assets Scanned:</span><span class="val">{{ stats.total }}</span></div>
+    <div><span class="lbl">Classification:</span><span class="val" style="color:#f59e0b;">CONFIDENTIAL</span></div>
   </div>
+  <div class="cover-conf">Prepared by QuShield Platform · Technical Security Assessment</div>
 </div>
+
 <div class="page">
-  <div class="kpi-row">
+  <div class="kpi-row avoid-break">
     <div class="kpi"><div class="val">{{ stats.total }}</div><div class="lbl">Total Assets</div></div>
-    <div class="kpi"><div class="val red">{{ stats.critical_count }}</div><div class="lbl">Critical</div></div>
-    <div class="kpi"><div class="val red">{{ stats.vulnerable_count }}</div><div class="lbl">Vulnerable</div></div>
-    <div class="kpi"><div class="val red">{{ stats.hndl_count }}</div><div class="lbl">HNDL Exposed</div></div>
-    <div class="kpi"><div class="val">{{ stats.avg_readiness }}</div><div class="lbl">Avg Readiness</div></div>
-    <div class="kpi"><div class="val blue">{{ stats.avg_compliance_pct }}%</div><div class="lbl">Compliance</div></div>
-    <div class="kpi"><div class="val green">{{ stats.tls_13_assets }}</div><div class="lbl">TLS 1.3</div></div>
-    <div class="kpi"><div class="val">{{ stats.total_cbom_components }}</div><div class="lbl">CBOM Components</div></div>
+    <div class="kpi red"><div class="val red">{{ stats.critical_count }}</div><div class="lbl">Critical</div></div>
+    <div class="kpi red"><div class="val red">{{ stats.vulnerable_count }}</div><div class="lbl">Vulnerable</div></div>
+    <div class="kpi red"><div class="val red">{{ stats.hndl_count }}</div><div class="lbl">HNDL Exposed</div></div>
+    <div class="kpi blue"><div class="val blue">{{ stats.avg_readiness }}</div><div class="lbl">Avg Readiness</div></div>
+    <div class="kpi"><div class="val">{{ stats.avg_compliance_pct }}%</div><div class="lbl">Compliance</div></div>
+    <div class="kpi"><div class="val">{{ stats.total_certs }}</div><div class="lbl">Certificates</div></div>
+    <div class="kpi amber"><div class="val amber">{{ stats.vulnerable_certs }}</div><div class="lbl">Vuln Certs</div></div>
   </div>
-  {% if charts %}
-  <div class="chart-row">
-    {% if charts.risk_distribution %}<div class="chart-box"><div class="ct">Risk Distribution</div><img src="data:image/png;base64,{{ charts.risk_distribution }}"/></div>{% endif %}
-    {% if charts.tls_version_distribution %}<div class="chart-box"><div class="ct">TLS Versions</div><img src="data:image/png;base64,{{ charts.tls_version_distribution }}"/></div>{% endif %}
-    {% if charts.asset_type_risk_scatter %}<div class="chart-box"><div class="ct">Risk by Asset Type</div><img src="data:image/png;base64,{{ charts.asset_type_risk_scatter }}"/></div>{% endif %}
+
+  {% if stats.hndl_count > 0 %}
+  <div class="callout callout-red avoid-break">
+    <strong>⚠ HNDL ALERT:</strong> {{ stats.hndl_count }} asset(s) are HNDL-exposed. Adversaries may be collecting encrypted traffic today for future quantum decryption.
   </div>
   {% endif %}
-  <div class="section">
-    <h2>Infrastructure Overview</h2>
-    <div class="narrative">{{ ai.infra_overview or 'Analysis unavailable.' }}</div>
+
+  {% if charts.risk_distribution or charts.cbom_breakdown %}
+  <div class="chart-row avoid-break">
+    {% if charts.risk_distribution %}<div class="chart-box"><div class="ct">Risk Distribution</div><img src="data:image/png;base64,{{ charts.risk_distribution }}" /></div>{% endif %}
+    {% if charts.cbom_breakdown %}<div class="chart-box"><div class="ct">CBOM Algorithm Mix</div><img src="data:image/png;base64,{{ charts.cbom_breakdown }}" /></div>{% endif %}
+    {% if charts.quantum_readiness_gauge %}<div class="chart-box"><div class="ct">Quantum Readiness</div><img src="data:image/png;base64,{{ charts.quantum_readiness_gauge }}" /></div>{% endif %}
   </div>
-  <div class="section">
-    <h2>TLS Analysis &amp; Key Exchange Findings</h2>
-    <div class="narrative">{{ ai.tls_findings or 'TLS analysis unavailable.' }}</div>
+  {% endif %}
+
+  <div class="section avoid-break">
+    <h2 class="section-title">Infrastructure Overview</h2>
+    <div class="narrative">{{ ai.infra_overview | safe }}</div>
   </div>
+
+  <div class="section avoid-break">
+    <h2 class="section-title red">TLS Analysis &amp; Key Exchange Findings</h2>
+    <div class="narrative">{{ ai.tls_findings | safe }}</div>
+  </div>
+
+  <div class="section avoid-break">
+    <h2 class="section-title red">Certificate Infrastructure Findings</h2>
+    <div class="narrative">{{ ai.cert_findings | safe }}</div>
+  </div>
+
+  {% if cert_summary %}
   <div class="section">
-    <h2>Certificate Infrastructure Findings</h2>
-    <div class="narrative">{{ ai.cert_findings or 'Certificate analysis unavailable.' }}</div>
-    {% if cert_summary %}
-    <table style="margin-top:12px;">
-      <thead><tr><th>Common Name</th><th>Issuer</th><th>Algorithm</th><th>Key</th><th>Valid To</th><th>TLS</th><th>FS</th><th>Quantum</th></tr></thead>
-      <tbody>
-      {% for c in cert_summary[:30] %}
+    <h2 class="section-title">Certificate Inventory (Top {{ cert_summary|length }})</h2>
+    <table>
+      <thead>
         <tr>
-          <td style="font-family:monospace;font-size:9px;">{{ c.common_name[:40] }}</td>
-          <td style="font-size:9px;">{{ c.issuer[:30] }}</td>
+          <th style="width:24%">Common Name</th>
+          <th style="width:14%">Issuer</th>
+          <th style="width:14%">Algorithm</th>
+          <th style="width:8%">Key</th>
+          <th style="width:10%">Expires</th>
+          <th style="width:8%">TLS</th>
+          <th style="width:8%">FS</th>
+          <th style="width:14%">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cert_summary %}
+        <tr>
+          <td>{{ c.common_name[:30] }}{% if c.common_name|length > 30 %}…{% endif %}</td>
+          <td>{{ c.issuer[:18] }}{% if c.issuer|length > 18 %}…{% endif %}</td>
           <td>{{ c.algorithm }}</td>
           <td>{{ c.key_type }}-{{ c.key_length }}</td>
           <td>{{ c.valid_to }}</td>
           <td>{{ c.tls_version }}</td>
-          <td><span class="{% if c.forward_secrecy %}ok{% else %}nok{% endif %}">{% if c.forward_secrecy %}&#10003;{% else %}&#10007;{% endif %}</span></td>
-          <td><span class="badge {% if c.is_quantum_vulnerable %}badge-vulnerable{% else %}badge-safe{% endif %}">{% if c.is_quantum_vulnerable %}VULN{% else %}SAFE{% endif %}</span></td>
+          <td>{% if c.forward_secrecy %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if c.is_quantum_vulnerable %}<span class="badge badge-vulnerable">Vulnerable</span>{% else %}<span class="badge badge-ready">Safe</span>{% endif %}</td>
         </tr>
-      {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
-    {% endif %}
   </div>
-  <div class="section">
-    <h2>Shadow Assets &amp; Unmanaged Infrastructure</h2>
-    <div class="narrative">{{ ai.shadow_assets or 'Shadow asset analysis unavailable.' }}</div>
+  {% endif %}
+
+  <div class="section avoid-break">
+    <h2 class="section-title purple">Shadow Assets &amp; Unmanaged Infrastructure</h2>
+    <div class="narrative">{{ ai.shadow_assets | safe }}</div>
   </div>
-  <div class="section">
-    <h2>Third-Party &amp; Vendor Risk</h2>
-    <div class="narrative">{{ ai.third_party_risk or 'Third-party analysis unavailable.' }}</div>
-    {% if vendor_summary %}
-    <table style="margin-top:12px;">
-      <thead><tr><th>Vendor / Provider</th><th>Assets</th><th>Avg Risk Score</th><th>HNDL Exposed</th></tr></thead>
-      <tbody>
-      {% for v in vendor_summary %}
-        <tr>
-          <td>{{ v.vendor }}</td><td>{{ v.assets }}</td>
-          <td><strong>{{ v.avg_risk }}</strong></td>
-          <td>{{ v.hndl_assets }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
+
+  <div class="section avoid-break">
+    <h2 class="section-title amber">Third-Party &amp; Vendor Risk</h2>
+    <div class="narrative">{{ ai.third_party_risk | safe }}</div>
   </div>
-  <div class="section">
-    <h2>Technical Recommendations</h2>
-    <div class="narrative">{{ ai.technical_recommendations or 'Recommendations unavailable.' }}</div>
-  </div>
-  <div class="section">
-    <h2>Full Asset Inventory ({{ stats.total }} Assets)</h2>
+
+  {% if vendor_summary %}
+  <div class="section avoid-break">
+    <h2 class="section-title amber">Vendor Risk Summary</h2>
     <table>
-      <thead><tr><th>#</th><th>Hostname</th><th>Type</th><th>IP</th><th>Score</th><th>Risk</th><th>HNDL</th><th>TLS</th><th>RBI</th><th>Agility</th><th>CBOM%</th></tr></thead>
+      <thead>
+        <tr><th style="width:40%">Vendor / Provider</th><th style="width:15%">Assets</th><th style="width:20%">Avg Risk Score</th><th style="width:25%">HNDL Exposed</th></tr>
+      </thead>
       <tbody>
-      {% for a in assets %}
+        {% for v in vendor_summary %}
         <tr>
-          <td>{{ loop.index }}</td>
-          <td style="font-family:monospace;font-size:9px;">{{ a.hostname }}</td>
-          <td>{{ a.asset_type }}</td>
-          <td style="font-family:monospace;font-size:9px;">{{ a.ip_address }}</td>
-          <td><strong>{{ a.risk_score }}</strong></td>
-          <td><span class="badge badge-{{ a.risk_classification }}">{{ a.risk_classification }}</span></td>
-          <td><span class="{% if a.hndl_exposed %}nok{% else %}ok{% endif %}">{% if a.hndl_exposed %}YES{% else %}NO{% endif %}</span></td>
-          <td>{{ a.tls_version }}</td>
-          <td><span class="{% if a.rbi_compliant %}ok{% else %}nok{% endif %}">{% if a.rbi_compliant %}&#10003;{% else %}&#10007;{% endif %}</span></td>
-          <td>{{ a.crypto_agility_score }}</td>
-          <td>{{ a.cbom_ready_pct }}%</td>
+          <td>{{ v.vendor }}</td><td>{{ v.assets }}</td><td>{{ v.avg_risk }}</td>
+          <td>{% if v.hndl_assets > 0 %}<span class="nok">{{ v.hndl_assets }} HNDL</span>{% else %}<span class="ok">None</span>{% endif %}</td>
         </tr>
-      {% else %}
-        <tr><td colspan="11" style="text-align:center;color:#64748b;">No assets found.</td></tr>
-      {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
   </div>
-  <div class="footer">QuShield-PnB &nbsp;|&nbsp; CONFIDENTIAL &nbsp;|&nbsp; {{ generation_date }} &nbsp;|&nbsp; Scan {{ scan_id[:8] | upper }}</div>
+  {% endif %}
+
+  <div class="section avoid-break">
+    <h2 class="section-title blue">Technical Recommendations</h2>
+    <div class="narrative">{{ ai.technical_recommendations | safe }}</div>
+  </div>
+
+  <!-- Full Asset Inventory -->
+  <div class="section page-break">
+    <h2 class="section-title">Full Asset Inventory ({{ assets|length }} Assets)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">Hostname</th>
+          <th style="width:10%">Type</th>
+          <th style="width:9%">IP Address</th>
+          <th style="width:8%">Score</th>
+          <th style="width:12%">Risk Level</th>
+          <th style="width:7%">HNDL</th>
+          <th style="width:8%">TLS</th>
+          <th style="width:8%">RBI</th>
+          <th style="width:8%">ML-KEM</th>
+          <th style="width:8%">Hybrid</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assets %}
+        <tr>
+          <td>{{ a.hostname[:28] }}{% if a.hostname|length > 28 %}…{% endif %}</td>
+          <td>{{ a.asset_type[:12] }}</td>
+          <td>{{ a.ip_address }}</td>
+          <td><strong>{{ a.risk_score }}</strong></td>
+          <td><span class="badge badge-{{ a.risk_classification | lower | replace(' ','_') }}">{{ a.risk_classification }}</span></td>
+          <td>{% if a.hndl_exposed %}<span class="nok">YES</span>{% else %}<span class="ok">NO</span>{% endif %}</td>
+          <td>{{ a.tls_version }}</td>
+          <td>{% if a.rbi_compliant %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.fips_203_deployed %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.hybrid_mode %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>QuShield Platform · Full Scan Report · Confidential · {{ generation_date }}</span>
+    <span>Scan ID: QS-{{ scan_id[:8] | upper }}</span>
+  </div>
 </div>
 </body>
 </html>

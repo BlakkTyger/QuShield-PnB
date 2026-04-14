@@ -22,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class TabularAgent:
-    def __init__(self, user: User, db: Session):
+    def __init__(self, user: User, db: Session, scan_id: Optional[str] = None):
         self.user = user
         self.db = db
+        self.scan_id = scan_id
         self.ai = get_ai_provider(user)
 
     def _build_isolated_db(self) -> sqlite3.Connection:
@@ -35,8 +36,11 @@ class TabularAgent:
         """
         conn = sqlite3.connect(":memory:")
 
-        # Get all scan_ids belonging to this user
-        scans = self.db.query(ScanJob).filter(ScanJob.user_id == self.user.id).all()
+        # Get scan_ids belonging to this user (optionally scoped to one scan)
+        scans_q = self.db.query(ScanJob).filter(ScanJob.user_id == self.user.id)
+        if self.scan_id:
+            scans_q = scans_q.filter(ScanJob.id == self.scan_id)
+        scans = scans_q.all()
         scan_ids = [s.id for s in scans]
 
         if not scan_ids:
@@ -88,7 +92,8 @@ class TabularAgent:
         cursor = conn.cursor()
 
         # Step 1: Text-to-SQL
-        schema_prompt = """
+        scan_scope_hint = f" NOTE: Data is already pre-filtered to scan_id='{self.scan_id}'." if self.scan_id else ""
+        schema_prompt = f"""
 You are an expert Data Analyst AI for QuShield-PnB.
 You have the following tables:
 1. scans (id, targets, status, created_at, completed_at)
@@ -97,7 +102,7 @@ You have the following tables:
 4. risk_scores (asset_id, base_score, risk_classification, quantum_readiness_level)
 
 Output ONLY a valid syntactically correct SQLite query. Do NOT add markdown formatting, do NOT write ```sql. Only the query string.
-If the question is unrelated to the data, return 'SELECT NULL;'.
+If the question is unrelated to the data, return 'SELECT NULL;'.{scan_scope_hint}
 """
         user_prompt = f"Write a query to answer the user's question:\n{question}"
         

@@ -7,7 +7,7 @@ import {
   useScans, useFIPSMatrix, useRegulatoryDeadlines,
   useComplianceAgility, useComplianceRegulatory, useScanSummary,
 } from "@/lib/hooks";
-import { MetricCard, ProgressBar, EmptyState, Skeleton } from "@/components/ui";
+import { MetricCard, ProgressBar, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 
 export default function CompliancePage() {
   const [scanId, setScanId] = useState<string | null>(null);
@@ -49,12 +49,17 @@ export default function CompliancePage() {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
-        PQC Compliance
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-        Regulatory alignment and FIPS compliance tracking
-      </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
+            PQC Compliance
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Regulatory alignment and FIPS compliance tracking
+          </p>
+        </div>
+        <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+      </div>
 
       {/* Headline Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

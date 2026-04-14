@@ -323,50 +323,28 @@ export default function ReportsPage() {
                 </h3>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between opacity-60 cursor-not-allowed">
                     <div className="flex items-center gap-2">
-                       <CheckCircle size={16} className={sendViaEmail ? "text-orange-400" : "text-gray-500"} />
+                       <CheckCircle size={16} className="text-gray-500" />
                        <span className="text-sm">Send via Email</span>
+                       <span className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Coming Soon</span>
                     </div>
-                    <button onClick={() => setSendViaEmail(!sendViaEmail)} className={`w-8 h-4 rounded-full p-0.5 transition ${sendViaEmail ? 'bg-orange-500' : 'bg-gray-600'}`}>
-                      <div className={`bg-white w-3 h-3 rounded-full transform transition ${sendViaEmail ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </button>
+                    <div className="w-8 h-4 rounded-full bg-gray-700 p-0.5"><div className="bg-gray-500 w-3 h-3 rounded-full" /></div>
                   </div>
-                  {sendViaEmail && (
-                    <div className="flex bg-black/20 rounded p-1 border" style={{ borderColor: 'var(--border-subtle)' }}>
-                      <input type="text" placeholder="Enter Email Addresses" className="bg-transparent border-none outline-none text-xs w-full px-2" value={emailAddress} onChange={e => setEmailAddress(e.target.value)} />
-                      <button className="text-orange-400 p-1"><Plus size={14}/></button>
-                    </div>
-                  )}
 
-                  <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center justify-between opacity-60 cursor-not-allowed mt-4">
                     <div className="flex items-center gap-2">
-                       <CheckCircle size={16} className={saveToLocation ? "text-orange-400" : "text-gray-500"} />
+                       <CheckCircle size={16} className="text-gray-500" />
                        <span className="text-sm">Save to Location</span>
+                       <span className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Coming Soon</span>
                     </div>
-                    <button onClick={() => setSaveToLocation(!saveToLocation)} className={`w-8 h-4 rounded-full p-0.5 transition ${saveToLocation ? 'bg-orange-500' : 'bg-gray-600'}`}>
-                      <div className={`bg-white w-3 h-3 rounded-full transform transition ${saveToLocation ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </button>
+                    <div className="w-8 h-4 rounded-full bg-gray-700 p-0.5"><div className="bg-gray-500 w-3 h-3 rounded-full" /></div>
                   </div>
-                  {saveToLocation && (
-                    <div className="flex bg-black/20 rounded p-1 border" style={{ borderColor: 'var(--border-subtle)' }}>
-                      <input type="text" className="bg-transparent border-none outline-none text-xs w-full px-2" value={locationPath} onChange={e => setLocationPath(e.target.value)} />
-                      <button className="text-orange-400 p-1"><Folder size={14}/></button>
-                    </div>
-                  )}
 
-                  <div className="flex items-center gap-2 mt-4 cursor-pointer" onClick={() => setDownloadLink(!downloadLink)}>
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${downloadLink ? 'border-orange-400 bg-orange-400' : 'border-gray-500'}`}>
-                      {downloadLink && <CheckCircle size={10} color="white" />}
-                    </div>
+                  <div className="flex items-center gap-2 mt-4 opacity-60 cursor-not-allowed">
+                    <div className="w-4 h-4 rounded border border-gray-500 flex items-center justify-center" />
                     <span className="text-sm text-gray-400 flex items-center gap-2">Download Link <Link size={12}/></span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-2 cursor-pointer" onClick={() => setSlackNotif(!slackNotif)}>
-                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${slackNotif ? 'border-orange-400 bg-orange-400' : 'border-gray-500'}`}>
-                      {slackNotif && <CheckCircle size={10} color="white" />}
-                    </div>
-                    <span className="text-sm text-gray-400 flex items-center gap-2"><MessageSquare size={12}/> Slack Notification</span>
+                    <span className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Coming Soon</span>
                   </div>
 
                 </div>
@@ -393,11 +371,10 @@ export default function ReportsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 opacity-60 cursor-not-allowed">
                     <span className="text-xs text-gray-400">Password Protect</span>
-                    <button onClick={() => setPasswordProtect(!passwordProtect)} disabled={fileFormat !== "PDF"} className={`w-7 h-4 rounded-full p-0.5 transition ${passwordProtect ? 'bg-orange-500' : 'bg-gray-600'} ${fileFormat !== "PDF" ? "opacity-50" : ""}`}>
-                      <div className={`bg-white w-3 h-3 rounded-full transform transition ${passwordProtect ? 'translate-x-3' : 'translate-x-0'}`} />
-                    </button>
+                    <div className="w-7 h-4 rounded-full bg-gray-700 p-0.5"><div className="bg-gray-500 w-3 h-3 rounded-full" /></div>
+                    <span className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Coming Soon</span>
                   </div>
                 </div>
 
@@ -414,7 +391,14 @@ export default function ReportsPage() {
             </div>
           ) : (
             /* SCHEDULE MODE */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="relative">
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl" style={{ background: 'rgba(15,23,42,0.82)', backdropFilter: 'blur(4px)' }}>
+                <span className="text-3xl mb-3">🗓</span>
+                <p className="text-lg font-black text-white mb-1">Scheduled Reports</p>
+                <p className="text-sm text-gray-400 mb-4">Automated report scheduling is coming soon.</p>
+                <span className="text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded-full uppercase tracking-widest">Coming Soon</span>
+              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 opacity-30 pointer-events-none select-none">
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold mb-2">Report Type</label>
@@ -549,6 +533,7 @@ export default function ReportsPage() {
                 </div>
 
               </div>
+            </div>
             </div>
           )}
 

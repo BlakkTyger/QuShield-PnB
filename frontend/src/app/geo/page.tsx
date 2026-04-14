@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useScans, useGeoMapData } from "@/lib/hooks";
-import { EmptyState, Skeleton, RiskBadge } from "@/components/ui";
+import { EmptyState, Skeleton, RiskBadge, ScanSelector } from "@/components/ui";
 import { RISK_COLORS } from "@/lib/types";
 import dynamic from "next/dynamic";
 import type { GeoMarker } from "@/lib/types";
@@ -124,6 +124,7 @@ export default function GeoMapPage() {
             Visualize discovered IP addresses on an interactive global map
           </p>
         </div>
+        <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

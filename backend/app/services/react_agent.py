@@ -58,7 +58,7 @@ def _get_embed_model():
 
 # ─── Tool: RAG ────────────────────────────────────────────────────────────────
 
-def _build_rag_tool(user: User, db: Session):
+def _build_rag_tool(user: User, db: Session, scan_id: Optional[str] = None):
     from llama_index.core.tools import FunctionTool
 
     def rag_search(query: str, n_results: int = 6) -> str:
@@ -78,14 +78,17 @@ def _build_rag_tool(user: User, db: Session):
         except Exception as e:
             logger.debug(f"KB search failed: {e}")
 
-        # 2. User vector store
+        # 2. User vector store — filtered by scan_id tag when provided
         try:
             from app.services.vector_store import VectorStore
             vs = VectorStore(user)
-            user_results = vs.search(query, n_results=n_results)
+            where_filter = {"scan_id": scan_id} if scan_id else None
+            user_results = vs.search(query, n_results=n_results, where=where_filter)
             for r in user_results:
                 src = r.get("metadata", {}).get("source", "scan_data")
-                results.append(f"[Scan data: {src}]\n{r['content']}")
+                sid = r.get("metadata", {}).get("scan_id", "")
+                tag = f" | scan:{sid[:8]}" if sid else ""
+                results.append(f"[Scan data: {src}{tag}]\n{r['content']}")
         except Exception as e:
             logger.debug(f"User vector search failed: {e}")
 
@@ -93,6 +96,7 @@ def _build_rag_tool(user: User, db: Session):
             return "No relevant information found in the knowledge base or scan data."
         return "\n\n---\n\n".join(results[:8])
 
+    scope_note = f" Results are scoped to scan {scan_id[:8].upper()}." if scan_id else ""
     return FunctionTool.from_defaults(
         fn=rag_search,
         name="rag_search",
@@ -101,14 +105,14 @@ def _build_rag_tool(user: User, db: Session):
             "vendor PQC status, migration guides) and the user's scan data (assets, risks, "
             "compliance findings, generated reports). "
             "Use this first for any question about cryptographic standards, regulations, "
-            "or findings from scans."
+            f"or findings from scans.{scope_note}"
         ),
     )
 
 
 # ─── Tool: SQL ────────────────────────────────────────────────────────────────
 
-def _build_sql_tool(user: User, db: Session):
+def _build_sql_tool(user: User, db: Session, scan_id: Optional[str] = None):
     from llama_index.core.tools import FunctionTool
 
     def sql_query(question: str) -> str:
@@ -119,12 +123,13 @@ def _build_sql_tool(user: User, db: Session):
         """
         try:
             from app.services.sql_agent import TabularAgent
-            agent = TabularAgent(user, db)
+            agent = TabularAgent(user, db, scan_id=scan_id)
             return agent.query(question)
         except Exception as e:
             logger.error(f"SQL tool error: {e}")
             return f"Database query failed: {e}"
 
+    scope_note = f" Data is scoped to scan {scan_id[:8].upper()}." if scan_id else ""
     return FunctionTool.from_defaults(
         fn=sql_query,
         name="sql_query",
@@ -132,7 +137,7 @@ def _build_sql_tool(user: User, db: Session):
             "Query the QuShield scan database with natural language questions. "
             "Use this for: counting assets by risk level, listing critical assets, "
             "summarizing compliance statistics, finding CBOM components, "
-            "looking up specific scan results, or any question requiring structured data retrieval."
+            f"looking up specific scan results, or any question requiring structured data retrieval.{scope_note}"
         ),
     )
 
@@ -239,7 +244,7 @@ def _build_web_search_tool():
 
 # ─── Agent factory ────────────────────────────────────────────────────────────
 
-def build_react_agent(user: User, db: Session):
+def build_react_agent(user: User, db: Session, scan_id: Optional[str] = None):
     """Build and return a configured LlamaIndex ReActAgent for the given user."""
     from llama_index.core.agent import ReActAgent
     from llama_index.core import Settings as LISettings
@@ -252,18 +257,23 @@ def build_react_agent(user: User, db: Session):
         LISettings.embed_model = embed_model
 
     tools = [
-        _build_rag_tool(user, db),
-        _build_sql_tool(user, db),
+        _build_rag_tool(user, db, scan_id=scan_id),
+        _build_sql_tool(user, db, scan_id=scan_id),
         _build_json_tool(user, db),
         _build_web_search_tool(),
     ]
+
+    scan_scope_note = (
+        f" This conversation is scoped to scan ID {scan_id[:8].upper()} — "
+        "filter all database queries and vector searches to data from this specific scan."
+    ) if scan_id else ""
 
     system_prompt = (
         "You are QuShield AI, an expert Post-Quantum Cryptography security advisor for Indian banking infrastructure. "
         "You have access to tools to search the knowledge base, query scan data, load reports, and search the web. "
         "Always use tools to ground your answers in actual data. "
         "When analyzing quantum risk, reference specific assets, scores, and regulatory requirements. "
-        "Be precise, technical, and actionable. Cite data sources in your response."
+        f"Be precise, technical, and actionable. Cite data sources in your response.{scan_scope_note}"
     )
 
     agent = ReActAgent.from_tools(
@@ -279,7 +289,9 @@ def build_react_agent(user: User, db: Session):
 # ─── Streaming response generator ─────────────────────────────────────────────
 
 def stream_agent_response(
-    user: User, db: Session, query: str, chat_history: Optional[List[dict]] = None
+    user: User, db: Session, query: str,
+    chat_history: Optional[List[dict]] = None,
+    scan_id: Optional[str] = None,
 ) -> Generator[str, None, None]:
     """
     Generator that yields SSE-formatted lines for streaming to the frontend.
@@ -296,7 +308,7 @@ def stream_agent_response(
         return f"data: {payload}\n\n"
 
     try:
-        agent = build_react_agent(user, db)
+        agent = build_react_agent(user, db, scan_id=scan_id)
     except Exception as e:
         yield _sse("error", f"Agent initialization failed: {e}")
         return

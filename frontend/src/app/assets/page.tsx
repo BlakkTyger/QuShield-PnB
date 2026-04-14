@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Download, X, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { useScans, useAssets, useAssetDetail } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import type { Asset } from "@/lib/types";
 
 const RISK_FILTERS = [
@@ -118,9 +118,12 @@ export default function AssetsPage() {
             {assetsData?.total || 0} assets discovered
           </p>
         </div>
-        <button className="btn-outline" onClick={handleExportCSV}>
-          <Download size={14} /> Export CSV
-        </button>
+        <div className="flex items-center gap-3">
+          <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+          <button className="btn-outline" onClick={handleExportCSV}>
+            <Download size={14} /> Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

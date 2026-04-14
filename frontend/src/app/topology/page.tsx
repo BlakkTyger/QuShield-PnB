@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
 import { X, ZoomIn, ZoomOut, Maximize2, Filter, Search } from "lucide-react";
 import { useScans, useTopology } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import type { TopologyNode, TopologyEdge } from "@/lib/types";
 
 const NODE_TYPE_COLORS: Record<string, string> = {
@@ -432,6 +432,7 @@ export default function TopologyPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
           {/* Search node */}
           <div className="relative">
             <div className="flex items-center gap-2" style={{ background: "var(--bg-card)", border: "1px solid var(--border-subtle)", borderRadius: "8px", padding: "4px 10px" }}>

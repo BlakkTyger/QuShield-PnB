@@ -1,150 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PQC Migration Progress Report</title>
-  <style>
-    @page { margin: 18mm 15mm; }
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0b0f1a; color: #e2e8f0; margin: 0; padding: 0; font-size: 11px; line-height: 1.55; }
-    .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #0b0f1a 0%, #1e293b 100%); padding: 60px 40px; text-align: center; page-break-after: always; }
-    .cover-title { font-size: 28px; font-weight: 900; color: #f59e0b; margin-bottom: 8px; }
-    .cover-sub { font-size: 14px; color: #94a3b8; margin-bottom: 28px; }
-    .cover-meta { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 28px; text-align: left; font-size: 11px; color: #cbd5e1; line-height: 2; }
-    .cover-meta strong { color: #f59e0b; display: inline-block; width: 160px; }
-    .page { padding: 28px 36px; }
-    .section { margin-bottom: 28px; page-break-inside: avoid; }
-    h2 { font-size: 13px; font-weight: 700; color: #f59e0b; border-bottom: 1px solid #334155; padding-bottom: 5px; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-    .kpi-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
-    .kpi { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; flex: 1; min-width: 90px; text-align: center; }
-    .kpi .val { font-size: 22px; font-weight: 900; color: #f59e0b; }
-    .kpi .val.red { color: #ef4444; } .kpi .val.green { color: #22c55e; } .kpi .val.blue { color: #60a5fa; }
-    .kpi .lbl { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-    .narrative { background: #1e293b; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; font-size: 11px; line-height: 1.7; color: #cbd5e1; white-space: pre-wrap; margin-bottom: 14px; }
-    .phase-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
-    .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .phase-num { background: #f59e0b; color: #0b0f1a; font-weight: 900; font-size: 14px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .phase-title { font-size: 12px; font-weight: 700; color: #f1f5f9; }
-    .progress-bar { height: 10px; border-radius: 5px; background: #334155; overflow: hidden; margin: 6px 0; }
-    .progress-fill { height: 100%; border-radius: 5px; }
-    .progress-fill.red { background: #ef4444; } .progress-fill.orange { background: #f97316; }
-    .progress-fill.yellow { background: #eab308; } .progress-fill.green { background: #22c55e; }
-    table { width: 100%; border-collapse: collapse; font-size: 10px; }
-    th { background: #0f172a; color: #f59e0b; padding: 6px 8px; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
-    td { padding: 6px 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; vertical-align: top; }
-    .badge { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
-    .badge-done { background: #14532d; color: #86efac; } .badge-inprog { background: #1e3a5f; color: #93c5fd; }
-    .badge-notstart { background: #1e293b; color: #94a3b8; } .badge-blocked { background: #7f1d1d; color: #fca5a5; }
-    .chart-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
-    .chart-box { flex: 1; min-width: 220px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; }
-    .chart-box img { max-width: 100%; height: auto; } .chart-box .ct { font-size: 9px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; }
-    .footer { margin-top: 32px; border-top: 1px solid #334155; padding-top: 10px; font-size: 9px; color: #475569; text-align: center; }
-    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-  </style>
+<meta charset="UTF-8">
+<title>PQC Migration Progress Report</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #ffffff; color: #1e293b; font-size: 10.5px; line-height: 1.55; }
+.cover { background: #0f172a; color: #fff; padding: 52mm 20mm 40mm 20mm; text-align: center; page-break-after: always; }
+.cover-logo { font-size: 44px; margin-bottom: 10px; color: #f59e0b; }
+.cover-title { font-size: 26px; font-weight: 900; color: #f8fafc; margin-bottom: 6px; }
+.cover-sub { font-size: 13px; color: #94a3b8; margin-bottom: 32px; }
+.cover-rule { width: 60px; height: 3px; background: #f59e0b; margin: 0 auto 28px; }
+.cover-meta { display: inline-block; text-align: left; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 16px 24px; font-size: 10px; line-height: 2.1; }
+.cover-meta .lbl { color: #94a3b8; display: inline-block; width: 130px; }
+.cover-meta .val { color: #f1f5f9; font-weight: 600; }
+.cover-conf { margin-top: 28px; font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; }
+.section { margin-bottom: 20px; }
+h2.section-title { font-size: 10px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid #f59e0b; padding-left: 10px; margin-bottom: 10px; }
+h2.section-title.red { border-color: #ef4444; } h2.section-title.blue { border-color: #3b82f6; } h2.section-title.green { border-color: #22c55e; } h2.section-title.amber { border-color: #f59e0b; }
+.kpi-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.kpi { flex: 1; min-width: 70px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 6px; text-align: center; border-top: 3px solid #e2e8f0; }
+.kpi.red { border-top-color: #ef4444; } .kpi.green { border-top-color: #22c55e; } .kpi.blue { border-top-color: #3b82f6; } .kpi.amber { border-top-color: #f59e0b; }
+.kpi .val { font-size: 20px; font-weight: 900; color: #0f172a; line-height: 1; }
+.kpi .val.red { color: #ef4444; } .kpi .val.green { color: #16a34a; } .kpi .val.blue { color: #2563eb; } .kpi .val.amber { color: #b45309; }
+.kpi .lbl { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+.chart-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.chart-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; text-align: center; background: #f8fafc; }
+.chart-box img { max-width: 100%; height: auto; }
+.chart-box .ct { font-size: 8.5px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 700; }
+.narrative { border-left: 3px solid #e2e8f0; padding: 10px 14px; background: #f8fafc; border-radius: 0 5px 5px 0; margin-bottom: 10px; font-size: 10.5px; color: #334155; line-height: 1.65; }
+.narrative p { margin-bottom: 7px; } .narrative p:last-child { margin-bottom: 0; }
+.narrative ul, .narrative ol { margin: 6px 0 6px 16px; } .narrative li { margin-bottom: 4px; }
+.narrative h3, .narrative h4 { font-size: 10.5px; font-weight: 700; color: #0f172a; margin: 8px 0 4px; }
+.narrative strong { color: #0f172a; }
+table { width: 100%; border-collapse: collapse; font-size: 9.5px; table-layout: fixed; }
+th { background: #1e293b; color: #f1f5f9; padding: 6px 8px; text-align: left; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #334155; vertical-align: top; word-break: break-word; }
+tr:nth-child(even) td { background: #f8fafc; } tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+.badge-done { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.badge-progress { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.badge-pending { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+.badge-blocked { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.ok { color: #16a34a; font-weight: 700; } .nok { color: #dc2626; font-weight: 700; }
+.progress-bar-wrap { background: #e2e8f0; border-radius: 4px; height: 10px; margin-top: 3px; }
+.progress-bar { border-radius: 4px; height: 10px; background: #22c55e; }
+.phase-card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; }
+.phase-card .phase-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.phase-card .phase-name { font-weight: 700; font-size: 10.5px; color: #0f172a; }
+.phase-card .phase-pct { font-size: 11px; font-weight: 900; color: #16a34a; }
+.footer { margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 8.5px; color: #94a3b8; display: flex; justify-content: space-between; }
+.page-break { page-break-before: always; }
+.avoid-break { page-break-inside: avoid; }
+@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
 </head>
 <body>
+
 <div class="cover">
-  <div style="font-size:48px;margin-bottom:12px;">&#128202;</div>
+  <div class="cover-logo">📈</div>
   <div class="cover-title">PQC Migration Progress Report</div>
-  <div class="cover-sub">Post-Quantum Cryptography Migration Tracking — PQCC Framework</div>
+  <div class="cover-sub">Post-Quantum Cryptography Migration Status Assessment</div>
+  <div class="cover-rule"></div>
   <div class="cover-meta">
-    <div><strong>Organization:</strong> {{ targets | join(', ') or 'N/A' }}</div>
-    <div><strong>Report Date:</strong> {{ generation_date_long }}</div>
-    <div><strong>Scan ID:</strong> {{ scan_id[:8] | upper }}</div>
-    <div><strong>Framework:</strong> PQCC 4-Phase Migration Methodology</div>
-    <div><strong>Quantum-Ready:</strong> {{ stats.quantum_ready_pct }}%</div>
-    <div><strong>Classification:</strong> CONFIDENTIAL</div>
+    <div><span class="lbl">Organization:</span><span class="val">{{ targets | join(', ') or 'N/A' }}</span></div>
+    <div><span class="lbl">Report Date:</span><span class="val">{{ generation_date_long }}</span></div>
+    <div><span class="lbl">Assessment Date:</span><span class="val">{{ completed_at }}</span></div>
+    <div><span class="lbl">Reference:</span><span class="val">QS-MIG-{{ scan_id[:8] | upper }}</span></div>
+    <div><span class="lbl">Assets in Scope:</span><span class="val">{{ stats.total }}</span></div>
+    <div><span class="lbl">Classification:</span><span class="val" style="color:#f59e0b;">CONFIDENTIAL</span></div>
   </div>
+  <div class="cover-conf">Prepared by QuShield Platform · PQCC Migration Framework</div>
 </div>
+
 <div class="page">
-  <div class="kpi-row">
-    <div class="kpi"><div class="val green">{{ stats.quantum_ready_pct }}%</div><div class="lbl">Quantum Ready</div></div>
-    <div class="kpi"><div class="val red">{{ stats.hndl_count }}</div><div class="lbl">HNDL Exposed</div></div>
-    <div class="kpi"><div class="val green">{{ stats.hybrid_assets }}</div><div class="lbl">Hybrid PQC</div></div>
-    <div class="kpi"><div class="val green">{{ stats.fips_203_assets }}</div><div class="lbl">ML-KEM Deployed</div></div>
-    <div class="kpi"><div class="val green">{{ stats.fips_204_assets }}</div><div class="lbl">ML-DSA Deployed</div></div>
-    <div class="kpi"><div class="val blue">{{ stats.avg_crypto_agility }}</div><div class="lbl">Crypto Agility</div></div>
+  <div class="kpi-row avoid-break">
+    <div class="kpi green"><div class="val green">{{ stats.quantum_ready_pct }}%</div><div class="lbl">Quantum Ready</div></div>
+    <div class="kpi"><div class="val">{{ stats.fips_203_assets }}</div><div class="lbl">ML-KEM (FIPS-203)</div></div>
+    <div class="kpi"><div class="val">{{ stats.fips_204_assets }}</div><div class="lbl">ML-DSA (FIPS-204)</div></div>
+    <div class="kpi blue"><div class="val blue">{{ stats.hybrid_assets }}</div><div class="lbl">Hybrid PQC</div></div>
+    <div class="kpi red"><div class="val red">{{ stats.vulnerable_cbom_components }}</div><div class="lbl">Vuln Components</div></div>
+    <div class="kpi"><div class="val">{{ stats.tls_13_assets }}/{{ stats.total }}</div><div class="lbl">TLS 1.3</div></div>
+    <div class="kpi amber"><div class="val amber">{{ stats.avg_crypto_agility }}</div><div class="lbl">Crypto Agility</div></div>
+    <div class="kpi"><div class="val">{{ stats.avg_compliance_pct }}%</div><div class="lbl">Avg Compliance</div></div>
   </div>
 
-  {% if charts %}
-  <div class="chart-row">
-    {% if charts.quantum_readiness_gauge %}<div class="chart-box"><div class="ct">Quantum Readiness Gauge</div><img src="data:image/png;base64,{{ charts.quantum_readiness_gauge }}"/></div>{% endif %}
-    {% if charts.hndl_exposure_timeline %}<div class="chart-box"><div class="ct">HNDL &amp; CRQC Timeline</div><img src="data:image/png;base64,{{ charts.hndl_exposure_timeline }}"/></div>{% endif %}
-  </div>
-  {% endif %}
-
-  <div class="section">
-    <h2>Migration Progress Summary</h2>
-    <div class="narrative">{{ ai.progress_summary or 'Progress summary unavailable.' }}</div>
-  </div>
-
-  <div class="section">
-    <h2>PQCC Phase Status Assessment</h2>
-    <div class="phase-card">
-      <div class="phase-header"><div class="phase-num">1</div><div class="phase-title">Phase 1: Inventory &amp; Discovery</div></div>
-      <div style="font-size:10px;color:#94a3b8;">CBOM components catalogued: {{ stats.total_cbom_components }} | Assets scanned: {{ stats.total }}</div>
-      <div class="progress-bar"><div class="progress-fill green" style="width:{% if stats.total_cbom_components > 0 %}85{% else %}20{% endif %}%;"></div></div>
-    </div>
-    <div class="phase-card">
-      <div class="phase-header"><div class="phase-num">2</div><div class="phase-title">Phase 2: Prioritize &amp; Plan</div></div>
-      <div style="font-size:10px;color:#94a3b8;">Critical assets identified: {{ stats.critical_count }} | HNDL analysis: {{ stats.hndl_count }} assets</div>
-      <div class="progress-bar"><div class="progress-fill yellow" style="width:{% if stats.critical_count > 0 %}60{% else %}10{% endif %}%;"></div></div>
-    </div>
-    <div class="phase-card">
-      <div class="phase-header"><div class="phase-num">3</div><div class="phase-title">Phase 3: Migrate</div></div>
-      <div style="font-size:10px;color:#94a3b8;">Hybrid PQC deployed: {{ stats.hybrid_assets }} | ML-KEM: {{ stats.fips_203_assets }} | ML-DSA: {{ stats.fips_204_assets }}</div>
-      <div class="progress-bar"><div class="progress-fill orange" style="width:{{ stats.quantum_ready_pct | int }}%;"></div></div>
-    </div>
-    <div class="phase-card">
-      <div class="phase-header"><div class="phase-num">4</div><div class="phase-title">Phase 4: Verify &amp; Monitor</div></div>
-      <div style="font-size:10px;color:#94a3b8;">TLS 1.3 enforced: {{ stats.tls_13_assets }}/{{ stats.total }} | Compliance: {{ stats.avg_compliance_pct }}%</div>
-      <div class="progress-bar"><div class="progress-fill red" style="width:{% if stats.tls_13_assets / (stats.total or 1) > 0.5 %}40{% else %}15{% endif %}%;"></div></div>
-    </div>
-    <div class="narrative" style="margin-top:14px;">{{ ai.phase_status or 'Phase status analysis unavailable.' }}</div>
-  </div>
-
-  <div class="section">
-    <h2>Migration Blockers</h2>
-    <div class="narrative">{{ ai.blockers or 'Blocker analysis unavailable.' }}</div>
-  </div>
-
-  <div class="section">
-    <h2>Acceleration Opportunities</h2>
-    <div class="narrative">{{ ai.acceleration or 'Acceleration analysis unavailable.' }}</div>
-  </div>
-
-  {% if charts.migration_complexity_heatmap %}
-  <div class="section">
-    <h2>Migration Complexity Heatmap</h2>
-    <div class="chart-box" style="max-width:100%;"><img src="data:image/png;base64,{{ charts.migration_complexity_heatmap }}"/></div>
+  {% if charts.quantum_readiness_gauge or charts.risk_distribution %}
+  <div class="chart-row avoid-break">
+    {% if charts.quantum_readiness_gauge %}<div class="chart-box"><div class="ct">Quantum Readiness Score</div><img src="data:image/png;base64,{{ charts.quantum_readiness_gauge }}" /></div>{% endif %}
+    {% if charts.risk_distribution %}<div class="chart-box"><div class="ct">Risk Distribution</div><img src="data:image/png;base64,{{ charts.risk_distribution }}" /></div>{% endif %}
+    {% if charts.cbom_breakdown %}<div class="chart-box"><div class="ct">CBOM Status</div><img src="data:image/png;base64,{{ charts.cbom_breakdown }}" /></div>{% endif %}
   </div>
   {% endif %}
 
-  <div class="section">
-    <h2>Asset Migration Status Summary</h2>
+  <div class="section avoid-break">
+    <h2 class="section-title blue">Migration Progress Summary</h2>
+    <div class="narrative">{{ ai.progress_summary | safe }}</div>
+  </div>
+
+  <!-- Phase status cards -->
+  <div class="section avoid-break">
+    <h2 class="section-title">Phase Status Assessment (PQCC Framework)</h2>
+    <div class="phase-card avoid-break">
+      <div class="phase-hdr">
+        <span class="phase-name">Phase 1 — Inventory &amp; Discovery</span>
+        <span class="phase-pct">{{ [[(stats.total_cbom_components / [stats.total * 3, 1]|max * 100)|int, 100]|min, 0]|max }}%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:{{ [[(stats.total_cbom_components / [stats.total * 3, 1]|max * 100)|int, 100]|min, 2]|max }}%"></div></div>
+      <p style="margin-top:5px;font-size:9.5px;color:#475569;">{{ stats.total_cbom_components }} CBOM components catalogued across {{ stats.total }} assets.</p>
+    </div>
+    <div class="phase-card avoid-break">
+      <div class="phase-hdr">
+        <span class="phase-name">Phase 2 — Prioritize &amp; Plan</span>
+        <span class="phase-pct">{% if stats.critical_count > 0 %}60%{% else %}40%{% endif %}</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:{% if stats.critical_count > 0 %}60{% else %}40{% endif %}%;background:#3b82f6;"></div></div>
+      <p style="margin-top:5px;font-size:9.5px;color:#475569;">{{ stats.critical_count }} critical + {{ stats.vulnerable_count }} vulnerable assets prioritised. Cohort assignment in progress.</p>
+    </div>
+    <div class="phase-card avoid-break">
+      <div class="phase-hdr">
+        <span class="phase-name">Phase 3 — Migrate</span>
+        <span class="phase-pct">{{ (stats.fips_203_assets / [stats.total,1]|max * 100)|int }}%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:{{ [(stats.fips_203_assets / [stats.total,1]|max * 100)|int, 2]|max }}%;background:#f59e0b;"></div></div>
+      <p style="margin-top:5px;font-size:9.5px;color:#475569;">{{ stats.fips_203_assets }} assets have ML-KEM. {{ stats.hybrid_assets }} assets have hybrid PQC. {{ stats.total - stats.fips_203_assets }} remain.</p>
+    </div>
+    <div class="phase-card avoid-break">
+      <div class="phase-hdr">
+        <span class="phase-name">Phase 4 — Verify &amp; Monitor</span>
+        <span class="phase-pct">0%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:2%;background:#94a3b8;"></div></div>
+      <p style="margin-top:5px;font-size:9.5px;color:#475569;">Formal verification framework not yet established. To commence after Phase 3 completion.</p>
+    </div>
+  </div>
+
+  <div class="section avoid-break">
+    <h2 class="section-title">Detailed Phase Status</h2>
+    <div class="narrative">{{ ai.phase_status | safe }}</div>
+  </div>
+
+  <div class="section avoid-break">
+    <h2 class="section-title red">Migration Blockers</h2>
+    <div class="narrative">{{ ai.blockers | safe }}</div>
+  </div>
+
+  <div class="section avoid-break">
+    <h2 class="section-title green">Acceleration Opportunities</h2>
+    <div class="narrative">{{ ai.acceleration | safe }}</div>
+  </div>
+
+  <!-- Asset migration status -->
+  <div class="section page-break">
+    <h2 class="section-title">Asset Migration Status Summary</h2>
     <table>
-      <thead><tr><th>Hostname</th><th>Risk Class</th><th>HNDL</th><th>TLS</th><th>ML-KEM</th><th>ML-DSA</th><th>Hybrid</th><th>RBI</th><th>CBOM Ready%</th></tr></thead>
-      <tbody>
-      {% for a in assets[:40] %}
+      <thead>
         <tr>
-          <td style="font-family:monospace;font-size:9px;">{{ a.hostname }}</td>
-          <td><span class="badge badge-{{ a.risk_classification }}">{{ a.risk_classification }}</span></td>
-          <td style="color:{% if a.hndl_exposed %}#ef4444{% else %}#22c55e{% endif %};">{% if a.hndl_exposed %}YES{% else %}NO{% endif %}</td>
-          <td>{{ a.tls_version }}</td>
-          <td style="color:{% if a.fips_203_deployed %}#22c55e{% else %}#ef4444{% endif %};">{% if a.fips_203_deployed %}&#10003;{% else %}&#10007;{% endif %}</td>
-          <td style="color:{% if a.fips_204_deployed %}#22c55e{% else %}#ef4444{% endif %};">{% if a.fips_204_deployed %}&#10003;{% else %}&#10007;{% endif %}</td>
-          <td style="color:{% if a.hybrid_mode %}#22c55e{% else %}#ef4444{% endif %};">{% if a.hybrid_mode %}&#10003;{% else %}&#10007;{% endif %}</td>
-          <td style="color:{% if a.rbi_compliant %}#22c55e{% else %}#ef4444{% endif %};">{% if a.rbi_compliant %}&#10003;{% else %}&#10007;{% endif %}</td>
-          <td>{{ a.cbom_ready_pct }}%</td>
+          <th style="width:22%">Hostname</th>
+          <th style="width:10%">Type</th>
+          <th style="width:10%">Risk Score</th>
+          <th style="width:12%">Risk Level</th>
+          <th style="width:7%">ML-KEM</th>
+          <th style="width:7%">ML-DSA</th>
+          <th style="width:7%">Hybrid</th>
+          <th style="width:7%">TLS 1.3</th>
+          <th style="width:8%">RBI</th>
+          <th style="width:10%">Agility</th>
         </tr>
-      {% else %}
-        <tr><td colspan="9" style="text-align:center;color:#64748b;">No asset data available.</td></tr>
-      {% endfor %}
+      </thead>
+      <tbody>
+        {% for a in assets %}
+        <tr>
+          <td>{{ a.hostname[:26] }}{% if a.hostname|length > 26 %}…{% endif %}</td>
+          <td>{{ a.asset_type[:12] }}</td>
+          <td><strong>{{ a.risk_score }}</strong></td>
+          <td><span class="badge {% if a.risk_classification in ['critical','vulnerable'] %}badge-blocked{% elif a.risk_classification == 'at_risk' %}badge-pending{% elif a.risk_classification == 'aware' %}badge-progress{% else %}badge-done{% endif %}">{{ a.risk_classification }}</span></td>
+          <td>{% if a.fips_203_deployed %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.fips_204_deployed %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.hybrid_mode %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.tls_13_enforced %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{% if a.rbi_compliant %}<span class="ok">✓</span>{% else %}<span class="nok">✗</span>{% endif %}</td>
+          <td>{{ a.crypto_agility_score }}/100</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <div class="footer">PQC Migration Progress Report &nbsp;|&nbsp; CONFIDENTIAL &nbsp;|&nbsp; {{ generation_date }} &nbsp;|&nbsp; Scan {{ scan_id[:8] | upper }}</div>
+  <div class="footer">
+    <span>QuShield Platform · Migration Progress Report · Confidential · {{ generation_date }}</span>
+    <span>Ref: QS-MIG-{{ scan_id[:8] | upper }}</span>
+  </div>
 </div>
 </body>
 </html>

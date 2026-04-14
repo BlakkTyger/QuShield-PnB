@@ -71,6 +71,7 @@ class GroqProvider(AIProvider):
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
 
     def generate(self, prompt: str, system: str = None, temperature: float = 0.7) -> str:
+        import time
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -84,20 +85,38 @@ class GroqProvider(AIProvider):
             "model": self.model,
             "messages": messages,
             "temperature": temperature,
-            "max_tokens": 8192,
+            "max_tokens": 4096,
         }
 
-        try:
-            logger.info(f"Groq Cloud Request [Model: {self.model}]")
-            response = requests.post(self.base_url, headers=headers, json=payload, timeout=120)
-            response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"]
-        except requests.HTTPError as e:
-            logger.error(f"Groq API HTTP error: {e.response.status_code} — {e.response.text}")
-            raise RuntimeError(f"Groq API error ({e.response.status_code}): {e.response.text}") from e
-        except Exception as e:
-            logger.error(f"Groq API generation failed: {e}")
-            raise RuntimeError(f"Cloud generation failed: {e}") from e
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                logger.info(f"Groq Cloud Request [Model: {self.model}, attempt {attempt + 1}]")
+                response = requests.post(self.base_url, headers=headers, json=payload, timeout=120)
+                if response.status_code in (429, 503):
+                    wait = 2 ** attempt
+                    logger.warning(f"Groq rate limit / overload ({response.status_code}) — waiting {wait}s before retry")
+                    time.sleep(wait)
+                    if attempt == max_attempts - 1:
+                        raise RuntimeError(
+                            f"Groq API rate limit exceeded after {max_attempts} attempts. "
+                            "Please wait 30 seconds and try again."
+                        )
+                    continue
+                response.raise_for_status()
+                return response.json()["choices"][0]["message"]["content"]
+            except RuntimeError:
+                raise
+            except requests.HTTPError as e:
+                logger.error(f"Groq API HTTP error: {e.response.status_code} — {e.response.text[:200]}")
+                raise RuntimeError(f"Groq API error ({e.response.status_code})") from e
+            except Exception as e:
+                if attempt < max_attempts - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                logger.error(f"Groq API generation failed: {e}")
+                raise RuntimeError(f"Cloud generation failed: {e}") from e
+        raise RuntimeError("Groq API failed after all retries.")
 
 
 class OpenAIProvider(AIProvider):

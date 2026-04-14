@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
   useAIChat, useAIStatus, useAIModels, useRefreshEmbeddings,
-  useUpdateAISettings, useAgentStream, useAgentStatus,
+  useUpdateAISettings, useAgentStream, useAgentStatus, useScans,
   type AgentEvent,
 } from "@/lib/hooks";
+import { ScanSelector } from "@/components/ui";
 import { Bot, Send, Loader2, Search, RefreshCw, Settings, X,
   Cpu, Cloud, ChevronDown, ChevronRight, Zap, Database, Globe } from "lucide-react";
 import type { ChatMessage } from "@/lib/types";
@@ -37,6 +38,7 @@ export default function AIAssistantPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<ChatMode>("agent");
   const [expandedTraces, setExpandedTraces] = useState<Set<number>>(new Set());
+  const [scanId, setScanId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,6 +46,7 @@ export default function AIAssistantPage() {
   const { data: aiStatus } = useAIStatus();
   const { data: aiModels } = useAIModels();
   const { data: agentStatus } = useAgentStatus();
+  const { data: scans } = useScans();
   const refreshEmbeddings = useRefreshEmbeddings();
   const agentStream = useAgentStream();
 
@@ -83,6 +86,7 @@ export default function AIAssistantPage() {
         await agentStream.mutateAsync({
           message: text,
           history,
+          scan_id: scanId,
           onEvent: (event: AgentEvent) => {
             if (event.type === "thought" || event.type === "tool") {
               traceSteps.push({ type: event.type, content: event.content });
@@ -189,6 +193,13 @@ export default function AIAssistantPage() {
           <div className="flex items-center gap-2 mb-3">
             <Bot size={18} className="text-yellow-400" />
             <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>QuShield AI</span>
+          </div>
+          <div className="mb-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-muted)" }}>Scan Scope</p>
+            <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} className="w-full" />
+            {scanId && (
+              <p className="text-[9px] mt-1" style={{ color: "var(--text-muted)" }}>Agent will only query data from selected scan.</p>
+            )}
           </div>
           <div className="space-y-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
             <div className="flex justify-between">

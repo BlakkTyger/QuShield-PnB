@@ -7,7 +7,7 @@ import {
 } from "recharts";
 import { Download, Search, ChevronRight, Shield } from "lucide-react";
 import { useScans, useAssets, useCBOMForAsset, useCBOMAggregate, useCBOMAlgorithms } from "@/lib/hooks";
-import { RiskBadge, EmptyState, Skeleton } from "@/components/ui";
+import { RiskBadge, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 
 const NIST_COLORS: Record<number, string> = {
   [-1]: "#6b7280",
@@ -84,13 +84,18 @@ export default function CBOMPage() {
 
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-black mb-1" style={{ color: "var(--text-primary)" }}>
-        CBOM Explorer
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-        Cryptographic Bill of Materials — {aggregate?.total_components || 0} components across{" "}
-        {aggregate?.total_assets || 0} assets
-      </p>
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h1 className="text-2xl font-black" style={{ color: "var(--text-primary)" }}>
+            CBOM Explorer
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Cryptographic Bill of Materials — {aggregate?.total_components || 0} components across{" "}
+            {aggregate?.total_assets || 0} assets
+          </p>
+        </div>
+        <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+      </div>
 
       {/* Top: Aggregate Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

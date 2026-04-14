@@ -9,7 +9,7 @@ import {
   useScans, useScanSummary, useEnterpriseRating,
   useRiskHeatmap, useRegulatoryDeadlines, useCBOMAlgorithms,
 } from "@/lib/hooks";
-import { ScoreGauge, MetricCard, RiskBadge, ProgressBar, EmptyState, Skeleton } from "@/components/ui";
+import { ScoreGauge, MetricCard, RiskBadge, ProgressBar, EmptyState, Skeleton, ScanSelector } from "@/components/ui";
 import { RISK_COLORS, RISK_LABELS } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -94,8 +94,11 @@ export default function DashboardPage() {
             Organization quantum posture overview — {summary.targets.join(", ")}
           </p>
         </div>
-        <div className="text-xs" style={{ color: "var(--text-muted)" }}>
-          Last scan: {summary.completed_at ? new Date(summary.completed_at).toLocaleString() : "—"}
+        <div className="flex items-center gap-3">
+          <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} />
+          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+            {summary.completed_at ? new Date(summary.completed_at).toLocaleString() : "—"}
+          </span>
         </div>
       </div>
 
