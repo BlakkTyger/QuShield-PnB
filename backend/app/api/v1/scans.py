@@ -374,6 +374,28 @@ async def stream_scan_events(
     )
 
 
+@router.get("/{scan_id}/logs")
+def poll_scan_logs(
+    scan_id: UUID,
+    since: int = Query(0, ge=0, description="Return events starting from this index"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Polling-based telemetry endpoint.  The frontend calls this every ~2s,
+    passing `since=<next_index>` from the previous response to get only
+    new events.  Works through Vercel's Next.js rewrite proxy so there
+    are no Mixed-Content or timeout issues.
+    """
+    from app.services.scan_events import scan_events
+
+    scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+    if not scan_job or (scan_job.user_id and scan_job.user_id != current_user.id):
+        raise HTTPException(status_code=404, detail="Scan not found")
+
+    return scan_events.get_logs(str(scan_id), since=since)
+
+
 @router.get("", response_model=list[ScanStatus])
 def list_scans(
     limit: int = Query(20, ge=1, le=100),

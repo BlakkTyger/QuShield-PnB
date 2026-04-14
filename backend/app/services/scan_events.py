@@ -1,17 +1,25 @@
 """
-Scan Events Manager — Real-time progress streaming via Server-Sent Events (SSE).
+Scan Events Manager — Real-time progress streaming via Server-Sent Events (SSE)
+and polling-based log retrieval.
 
 Provides a centralized queue-based event bus for broadcasting deep scan progress
-to connected frontend clients. Designed for FastAPI's StreamingResponse.
+to connected frontend clients. Supports both SSE (StreamingResponse) and
+HTTP polling for environments where long-lived connections are not feasible
+(e.g. Vercel serverless).
 """
 import asyncio
 import json
+import threading
+from collections import defaultdict
 from datetime import datetime, timezone
-from typing import Dict, Set, Any, AsyncGenerator
+from typing import Dict, List, Set, Any, AsyncGenerator
 
 from app.core.logging import get_logger
 
 logger = get_logger("scan_events")
+
+# Maximum number of log entries kept in memory per scan
+_MAX_LOG_BUFFER = 500
 
 
 class ScanEventManager:
@@ -23,7 +31,9 @@ class ScanEventManager:
         # Maps scan_id -> set of active asyncio.Queue items
         self._queues: Dict[str, Set[asyncio.Queue]] = {}
         self._lock = asyncio.Lock()
-        self._thread_lock = __import__('threading').Lock()  # For thread-safe access from sync code
+        self._thread_lock = threading.Lock()  # For thread-safe access from sync code
+        # Polling log buffer: scan_id -> list of event dicts (append-only)
+        self._log_buffer: Dict[str, List[dict]] = defaultdict(list)
 
     async def add_client(self, scan_id: str) -> asyncio.Queue:
         """Add a new client listener for a specific scan."""
@@ -80,10 +90,13 @@ class ScanEventManager:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
+        # Always append to the polling log buffer (thread-safe via GIL for list.append)
+        self._append_log(scan_id, event_payload)
+
         async with self._lock:
             if scan_id not in self._queues:
-                logger.debug(f"Broadcast: no listeners for {scan_id} ({event_type})")
-                return  # No active listeners, safe to ignore
+                logger.debug(f"Broadcast: no SSE listeners for {scan_id} ({event_type}), logged for polling")
+                return  # No active SSE listeners, but event is buffered for polling
 
             # Send to all connected queues for this scan
             queues = self._queues[scan_id].copy()
@@ -125,9 +138,12 @@ class ScanEventManager:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
+        # Always append to the polling log buffer
+        self._append_log(scan_id, event_payload)
+
         with self._thread_lock:
             if scan_id not in self._queues:
-                logger.debug(f"broadcast_sync: no listeners for {scan_id[:8]} ({event_type})")
+                logger.debug(f"broadcast_sync: no SSE listeners for {scan_id[:8]} ({event_type}), logged for polling")
                 return
             queues = list(self._queues[scan_id])
 
@@ -182,6 +198,44 @@ class ScanEventManager:
             logger.info(f"SSE generator cancelled for scan {scan_id}")
         finally:
             await self.remove_client(scan_id, queue)
+
+
+    # ── Polling log buffer methods ─────────────────────────────────────
+
+    def _append_log(self, scan_id: str, event_payload: dict) -> None:
+        """Thread-safe append to the in-memory log buffer."""
+        with self._thread_lock:
+            buf = self._log_buffer[scan_id]
+            buf.append(event_payload)
+            # Trim oldest entries if buffer exceeds max size
+            if len(buf) > _MAX_LOG_BUFFER:
+                self._log_buffer[scan_id] = buf[-_MAX_LOG_BUFFER:]
+
+    def get_logs(self, scan_id: str, since: int = 0) -> dict:
+        """
+        Return buffered log events for a scan starting from index `since`.
+
+        Returns:
+            {
+                "scan_id": str,
+                "logs": [event_payload, ...],
+                "next_index": int  # pass this as `since` on next poll
+            }
+        """
+        with self._thread_lock:
+            buf = self._log_buffer.get(scan_id, [])
+            new_logs = buf[since:]
+            next_index = since + len(new_logs)
+        return {
+            "scan_id": scan_id,
+            "logs": new_logs,
+            "next_index": next_index,
+        }
+
+    def clear_logs(self, scan_id: str) -> None:
+        """Remove buffered logs for a completed/failed scan."""
+        with self._thread_lock:
+            self._log_buffer.pop(scan_id, None)
 
 
 # Global singleton instance to be used across the app

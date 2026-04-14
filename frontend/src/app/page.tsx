@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, CheckCircle, Loader2, ArrowRight, Shield, Lock, Award, Server, ChevronDown, ChevronUp, Key, Clock, Layers, Target } from "lucide-react";
 import { useStartScan, useShallowScan, useShallowResult, useScanStatus, useScanSummary, useEnterpriseRating, useCancelScan } from "@/lib/hooks";
+import api from "@/lib/api";
 import { ScoreGauge, MetricCard, RiskBadge } from "@/components/ui";
 import { notificationStore } from "@/lib/notifications";
 
@@ -38,6 +39,8 @@ export default function QuickScanPage() {
   const esRef = useRef<EventSource | null>(null);
   // Guard: prevent firing the "scan finished" notification more than once per scan
   const notifiedRef = useRef(false);
+  // Log index for polling
+  const logIndexRef = useRef(0);
 
   const router = useRouter();
   const startScan = useStartScan();
@@ -100,61 +103,50 @@ export default function QuickScanPage() {
     }
   }, [scanStatus, isScanning, summary, isShallowScan, shallowResult, scanId]);
 
-  // Hook up SSE stream — only depends on scanId (NOT scanStatus) to avoid reconnect on every poll
+  // Telemetry Polling — works through Vercel's proxy
   useEffect(() => {
-    // Skip SSE for shallow scans (they emit nothing via SSE)
     if (!scanId || isShallowScan) return;
 
-    // Close any prior connection
-    if (esRef.current) {
-      esRef.current.close();
-      esRef.current = null;
-    }
-
-    const token = (typeof window !== "undefined" ? localStorage.getItem("qushield_access_token") : "") || "";
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-    const es = new EventSource(`${backendUrl}/api/v1/scans/${scanId}/stream?token=${token}`);
-    esRef.current = es;
+    // Check terminal states
+    const isTerminal = scanStatus?.status === "completed" || scanStatus?.status === "failed" || scanStatus?.status === "cancelled";
+    if (isTerminal) return;
 
     const PHASE_NAMES: Record<number, string> = {
       1: "Discovery", 2: "Crypto Inspection", 3: "CBOM Build",
       4: "Risk Assessment", 5: "Compliance", 6: "Topology",
     };
 
-    es.onmessage = (event) => {
-      const ts = new Date().toISOString().split("T")[1].slice(0, 12);
+    const pollLogs = async () => {
       try {
-        const d = JSON.parse(event.data);
-        const phaseName = d.phase ? PHASE_NAMES[d.phase] ?? `Phase ${d.phase}` : null;
-        const pct = d.progress_pct != null ? ` ${d.progress_pct}%` : "";
-        const prefix = phaseName ? `[${phaseName}${pct}]` : "";
-        const msg = d.message || d.event_type || event.data;
-        setLogs((prev) => [...prev, `[${ts}] ${prefix} ${msg}`.trim()]);
-        // Close stream on terminal events
-        if (d.event_type === "scan_complete" || d.event_type === "scan_failed") {
-          es.close();
-          esRef.current = null;
+        const { data } = await api.get(`/scans/${scanId}/logs`, {
+          params: { since: logIndexRef.current }
+        });
+        
+        if (data.logs && data.logs.length > 0) {
+          logIndexRef.current = data.next_index;
+          const newLogs = data.logs.map((d: any) => {
+            const ts = new Date(d.timestamp || Date.now()).toISOString().split("T")[1].slice(0, 12);
+            const phaseName = d.phase ? PHASE_NAMES[d.phase] ?? `Phase ${d.phase}` : null;
+            const pct = d.progress_pct != null ? ` ${d.progress_pct}%` : "";
+            const prefix = phaseName ? `[${phaseName}${pct}]` : "";
+            const msg = d.message || d.event_type || "Updating...";
+            return `[${ts}] ${prefix} ${msg}`.trim();
+          });
+          setLogs((prev) => [...prev, ...newLogs]);
         }
-      } catch {
-        setLogs((prev) => [...prev, `[${ts}] ${event.data}`]);
+      } catch (err) {
+        console.error("Telemetry poll failed:", err);
       }
     };
 
-    es.onerror = () => {
-      // Don't close on transient errors — browser will auto-reconnect EventSource
-      // Only close if scan is already in terminal state
-      if (scanStatus?.status === "completed" || scanStatus?.status === "failed") {
-        es.close();
-        esRef.current = null;
-      }
-    };
+    // Initial poll
+    pollLogs();
 
-    return () => {
-      es.close();
-      esRef.current = null;
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scanId, isShallowScan]);
+    // Poll every 2.5 seconds
+    const interval = setInterval(pollLogs, 2500);
+
+    return () => clearInterval(interval);
+  }, [scanId, isShallowScan, scanStatus?.status]);
 
   // Auto scroll logs
   useEffect(() => {
@@ -183,6 +175,7 @@ export default function QuickScanPage() {
     setQuickResult(null);
     setIsShallowScan(false);
     notifiedRef.current = false; // reset for new scan
+    logIndexRef.current = 0; // reset log index
     setScanId(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem("qushield_active_scan");
