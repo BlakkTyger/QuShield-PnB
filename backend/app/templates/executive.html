@@ -217,6 +217,25 @@ tr:last-child td { border-bottom: none; }
     <div class="narrative">{{ ai.roadmap_90d | safe }}</div>
   </div>
 
+  <!-- CRQC Arrival Risk (Monte Carlo) -->
+  <div class="section avoid-break">
+    <h2 class="section-title amber">CRQC Arrival Risk — Monte Carlo Simulation</h2>
+    <p style="font-size:11px;color:#555;margin-bottom:10px;">Based on 10,000 simulations of log-normal CRQC arrival distribution (mode=2032, σ=3.5 years). Reflects expert consensus from GRI 2023 quantum computing timeline survey.</p>
+    <div class="kpi-row" style="margin-bottom:12px;">
+      <div class="kpi red"><div class="val red">{{ crqc_sim.p5 }}</div><div class="lbl">P5 — Aggressive</div></div>
+      <div class="kpi amber"><div class="val amber">{{ crqc_sim.p50 }}</div><div class="lbl">P50 — Median</div></div>
+      <div class="kpi green"><div class="val green">{{ crqc_sim.p95 }}</div><div class="lbl">P95 — Conservative</div></div>
+      <div class="kpi red"><div class="val red">{{ cert_race.at_risk }}</div><div class="lbl">Certs At Risk</div></div>
+      <div class="kpi amber"><div class="val amber">{{ cert_race.natural_rotation }}</div><div class="lbl">Natural Rotation</div></div>
+      <div class="kpi green"><div class="val green">{{ cert_race.safe }}</div><div class="lbl">PQC Safe Certs</div></div>
+    </div>
+    {% if cert_race.at_risk > 0 %}
+    <div class="callout callout-red" style="margin-top:8px;">
+      <strong>⚠ Certificate Race Alert:</strong> {{ cert_race.at_risk }} certificate(s) ({{ cert_race.pct_at_risk }}%) will still be active at median CRQC arrival ({{ crqc_sim.p50 }}) and require out-of-band proactive replacement. These cannot wait for natural certificate expiry.
+    </div>
+    {% endif %}
+  </div>
+
   <!-- Compliance Summary -->
   <div class="section avoid-break">
     <h2 class="section-title green">Regulatory Compliance Summary</h2>

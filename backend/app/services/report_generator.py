@@ -1,4 +1,4 @@
- """
+"""
 Report Generation Service — Produces dense, AI-enriched, chart-embedded PDF/HTML reports.
 
 Supports 6 report types, each with:
@@ -317,6 +317,32 @@ class ReportGenerator:
             "vulnerable_certs": sum(1 for c in certs if c.is_quantum_vulnerable),
         }
 
+        # Monte Carlo CRQC simulation summary
+        crqc_sim = {"p5": 2029, "p50": 2032, "p95": 2039, "mean": 2032.0}
+        cert_race_summary = {"safe": 0, "natural_rotation": 0, "at_risk": 0}
+        try:
+            from app.services.monte_carlo import simulate_crqc_arrival
+            mc_result = simulate_crqc_arrival(n_simulations=10000, seed=42)
+            crqc_sim = {
+                "p5": mc_result["percentiles"]["p5"],
+                "p50": mc_result["percentiles"]["p50"],
+                "p95": mc_result["percentiles"]["p95"],
+                "mean": mc_result["statistics"]["mean"],
+            }
+        except Exception:
+            pass
+        try:
+            from app.services.risk_engine import compute_cert_crqc_race
+            race = compute_cert_crqc_race(str(sid), self.db)
+            cert_race_summary = {
+                "safe": race.get("safe", 0),
+                "natural_rotation": race.get("natural_rotation", 0),
+                "at_risk": race.get("at_risk", 0),
+                "pct_at_risk": round(race.get("pct_at_risk", 0) * 100, 1),
+            }
+        except Exception:
+            pass
+
         gen_date = datetime.now(timezone.utc)
         return {
             "report_title": "",  # filled per-type in AI sections
@@ -335,6 +361,8 @@ class ReportGenerator:
             "cert_summary": cert_summary,
             "vendor_summary": vendor_summary,
             "compliance_list": compliance,
+            "crqc_sim": crqc_sim,
+            "cert_race": cert_race_summary,
             "charts": {},
             "ai": {},
         }

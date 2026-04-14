@@ -18,6 +18,7 @@ import {
   Bot,
   ChevronLeft,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: "/assets", label: "Assets", icon: Server },
   { href: "/cbom", label: "CBOM Explorer", icon: Shield },
   { href: "/risk", label: "Risk Intelligence", icon: AlertTriangle },
+  { href: "/risk/monte-carlo", label: "↳ Monte Carlo Sim", icon: Activity },
   { href: "/compliance", label: "Compliance", icon: CheckCircle },
   { href: "/topology", label: "Topology Map", icon: Network },
   { href: "/geo", label: "GeoIP Map", icon: Globe },

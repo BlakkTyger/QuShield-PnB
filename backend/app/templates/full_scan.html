@@ -191,6 +191,36 @@ tr:last-child td { border-bottom: none; }
     <div class="narrative">{{ ai.technical_recommendations | safe }}</div>
   </div>
 
+  <!-- CRQC Monte Carlo Simulation -->
+  <div class="section avoid-break">
+    <h2 class="section-title amber">CRQC Arrival Risk — Monte Carlo Simulation (10,000 Samples)</h2>
+    <p style="font-size:10px;color:#555;margin-bottom:10px;">Log-normal distribution model of CRQC arrival timing. Based on GRI 2023 expert survey consensus. Mode year: 2032, σ=3.5 years.</p>
+    <div class="kpi-row" style="margin-bottom:10px;">
+      <div class="kpi red"><div class="val red">{{ crqc_sim.p5 }}</div><div class="lbl">P5 Aggressive</div></div>
+      <div class="kpi amber"><div class="val amber">{{ crqc_sim.p50 }}</div><div class="lbl">P50 Median</div></div>
+      <div class="kpi green"><div class="val green">{{ crqc_sim.p95 }}</div><div class="lbl">P95 Conservative</div></div>
+      <div class="kpi red"><div class="val red">{{ cert_race.at_risk }}</div><div class="lbl">Certs At Risk</div></div>
+      <div class="kpi amber"><div class="val amber">{{ cert_race.natural_rotation }}</div><div class="lbl">Natural Rotation</div></div>
+      <div class="kpi green"><div class="val green">{{ cert_race.safe }}</div><div class="lbl">PQC Safe</div></div>
+    </div>
+    <table style="margin-top:8px;">
+      <thead><tr><th>Metric</th><th>Value</th><th>Interpretation</th></tr></thead>
+      <tbody>
+        <tr><td>P5 CRQC Arrival</td><td><strong>{{ crqc_sim.p5 }}</strong></td><td>5% probability — use for SWIFT/core banking planning</td></tr>
+        <tr><td>P50 CRQC Arrival (Median)</td><td><strong>{{ crqc_sim.p50 }}</strong></td><td>Central planning assumption for most assets</td></tr>
+        <tr><td>P95 CRQC Arrival</td><td><strong>{{ crqc_sim.p95 }}</strong></td><td>Conservative — use for long-lived archival data</td></tr>
+        <tr><td>Certificates At Risk</td><td><strong>{{ cert_race.at_risk }} ({{ cert_race.pct_at_risk }}%)</strong></td><td>Valid at P50 CRQC arrival — require proactive replacement</td></tr>
+        <tr><td>Natural Rotation Safe</td><td><strong>{{ cert_race.natural_rotation }}</strong></td><td>Expires before CRQC — replace with PQC at next renewal</td></tr>
+        <tr><td>PQC Ready Certificates</td><td><strong>{{ cert_race.safe }}</strong></td><td>Already using post-quantum algorithms — no action needed</td></tr>
+      </tbody>
+    </table>
+    {% if cert_race.at_risk > 0 %}
+    <div class="callout callout-red" style="margin-top:8px;font-size:10px;">
+      <strong>Action Required:</strong> {{ cert_race.at_risk }} certificate(s) need out-of-band proactive PQC replacement before {{ crqc_sim.p50 }}. Cannot wait for natural expiry.
+    </div>
+    {% endif %}
+  </div>
+
   <!-- Full Asset Inventory -->
   <div class="section page-break">
     <h2 class="section-title">Full Asset Inventory ({{ assets|length }} Assets)</h2>

@@ -1,0 +1,151 @@
+Monte Carlo CRQC Arrival Simulation — QuShield Knowledge Base
+
+OVERVIEW
+========
+QuShield uses Monte Carlo simulation to model the probabilistic arrival of a
+Cryptographically Relevant Quantum Computer (CRQC) — the milestone at which RSA,
+ECC, and Diffie-Hellman become computationally breakable.
+
+Unlike simpler 3-scenario models (pessimistic/median/optimistic), Monte Carlo
+provides a full probability distribution, allowing organisations to quantify risk
+exposure at any confidence level.
+
+DEFAULT PARAMETERS
+==================
+- Mode year (most likely CRQC arrival): 2032
+- Sigma (distribution spread): 3.5 years
+- Minimum year (physical impossibility before): 2027
+- Maximum year (planning horizon): 2045
+- Simulations: 10,000 samples
+
+These defaults reflect expert consensus from the Global Risk Institute 2023 survey
+and align with NIST's post-quantum transition timeline (NIST IR 8547).
+
+LOG-NORMAL DISTRIBUTION
+========================
+CRQC arrival is modelled as a log-normal distribution for two key reasons:
+
+1. RIGHT TAIL: Quantum computing breakthroughs are uncertain — delays are more
+   probable than early arrivals. Log-normal naturally captures this asymmetry.
+
+2. LOWER BOUND: The distribution has a hard floor at min_year (2027), reflecting
+   the physical and engineering constraints of building a fault-tolerant quantum
+   computer.
+
+The underlying normal distribution parameters are:
+  mu = ln(mode_year - min_year)
+  sigma_ln = sigma / (mode_year - min_year)
+
+Samples are drawn from lognormal(mu, sigma_ln) and shifted by min_year.
+
+PERCENTILE INTERPRETATION
+==========================
+- P5  (Aggressive scenario): 5% probability CRQC arrives by this year.
+  Use this for high-sensitivity data (SWIFT, core banking, nuclear).
+  Typically ~2029-2030.
+
+- P50 (Median scenario):    50% probability CRQC arrives by this year.
+  Use as the central planning assumption for most assets.
+  Typically ~2031-2033.
+
+- P95 (Conservative scenario): 95% probability CRQC arrives by this year.
+  Use for long-lived data archives and regulatory compliance timelines.
+  Typically ~2038-2042.
+
+MOSCA'S INEQUALITY — PROBABILISTIC EXTENSION
+=============================================
+Classical Mosca's theorem: X + Y > Z → IMMEDIATE ACTION REQUIRED
+
+Where:
+  X = migration time (years to implement PQC)
+  Y = data shelf life (years data must remain confidential)
+  Z = years until CRQC arrival
+
+Monte Carlo extends this: instead of a single Z value, we sample 10,000 Z values
+from the CRQC arrival distribution. For each simulation:
+  exposed_i = (X + Y) > Z_i
+
+Exposure probability = sum(exposed_i) / 10,000
+
+This gives a continuous probability of quantum exposure per asset, rather than
+a binary yes/no answer.
+
+CERTIFICATE EXPIRY vs CRQC RACE
+================================
+Each TLS/X.509 certificate is classified into one of three states:
+
+1. SAFE (PQC): Certificate already uses post-quantum algorithms (ML-KEM, ML-DSA,
+   SLH-DSA). No action required.
+
+2. NATURAL ROTATION: Certificate will expire before the CRQC median arrival year.
+   The certificate can be replaced during its natural renewal cycle with a PQC
+   algorithm. Low urgency.
+
+3. AT RISK: Certificate will still be active when CRQC arrives (P50 estimate).
+   Requires OUT-OF-BAND proactive replacement — cannot wait for natural expiry.
+   These certificates are highest priority for PQC migration.
+
+The classification uses the median arrival year as the threshold. Organisations
+handling highly sensitive data should use P5 as a more conservative threshold.
+
+PORTFOLIO SIMULATION
+====================
+For a portfolio of assets, QuShield runs a single set of 10,000 CRQC arrival
+samples (same quantum breakthrough affects all assets simultaneously). This
+correctly models the correlated nature of quantum risk — CRQC is a systemic
+event, not asset-specific.
+
+Portfolio metrics:
+- avg_assets_exposed: Expected number of assets exposed across all simulations
+- pct_portfolio_exposed: Fraction of portfolio with exposure probability > 0
+- max_assets_exposed: Worst-case scenario (highest single simulation count)
+
+RISK LEVEL CLASSIFICATION
+==========================
+Exposure probability thresholds:
+- Critical:  >= 80%  (8 in 10 simulations show exposure)
+- High:      >= 60%
+- Medium:    >= 30%
+- Low:       >= 10%
+- Minimal:   <  10%
+
+HOW TO USE THIS IN PRACTICE
+============================
+1. Start with the Monte Carlo dashboard at /risk/monte-carlo
+2. Adjust the mode_year slider based on your threat intelligence assessment
+3. Use a lower sigma (1-2) if you have high confidence in timing; higher sigma
+   (5-8) if deeply uncertain
+4. All assets with exposure probability >= 60% should be in Phase 1 migration
+5. All "At Risk" certificates require immediate PQC replacement planning
+6. Report to board using P50 for central estimate, P95 for worst-case
+
+REGULATORY ALIGNMENT
+====================
+- RBI IT Framework 2023: Requires banks to assess quantum cryptographic risks
+  and maintain a migration roadmap
+- SEBI CSCRF: Cryptographic agility requirements align with PQC migration planning
+- NIST IR 8547: Recommends transitioning to PQC algorithms by 2030 (hard deprecation
+  of RSA/ECC by 2035)
+- NPCI: Payment system operators should use P5 scenario for critical payment data
+
+FREQUENTLY ASKED QUESTIONS
+===========================
+Q: What is HNDL (Harvest Now, Decrypt Later)?
+A: Adversaries are collecting encrypted traffic today to decrypt once CRQC arrives.
+   For data with Y >= 5 years sensitivity, HNDL exposure is already active even
+   without a CRQC existing today.
+
+Q: How is migration time (X) calculated?
+A: QuShield computes dynamic migration complexity based on asset type, crypto
+   agility score, third-party dependencies, certificate pinning, and forward
+   secrecy support. Typical range: 1-8 years.
+
+Q: Should we use P5 or P50 for our planning?
+A: P5 for SWIFT/core banking/critical infrastructure. P50 for standard banking
+   assets. P95 only for very long-lived archival data with low sensitivity.
+
+Q: What algorithms should we migrate to?
+A: NIST-standardised PQC algorithms (FIPS 203/204/205):
+   - ML-KEM (CRYSTALS-Kyber): Key encapsulation
+   - ML-DSA (CRYSTALS-Dilithium): Digital signatures
+   - SLH-DSA (SPHINCS+): Hash-based signatures (stateless)

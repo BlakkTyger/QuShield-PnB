@@ -234,6 +234,93 @@ export function useMigrationPlan(scanId: string | null) {
   });
 }
 
+export interface CRQCSimParams {
+  mode_year?: number;
+  sigma?: number;
+  n_simulations?: number;
+}
+
+export function useCRQCSimulation(params: CRQCSimParams = {}) {
+  const { mode_year = 2032, sigma = 3.5, n_simulations = 10000 } = params;
+  return useQuery({
+    queryKey: ["crqc-simulation", mode_year, sigma, n_simulations],
+    queryFn: async () => {
+      const { data } = await api.post(`/risk/monte-carlo/simulate`, null, {
+        params: { mode_year, sigma, n_simulations },
+      });
+      return data as {
+        n_simulations: number;
+        parameters: { mode_year: number; sigma: number; min_year: number; max_year: number };
+        statistics: { mean: number; median: number; std_dev: number };
+        percentiles: { p5: number; p25: number; p50: number; p75: number; p95: number };
+        probability_by_year: Record<string, number>;
+        cumulative_by_year: Record<string, number>;
+      };
+    },
+    staleTime: 60_000,
+  });
+}
+
+export function useCertRace(scanId: string | null) {
+  return useQuery({
+    queryKey: ["cert-race", scanId],
+    queryFn: async () => {
+      const { data } = await api.get(`/risk/scan/${scanId}/cert-race`);
+      return data as {
+        total_certificates: number;
+        safe: number;
+        natural_rotation: number;
+        at_risk: number;
+        pct_at_risk: number;
+        crqc_median_arrival: number;
+        certificates: Array<{
+          hostname: string | null;
+          common_name: string | null;
+          algorithm: string | null;
+          valid_to: string | null;
+          race_status: "safe" | "natural_rotation" | "at_risk";
+          days_until_expiry: number | null;
+        }>;
+      };
+    },
+    enabled: !!scanId,
+    staleTime: 120_000,
+  });
+}
+
+export function usePortfolioMonteCarlo(scanId: string | null, params: CRQCSimParams = {}) {
+  const { mode_year = 2032, sigma = 3.5, n_simulations = 10000 } = params;
+  return useQuery({
+    queryKey: ["portfolio-mc", scanId, mode_year, sigma, n_simulations],
+    queryFn: async () => {
+      const { data } = await api.get(`/risk/scan/${scanId}/monte-carlo`, {
+        params: { mode_year, sigma, n_simulations },
+      });
+      return data as {
+        n_assets: number;
+        n_simulations: number;
+        reference_year: number;
+        portfolio_summary: {
+          avg_assets_exposed: number;
+          pct_portfolio_exposed: number;
+          max_assets_exposed: number;
+          min_assets_exposed: number;
+        };
+        per_asset: Array<{
+          hostname: string;
+          migration_time_years: number;
+          data_shelf_life_years: number;
+          exposure_probability: number;
+          risk_level: string;
+        }>;
+        crqc_simulation: { median_arrival: number; p5: number; p95: number };
+      };
+    },
+    enabled: !!scanId,
+    staleTime: 120_000,
+  });
+}
+
 /* ─── Compliance ─────────────────────────────────────── */
 export function useFIPSMatrix(scanId: string | null) {
   return useQuery({

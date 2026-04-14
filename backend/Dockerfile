@@ -42,7 +42,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     shared-mime-info \
     libfreetype6 \
     libpng16-16 \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONPATH=/app
 
 # Copy installed python packages from py-builder
 COPY --from=py-builder /root/.local /root/.local

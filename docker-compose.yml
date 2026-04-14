@@ -22,6 +22,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     container_name: qushield_backend
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -39,6 +40,12 @@ services:
       - GEOIP_DB_PATH=/app/geoip/GeoLite2-City.mmdb
       - REPORTS_DIR=/app/data/reports
       - MPLBACKEND=Agg
+      - PYTHONPATH=/app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "8000:8000"
     volumes:
@@ -54,10 +61,16 @@ services:
       args:
         - BACKEND_URL=http://backend:8000
     container_name: qushield_frontend
+    restart: unless-stopped
     depends_on:
       - backend
     environment:
       - BACKEND_URL=http://backend:8000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
     ports:
       - "3000:3000"
 

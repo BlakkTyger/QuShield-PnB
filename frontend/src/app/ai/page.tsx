@@ -188,60 +188,90 @@ export default function AIAssistantPage() {
     <div className="flex h-[calc(100vh-64px)] overflow-hidden" style={{ background: "var(--bg-primary)" }}>
       {/* ── Sidebar ── */}
       <div className="w-64 border-r flex flex-col shrink-0" style={{ background: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
-        {/* Agent Status */}
+        {/* Agent Status Banner */}
         <div className="p-4 border-b" style={{ borderColor: "var(--border-subtle)" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Bot size={18} className="text-yellow-400" />
-            <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>QuShield AI</span>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Bot size={18} className="text-yellow-400" />
+              <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>QuShield AI</span>
+            </div>
+            {/* Prominent online/offline pill */}
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+              agentStatus?.available
+                ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                : "bg-red-500/20 text-red-400 border border-red-500/30"
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${
+                agentStatus?.available ? "bg-green-400 animate-pulse" : "bg-red-400"
+              }`} />
+              {agentStatus?.available ? "ONLINE" : "OFFLINE"}
+            </div>
           </div>
-          <div className="mb-3">
+
+          {/* Model + tier info */}
+          {agentStatus?.available && (
+            <div className="mb-3 p-2.5 rounded-lg border" style={{ background: "var(--bg-primary)", borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-center justify-between text-[11px] mb-1">
+                <span style={{ color: "var(--text-muted)" }}>Model</span>
+                <span className="font-mono font-bold text-yellow-400">llama-3.3-70b</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span style={{ color: "var(--text-muted)" }}>Provider</span>
+                <span className="font-bold" style={{ color: "var(--text-secondary)" }}>Groq Cloud</span>
+              </div>
+              {aiStatus?.deployment_mode && (
+                <div className="flex items-center justify-between text-[11px] mt-1">
+                  <span style={{ color: "var(--text-muted)" }}>RAG Tier</span>
+                  <span className="font-bold text-blue-400">{aiStatus.deployment_mode.toUpperCase()}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Scan scope */}
+          <div className="mb-0">
             <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-muted)" }}>Scan Scope</p>
             <ScanSelector scans={scans} scanId={scanId} onChange={setScanId} className="w-full" />
             {scanId && (
-              <p className="text-[9px] mt-1" style={{ color: "var(--text-muted)" }}>Agent will only query data from selected scan.</p>
+              <p className="text-[9px] mt-1" style={{ color: "var(--text-muted)" }}>Agent scoped to selected scan only.</p>
             )}
-          </div>
-          <div className="space-y-1 text-[11px]" style={{ color: "var(--text-muted)" }}>
-            <div className="flex justify-between">
-              <span>Agent</span>
-              <span className={`font-bold ${agentStatus?.available ? "text-green-400" : "text-red-400"}`}>
-                {agentStatus?.available ? "ONLINE" : "OFFLINE"}
-              </span>
-            </div>
-            {agentStatus?.available && (
-              <div className="flex justify-between">
-                <span>Model</span>
-                <span className="text-yellow-400 font-mono text-[10px]">llama-3.3-70b</span>
-              </div>
-            )}
-            <div className="flex justify-between">
-              <span>AI Status</span>
-              <span className={`font-bold ${aiStatus?.deployment_mode ? "text-green-400" : "text-yellow-400"}`}>
-                {(aiStatus?.deployment_mode || "—").toUpperCase()}
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Mode Selection */}
         <div className="p-4 border-b" style={{ borderColor: "var(--border-subtle)" }}>
           <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Chat Mode</p>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {modeOptions.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => setMode(opt.value)}
-                className={`w-full flex items-center gap-2 p-2 rounded-lg text-left transition text-[12px] ${mode === opt.value ? "bg-yellow-500/20 text-yellow-400" : "hover:bg-white/5 text-gray-400"}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all text-[12px] border ${
+                  mode === opt.value
+                    ? "bg-yellow-500/15 border-yellow-500/40 text-yellow-400 shadow-sm"
+                    : "border-transparent hover:bg-white/5 hover:border-white/10 text-gray-400"
+                }`}
               >
-                {opt.icon}
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  mode === opt.value ? "bg-yellow-500/20" : "bg-white/5"
+                }`}>
+                  {opt.icon}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <span className="font-semibold">{opt.label}</span>
-                    {opt.badge && <span className="text-[8px] px-1 rounded bg-yellow-500/30 text-yellow-400 font-bold">{opt.badge}</span>}
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="font-bold text-[13px]">{opt.label}</span>
+                    {opt.badge && (
+                      <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-black tracking-wide ${
+                        mode === opt.value ? "bg-yellow-400 text-black" : "bg-yellow-500/30 text-yellow-400"
+                      }`}>{opt.badge}</span>
+                    )}
                   </div>
                   <div className="text-[10px] opacity-60">{opt.desc}</div>
                 </div>
-                {mode === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 shrink-0" />}
+                {mode === opt.value && (
+                  <div className="w-2 h-2 rounded-full bg-yellow-400 shrink-0 shadow-[0_0_6px_rgba(234,179,8,0.8)]" />
+                )}
               </button>
             ))}
           </div>
