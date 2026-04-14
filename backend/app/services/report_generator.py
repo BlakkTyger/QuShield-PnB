@@ -218,7 +218,7 @@ class ReportGenerator:
                 "ip_address": asset.ip_v4 or "N/A",
                 "tls_version": asset.tls_version or "N/A",
                 "risk_score": risk.quantum_risk_score if risk else 0,
-                "risk_classification": (risk.risk_classification or "unknown").replace("quantum_", ""),
+                "risk_classification": (risk.risk_classification or "unknown").replace("quantum_", "") if risk else "unknown",
                 "hndl_exposed": bool(risk.hndl_exposed) if risk else False,
                 "tnfl_risk": bool(risk.tnfl_risk) if risk else False,
                 "crypto_agility_score": comp.crypto_agility_score if comp else 0,
