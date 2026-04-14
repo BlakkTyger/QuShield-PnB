@@ -87,13 +87,36 @@ export default function AssetsPage() {
 
   const handleExportCSV = () => {
     if (!sortedAssets.length) return;
-    const headers = ["Hostname", "IP", "Type", "TLS", "TLS Key Exchange", "Cert Key Type", "Risk Score", "Risk Class"];
+    const headers = [
+      "Hostname",
+      "IP Address",
+      "Type",
+      "TLS Version",
+      "TLS Key Exchange",
+      "Cert Key Type",
+      "Transition State",
+      "Risk Score",
+      "Risk Class",
+      "Cert Expiry (Days)"
+    ];
     const rows = sortedAssets.map((a) => [
-      a.hostname, a.ip_address, a.asset_type, a.tls_version, a.tls_key_exchange || a.key_exchange, a.cert_key_type,
-      a.risk_score, a.risk_classification,
+      a.hostname,
+      a.ip_address || "",
+      a.asset_type || "",
+      a.tls_version || "",
+      a.tls_key_exchange || a.key_exchange || "",
+      a.cert_key_type || "",
+      transitionLabel(a.crypto_transition_state),
+      a.risk_score ?? "",
+      a.risk_classification || "",
+      a.cert_expiry_days ?? "",
     ]);
-    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -245,8 +268,8 @@ export default function AssetsPage() {
                             (asset.risk_score || 0) >= 700
                               ? "var(--risk-critical)"
                               : (asset.risk_score || 0) >= 500
-                              ? "var(--risk-vulnerable)"
-                              : "var(--text-primary)",
+                                ? "var(--risk-vulnerable)"
+                                : "var(--text-primary)",
                         }}
                       >
                         {asset.risk_score ?? "—"}
@@ -265,8 +288,8 @@ export default function AssetsPage() {
                               asset.cert_expiry_days < 30
                                 ? "var(--risk-critical)"
                                 : asset.cert_expiry_days < 90
-                                ? "var(--risk-at-risk)"
-                                : "var(--text-secondary)",
+                                  ? "var(--risk-at-risk)"
+                                  : "var(--text-secondary)",
                           }}
                         >
                           {asset.cert_expiry_days}d
