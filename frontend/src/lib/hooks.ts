@@ -510,11 +510,16 @@ export function useAIMigrationRoadmap() {
 /* ─── Reports ────────────────────────────────────────── */
 export function useGenerateReport() {
   return useMutation({
-    mutationFn: async (params: { scanId: string; reportType: string; format?: string; password?: string }) => {
+    mutationFn: async (params: { scanId: string; reportType: string; format?: string; password?: string; downloadLink?: boolean }) => {
       const { data } = await api.post(
         `/reports/generate/${params.scanId}`,
-        { report_type: params.reportType, format: params.format || "pdf", password: params.password || null },
-        { responseType: "blob" }
+        { 
+          report_type: params.reportType, 
+          format: params.format || "pdf", 
+          password: params.password || null,
+          download_link: params.downloadLink || false 
+        },
+        { responseType: params.downloadLink ? "json" : "blob" }
       );
       return data;
     },

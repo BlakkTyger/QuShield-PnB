@@ -37,7 +37,7 @@ export default function AIAssistantPage() {
   const [messages, setMessages] = useState<ExtendedMessage[]>([]);
   const [input, setInput] = useState("");
   const [showSettings, setShowSettings] = useState(false);
-  const [mode, setMode] = useState<ChatMode>("agent");
+  const [mode, setMode] = useState<ChatMode>("rag");
   const [expandedTraces, setExpandedTraces] = useState<Set<number>>(new Set());
   const [scanId, setScanId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -191,10 +191,13 @@ export default function AIAssistantPage() {
     });
   };
 
-  const modeOptions: { value: ChatMode; label: string; icon: React.ReactNode; desc: string; badge?: string }[] = [
-    { value: "agent", label: "ReAct Agent", icon: <Zap size={14}/>, desc: "Reasoning + tools", badge: "RECOMMENDED" },
-    { value: "rag", label: "RAG Search", icon: <Database size={14}/>, desc: "Knowledge base" },
+  const tier = aiStatus?.active_tier || "free";
+  const isAgentEnabled = tier === "professional" || tier === "enterprise";
+
+  const modeOptions: { value: ChatMode; label: string; icon: React.ReactNode; desc: string; badge?: string; disabled?: boolean; tierRequired?: string }[] = [
+    { value: "rag", label: "RAG Search", icon: <Database size={14}/>, desc: "Knowledge base", badge: "DEFAULT" },
     { value: "sql", label: "SQL Query", icon: <Search size={14}/>, desc: "Scan data tables" },
+    { value: "agent", label: "ReAct Agent", icon: <Zap size={14}/>, desc: "Reasoning + tools", disabled: !isAgentEnabled, tierRequired: "SOON" },
   ];
 
   return (
@@ -259,17 +262,21 @@ export default function AIAssistantPage() {
             {modeOptions.map(opt => (
               <button
                 key={opt.value}
-                onClick={() => setMode(opt.value)}
+                onClick={() => !opt.disabled && setMode(opt.value)}
+                disabled={opt.disabled}
+                title={opt.disabled ? `Requires ${opt.tierRequired} tier` : undefined}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all text-[12px] border ${
                   mode === opt.value
                     ? "bg-yellow-500/15 border-yellow-500/40 text-yellow-400 shadow-sm"
-                    : "border-transparent hover:bg-white/5 hover:border-white/10 text-gray-400"
+                    : opt.disabled
+                      ? "border-transparent opacity-50 cursor-not-allowed text-gray-500"
+                      : "border-transparent hover:bg-white/5 hover:border-white/10 text-gray-400"
                 }`}
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                  mode === opt.value ? "bg-yellow-500/20" : "bg-white/5"
+                  mode === opt.value ? "bg-yellow-500/20" : opt.disabled ? "bg-white/5" : "bg-white/5"
                 }`}>
-                  {opt.icon}
+                  {opt.disabled ? <Lock size={14} /> : opt.icon}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
@@ -278,6 +285,11 @@ export default function AIAssistantPage() {
                       <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-black tracking-wide ${
                         mode === opt.value ? "bg-yellow-400 text-black" : "bg-yellow-500/30 text-yellow-400"
                       }`}>{opt.badge}</span>
+                    )}
+                    {opt.disabled && opt.tierRequired && (
+                      <span className="text-[8px] px-1.5 py-0.5 rounded-full border border-gray-600 text-gray-400">
+                        {opt.tierRequired}
+                      </span>
                     )}
                   </div>
                   <div className="text-[10px] opacity-60">{opt.desc}</div>

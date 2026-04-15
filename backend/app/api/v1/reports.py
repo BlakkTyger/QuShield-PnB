@@ -24,6 +24,7 @@ class ReportRequest(BaseModel):
     report_type: Literal["executive", "cbom_audit", "rbi_submission", "migration_progress", "full_scan", "pqc_migration_plan"] = "executive"
     format: Literal["pdf", "csv", "json", "html"] = "pdf"
     password: Optional[str] = None
+    download_link: Optional[bool] = False  # If True, save report and return link instead of direct download
 
 class ScheduleCreate(BaseModel):
     report_type: str
@@ -51,11 +52,46 @@ def generate_report(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Generate a PDF report for the given scan_id and report type."""
+    """Generate a PDF report for the given scan_id and report type.
+    
+    If download_link is True, saves the report and returns metadata with download URL.
+    Otherwise, returns the file directly for immediate download.
+    """
     try:
         generator = ReportGenerator(db, current_user)
         output_bytes = generator.generate_report(str(scan_id), payload.report_type, format=payload.format, password=payload.password)
         
+        # If download_link is requested, get the saved report and return metadata
+        if payload.download_link:
+            from app.models.scan import ScanJob
+            scan_job = db.query(ScanJob).filter(ScanJob.id == scan_id).first()
+            if not scan_job:
+                raise ValueError(f"Scan {scan_id} not found")
+            
+            # generate_report() already saved the report, query for it
+            saved_report = db.query(GeneratedReport).filter(
+                GeneratedReport.scan_id == scan_id,
+                GeneratedReport.report_type == payload.report_type,
+                GeneratedReport.format == payload.format
+            ).order_by(GeneratedReport.generated_at.desc()).first()
+            
+            if not saved_report:
+                raise HTTPException(status_code=500, detail="Failed to save report")
+            
+            # Return the saved report metadata with download URL
+            return {
+                "id": str(saved_report.id),
+                "scan_id": str(saved_report.scan_id),
+                "report_type": saved_report.report_type,
+                "format": saved_report.format,
+                "title": saved_report.title,
+                "file_size_kb": saved_report.file_size_kb,
+                "generated_at": str(saved_report.generated_at),
+                "targets": saved_report.targets,
+                "download_url": f"/api/v1/reports/saved/{saved_report.id}/download"
+            }
+        
+        # Otherwise, return the file directly for immediate download
         media_types = {
             "pdf": "application/pdf",
             "csv": "text/csv",

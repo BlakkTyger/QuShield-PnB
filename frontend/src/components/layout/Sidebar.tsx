@@ -15,6 +15,8 @@ import {
   FileText,
   Bot,
   Activity,
+  BookOpen,
+  Award,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -30,6 +32,8 @@ const NAV_ITEMS = [
   { href: "/history", label: "Scan History", icon: History },
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/ai", label: "AI Assistant", icon: Bot },
+  { href: "/tiers", label: "Tier Levels", icon: Award },
+  { href: "/about", label: "About", icon: BookOpen },
 ];
 
 interface SidebarProps {

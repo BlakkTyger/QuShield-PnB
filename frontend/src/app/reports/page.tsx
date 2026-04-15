@@ -61,6 +61,7 @@ export default function ReportsPage() {
   const [generatedReports, setGeneratedReports] = useState<GeneratedReport[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   // Schedules List State
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -123,8 +124,26 @@ export default function ReportsPage() {
         runPassword = Math.random().toString(36).slice(-8);
       }
       
-      const blob = await generateReport.mutateAsync({ scanId: selectedScanId, reportType, format: fileFormat.toLowerCase(), password: runPassword ?? undefined });
+      const response = await generateReport.mutateAsync({ 
+        scanId: selectedScanId, 
+        reportType, 
+        format: fileFormat.toLowerCase(), 
+        password: runPassword ?? undefined,
+        downloadLink: downloadLink
+      });
       
+      // If download link mode, show the saved report info with clickable link
+      if (downloadLink) {
+        const fullUrl = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}${response.download_url}`;
+        setSuccessMsg("Report saved successfully!");
+        setDownloadUrl(fullUrl);
+        refetchSaved();
+        setGenerating(false);
+        return;
+      }
+      
+      // Otherwise, response is a blob - download directly
+      const blob = response;
       const mimeTypes: Record<string, string> = {
         pdf: "application/pdf",
         csv: "text/csv",
@@ -228,9 +247,11 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="animate-fade-in flex justify-center py-10">
-      
-      <div className="glass-card-static w-full max-w-5xl rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)" }}>
+    <div className="animate-fade-in flex justify-center py-10 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-6xl">
+        
+        {/* On-Demand Reporting Card */}
+        <div className="glass-card-static w-full rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)" }}>
         {/* Header / Toggle area */}
         <div className="p-6 border-b flex justify-between items-center" style={{ borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center gap-3">
@@ -270,8 +291,35 @@ export default function ReportsPage() {
 
         <div className="p-8">
           {successMsg && (
-            <div className="flex items-center gap-2 p-3 rounded-lg mb-6" style={{ background: "color-mix(in srgb, var(--risk-ready) 14%, transparent)", color: "var(--risk-ready)" }}>
-              <CheckCircle size={16} /> <span className="text-sm">{successMsg}</span>
+            <div className="flex flex-col gap-2 p-3 rounded-lg mb-6" style={{ background: "color-mix(in srgb, var(--risk-ready) 14%, transparent)", color: "var(--risk-ready)" }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle size={16} /> <span className="text-sm">{successMsg}</span>
+              </div>
+              {downloadUrl && (
+                <div className="flex flex-col gap-2 ml-6">
+                  <div className="flex items-center gap-2">
+                    <Link size={14} />
+                    <a 
+                      href={downloadUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm underline hover:no-underline break-all"
+                      style={{ color: "var(--risk-ready)" }}
+                    >
+                      {downloadUrl}
+                    </a>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(downloadUrl);
+                      alert("Download link copied to clipboard!");
+                    }}
+                    className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition w-fit"
+                  >
+                    <ExternalLink size={12} /> Copy Link to Share
+                  </button>
+                </div>
+              )}
             </div>
           )}
           {errorMsg && (
@@ -611,7 +659,7 @@ export default function ReportsPage() {
       </div>
       
       {/* ─── Saved Reports ─── */}
-      <div className="glass-card-static w-full max-w-5xl rounded-2xl overflow-hidden mt-6" style={{ background: "var(--bg-card)" }}>
+      <div className="glass-card-static w-full rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)" }}>
         <div className="p-6 border-b flex justify-between items-center" style={{ borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
@@ -675,13 +723,8 @@ export default function ReportsPage() {
           )}
         </div>
       </div>
+      </div>
 
-      {currentTime && (
-        <div className="fixed bottom-4 left-4 flex flex-col gap-1 items-start text-[10px] uppercase font-bold tracking-widest opacity-50 z-50">
-          <span className="flex items-center gap-1.5"><Clock size={10} /> Local System Time</span>
-          <span className="text-xs text-orange-400 font-mono tracking-tight">{currentTime.toLocaleString()}</span>
-        </div>
-      )}
     </div>
   );
 }
