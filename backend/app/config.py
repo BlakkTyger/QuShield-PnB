@@ -76,7 +76,7 @@ class Settings(BaseSettings):
 
     # --- testssl.sh (TLS Deep Inspection) ---
     TESTSSL_BIN: str = str(PROJECT_ROOT / "testssl.sh" / "testssl.sh")
-    TESTSSL_TIMEOUT: int = 600
+    TESTSSL_TIMEOUT: int = 900
     TESTSSL_DEBUG_DIR: str = str(PROJECT_ROOT / "data" / "testssl")
 
     # --- PQCscan (Anvil) TLS PQC/hybrid probe — binaries in backend/bin/ ---
