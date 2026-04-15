@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.models.scan import ScanJob, ScanStatus
 from app.models.asset import Asset
+from app.models.compliance import ComplianceResult
 from app.services.asset_manager import create_scan_job, save_discovered_assets
 from app.services.discovery_runner import run_discovery
 from app.services.crypto_inspector import inspect_asset, save_crypto_results
@@ -20,7 +21,12 @@ from app.services.risk_engine import assess_all_assets
 
 from app.services.compliance import evaluate_compliance, compute_agility_score, save_compliance_result
 from app.services.graph_builder import build_topology_graph
-from app.services.csv_enrichment import supplement_discovery, enrich_fingerprint, enrich_asset_db_row, enrich_certificate_db_rows, enrich_risk_score
+from app.services.csv_enrichment import (
+    supplement_discovery, enrich_fingerprint, enrich_asset_db_row,
+    enrich_certificate_db_rows, enrich_risk_score, enrich_compliance,
+    update_csv_with_better_risk, update_csv_with_better_tls, persist_csv_changes,
+    generate_domain_csv, domain_csv_exists, get_csv_path
+)
 
 from app.core.logging import get_logger
 from app.core.utils import clean_domain, is_valid_domain
@@ -131,6 +137,13 @@ class ScanOrchestrator:
 
             targets = scan_job.targets
             logger.info(f"{TAG} Targets: {targets}")
+
+            # ── Domain detection for CSV enrichment ────────────────────────────
+            target_domain = targets[0] if targets else "pnb.bank.in"
+            is_new_domain = not domain_csv_exists(target_domain)
+            csv_path = get_csv_path(target_domain)
+            logger.info(f"{TAG} Domain: {target_domain}, CSV: {csv_path}, New domain: {is_new_domain}")
+
             all_assets = []
 
             # ═══════════════════════════════════════════════════════════════
@@ -194,9 +207,13 @@ class ScanOrchestrator:
             logger.info(f"{TAG} P1: Total raw assets: {len(all_assets)}")
 
             # ── CSV baseline supplement (fill in any hostnames the live scan missed) ──
-            for tgt in targets:
-                supplement_discovery(all_assets, tgt)
-            logger.info(f"{TAG} P1: Total assets after CSV supplement: {len(all_assets)}")
+            # Only supplement from CSV if not a brand new domain
+            if not is_new_domain:
+                for tgt in targets:
+                    supplement_discovery(all_assets, tgt)
+                logger.info(f"{TAG} P1: Total assets after CSV supplement: {len(all_assets)}")
+            else:
+                logger.info(f"{TAG} P1: Skipping CSV supplement (new domain: {target_domain})")
 
             # Save discovered assets to DB
             logger.info(f"{TAG} P1: Saving assets to database...")
@@ -410,13 +427,27 @@ class ScanOrchestrator:
                 aid = str(asset.id)
                 fp = asset_crypto_map.get(aid)
                 if fp:
-                    enrich_fingerprint(asset.hostname, fp)
+                    enrich_fingerprint(asset.hostname, fp, domain=target_domain)
                     csv_enriched += 1
-                enrich_asset_db_row(asset)
+                enrich_asset_db_row(asset, domain=target_domain)
                 cert_rows = db.query(CertModelEnrich).filter(CertModelEnrich.asset_id == asset.id).all()
-                enrich_certificate_db_rows(asset.hostname, cert_rows)
+                enrich_certificate_db_rows(asset.hostname, cert_rows, domain=target_domain)
             db.commit()
             logger.info(f"{TAG} P2: CSV enrichment applied to {csv_enriched} fingerprints")
+
+            # ── CSV write-back: update CSV when scan found better TLS values ──
+            tls_csv_updates = 0
+            for asset in db_assets:
+                aid = str(asset.id)
+                fp = asset_crypto_map.get(aid)
+                if fp:
+                    tls_data = fp.get("tls") or {}
+                    tls_version = tls_data.get("negotiated_protocol")
+                    key_exchange = tls_data.get("key_exchange")
+                    if update_csv_with_better_tls(asset.hostname, tls_version, key_exchange, domain=target_domain):
+                        tls_csv_updates += 1
+            if tls_csv_updates > 0:
+                logger.info(f"{TAG} P2: CSV updated with better TLS values for {tls_csv_updates} assets")
 
             # Phase 2.5: Incremental scan — compute fingerprints and detect deltas
             logger.info(f"{TAG} ── PHASE 2.5: Incremental Delta Detection ── elapsed={_elapsed()}")
@@ -613,9 +644,19 @@ class ScanOrchestrator:
             for rs in risk_rows:
                 hn = asset_hostname_map.get(str(rs.asset_id))
                 if hn:
-                    enrich_risk_score(hn, rs)
+                    enrich_risk_score(hn, rs, domain=target_domain)
             db.commit()
             logger.info(f"{TAG} P4: CSV risk enrichment applied to {len(risk_rows)} scores")
+
+            # ── CSV write-back: update CSV when scan found better risk values ──
+            risk_csv_updates = 0
+            for rs in risk_rows:
+                hn = asset_hostname_map.get(str(rs.asset_id))
+                if hn:
+                    if update_csv_with_better_risk(hn, rs.quantum_risk_score, rs.risk_classification, domain=target_domain):
+                        risk_csv_updates += 1
+            if risk_csv_updates > 0:
+                logger.info(f"{TAG} P4: CSV updated with better risk values for {risk_csv_updates} assets")
 
             summary["phases_completed"].append(4)
             _emit("phase_complete", phase=4, pct=100, msg="Risk assessment complete")
@@ -680,7 +721,10 @@ class ScanOrchestrator:
                         "waf_detected": asset.waf_detected,
                     }
                     ag = compute_agility_score(agility_data_dict)
-                    save_compliance_result(scan_id, str(asset.id), comp_result, ag, db)
+                    compliance_obj = save_compliance_result(scan_id, str(asset.id), comp_result, ag, db)
+                    # Enrich with CSV transition state data (only if not new domain)
+                    if not is_new_domain:
+                        enrich_compliance(asset.hostname, compliance_obj, domain=target_domain)
                     successful_compliance += 1
                 except Exception as e:
                     failed_compliance += 1
@@ -729,6 +773,40 @@ class ScanOrchestrator:
             scan_job.status = "completed"
             scan_job.completed_at = datetime.utcnow()
             db.commit()
+
+            # ── CSV write-back: persist any CSV updates made during scan ──
+            if persist_csv_changes(domain=target_domain):
+                logger.info(f"{TAG} CSV baseline updated with better values from scan")
+
+            # ── CSV generation for new domains ───────────────────────────────
+            if is_new_domain:
+                logger.info(f"{TAG} Generating CSV for new domain: {target_domain}")
+                # Build scan results dict for CSV generation
+                scan_results_for_csv = {
+                    "crypto": asset_crypto_map,
+                    "risk": {},
+                    "compliance": {}
+                }
+                # Add risk and compliance data
+                for rs in risk_rows:
+                    scan_results_for_csv["risk"][str(rs.asset_id)] = {
+                        "quantum_risk_score": rs.quantum_risk_score,
+                        "risk_classification": rs.risk_classification
+                    }
+                # Query compliance results
+                comp_rows = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
+                for cr in comp_rows:
+                    scan_results_for_csv["compliance"][str(cr.asset_id)] = {
+                        "fips_203_deployed": cr.fips_203_deployed,
+                        "fips_204_deployed": cr.fips_204_deployed,
+                        "fips_205_deployed": cr.fips_205_deployed,
+                        "hybrid_mode_active": cr.hybrid_mode_active
+                    }
+                # Generate CSV
+                generated_csv = generate_domain_csv(target_domain, db_assets, scan_results_for_csv, db)
+                if generated_csv:
+                    summary["domain_csv_generated"] = str(generated_csv)
+                    logger.info(f"{TAG} Domain CSV generated: {generated_csv}")
 
             # Intentionally no auto-delete of older ScanJobs: the UI scan history lists
             # past runs by scan_id; pruning them broke FK-safe deletes and removed history.
