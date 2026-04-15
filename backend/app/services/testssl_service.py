@@ -333,8 +333,11 @@ def run_testssl(hostname: str, port: str = "443") -> tuple[list[dict], Optional[
             TESTSSL_BIN,
             "--jsonfile", json_path,
             "--warnings", "batch",
-            "--openssl-timeout", "120",
-            "--socket-timeout", "120",
+            "--ip", "one",               # test only the first resolved IP, not all
+            "--nodns", "min",            # minimal DNS lookups (A, AAAA, MX only)
+            "--openssl-timeout", "30",   # fail fast on slow WAFs
+            "--socket-timeout", "30",
+            "--quiet",                   # suppress banner
             target,
         ]
         logger.info(f"[testssl] START: {' '.join(cmd)}")
