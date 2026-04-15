@@ -11,8 +11,8 @@ class RiskScore(Base):
     __tablename__ = "risk_scores"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
+    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False, index=True)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
     quantum_risk_score = Column(Integer, default=0)  # 0-1000
     risk_classification = Column(String(30), default="unknown")  # quantum_ready, aware, at_risk, vulnerable, critical
     mosca_x = Column(Float, nullable=True)  # migration time (years)
@@ -32,7 +32,7 @@ class RiskFactor(Base):
     __tablename__ = "risk_factors"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    risk_score_id = Column(UUID(as_uuid=True), ForeignKey("risk_scores.id"), nullable=False)
+    risk_score_id = Column(UUID(as_uuid=True), ForeignKey("risk_scores.id"), nullable=False, index=True)
     factor_name = Column(String(100), nullable=False)
     factor_score = Column(Float, default=0.0)
     factor_weight = Column(Float, default=0.0)

@@ -11,8 +11,8 @@ class Asset(Base):
     __tablename__ = "assets"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
-    hostname = Column(String(512), nullable=False)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
+    hostname = Column(String(512), nullable=False, index=True)
     url = Column(String(2048), nullable=True)
     ip_v4 = Column(String(45), nullable=True)
     ip_v6 = Column(String(45), nullable=True)
@@ -42,7 +42,7 @@ class AssetPort(Base):
     __tablename__ = "asset_ports"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
+    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False, index=True)
     port = Column(Integer, nullable=False)
     protocol = Column(String(10), default="tcp")
     service_name = Column(String(100), nullable=True)

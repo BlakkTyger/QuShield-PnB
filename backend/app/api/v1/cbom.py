@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 
 from app.core.database import get_db
@@ -25,14 +25,16 @@ def list_cboms_for_scan(
     db: Session = Depends(get_db),
 ):
     """List all CBOMs generated for a scan."""
-    records = db.query(CBOMRecord).filter(CBOMRecord.scan_id == scan_id).all()
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    records = db.query(CBOMRecord).options(
+        joinedload(CBOMRecord.asset)
+    ).filter(CBOMRecord.scan_id == scan_id).all()
     items = []
     for r in records:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
         items.append({
             "id": str(r.id),
             "asset_id": str(r.asset_id),
-            "hostname": asset.hostname if asset else None,
+            "hostname": r.asset.hostname if r.asset else None,
             "spec_version": r.spec_version,
             "total_components": r.total_components,
             "vulnerable_components": r.vulnerable_components,

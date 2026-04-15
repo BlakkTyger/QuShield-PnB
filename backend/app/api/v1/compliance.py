@@ -8,7 +8,7 @@ from uuid import UUID
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.database import get_db
 from app.config import PROJECT_ROOT
@@ -24,14 +24,16 @@ def list_compliance_results(
     db: Session = Depends(get_db),
 ):
     """List all compliance results for a scan."""
-    results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    results = db.query(ComplianceResult).options(
+        joinedload(ComplianceResult.asset)
+    ).filter(ComplianceResult.scan_id == scan_id).all()
     items = []
     for r in results:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
         items.append({
             "id": str(r.id),
             "asset_id": str(r.asset_id),
-            "hostname": asset.hostname if asset else None,
+            "hostname": r.asset.hostname if r.asset else None,
             "fips_203_deployed": r.fips_203_deployed,
             "fips_204_deployed": r.fips_204_deployed,
             "fips_205_deployed": r.fips_205_deployed,
@@ -58,28 +60,30 @@ def get_fips_matrix(
     db: Session = Depends(get_db),
 ):
     """FIPS 203/204/205 deployment matrix for all assets in a scan."""
-    results = db.query(ComplianceResult).filter(ComplianceResult.scan_id == scan_id).all()
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    results = db.query(ComplianceResult).options(
+        joinedload(ComplianceResult.asset)
+    ).filter(ComplianceResult.scan_id == scan_id).all()
     if not results:
         raise HTTPException(status_code=404, detail="No compliance data for this scan")
 
     matrix = []
     columns = [
-        "FIPS 203 (ML-KEM)", 
-        "FIPS 204 (ML-DSA)", 
-        "FIPS 205 (SLH-DSA)", 
-        "Hybrid Mode", 
-        "Classical Deprecated", 
-        "TLS 1.3", 
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)",
+        "FIPS 205 (SLH-DSA)",
+        "Hybrid Mode",
+        "Classical Deprecated",
+        "TLS 1.3",
         "Forward Secrecy"
     ]
-    
+
     col_counts = {c: 0 for c in columns}
 
     for r in results:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
         row = {
             "asset_id": str(r.asset_id),
-            "hostname": asset.hostname if asset else "unknown",
+            "hostname": r.asset.hostname if r.asset else "unknown",
             "FIPS 203 (ML-KEM)": r.fips_203_deployed,
             "FIPS 204 (ML-DSA)": r.fips_204_deployed,
             "FIPS 205 (SLH-DSA)": r.fips_205_deployed,

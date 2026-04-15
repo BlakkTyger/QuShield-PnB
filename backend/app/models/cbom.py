@@ -11,8 +11,8 @@ class CBOMRecord(Base):
     __tablename__ = "cbom_records"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
+    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False, index=True)
     spec_version = Column(String(10), default="1.6")  # CycloneDX spec version
     file_path = Column(String(1024), nullable=True)  # local filesystem path to .cdx.json
     total_components = Column(Integer, default=0)
@@ -21,16 +21,17 @@ class CBOMRecord(Base):
     generated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     components = relationship("CBOMComponent", back_populates="cbom_record", cascade="all, delete-orphan")
+    asset = relationship("Asset", lazy="noload")
 
 
 class CBOMComponent(Base):
     __tablename__ = "cbom_components"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cbom_id = Column(UUID(as_uuid=True), ForeignKey("cbom_records.id"), nullable=False)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
-    name = Column(String(255), nullable=False)
-    component_type = Column(String(50), nullable=False)  # algorithm, certificate, key_exchange, protocol
+    cbom_id = Column(UUID(as_uuid=True), ForeignKey("cbom_records.id"), nullable=False, index=True)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
+    name = Column(String(255), nullable=False, index=True)
+    component_type = Column(String(50), nullable=False, index=True)  # algorithm, certificate, key_exchange, protocol
     nist_quantum_level = Column(Integer, default=-1)
     is_quantum_vulnerable = Column(Boolean, default=True)
     key_type = Column(String(50), nullable=True)  # RSA, EC, Ed25519

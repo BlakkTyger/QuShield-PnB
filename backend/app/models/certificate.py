@@ -11,12 +11,12 @@ class Certificate(Base):
     __tablename__ = "certificates"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
+    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False, index=True)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
     common_name = Column(String(512), nullable=True)
     san_list = Column(JSON, nullable=True)  # list of subject alt names
     issuer = Column(String(512), nullable=True)
-    ca_name = Column(String(255), nullable=True)
+    ca_name = Column(String(255), nullable=True, index=True)
     key_type = Column(String(20), nullable=True)  # RSA, EC, Ed25519, ML-DSA
     key_length = Column(Integer, nullable=True)
     signature_algorithm = Column(String(100), nullable=True)

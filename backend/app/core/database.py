@@ -13,9 +13,12 @@ from app.config import settings
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-    echo=False,  # Set True to see SQL
+    pool_size=10,           # Increased for production load
+    max_overflow=20,        # Increased for burst traffic
+    pool_timeout=30,        # Wait up to 30 seconds for a connection
+    pool_recycle=1800,      # Recycle connections after 30 minutes (prevent stale connections)
+    pool_use_lifo=True,     # LIFO pattern for better connection reuse
+    echo=False,             # Set True to see SQL
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

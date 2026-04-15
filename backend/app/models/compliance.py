@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.dialects.postgresql import UUID, JSON
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
@@ -10,8 +11,8 @@ class ComplianceResult(Base):
     __tablename__ = "compliance_results"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
-    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False)
+    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False, index=True)
+    scan_id = Column(UUID(as_uuid=True), ForeignKey("scan_jobs.id"), nullable=False, index=True)
     fips_203_deployed = Column(Boolean, default=False)  # ML-KEM
     fips_204_deployed = Column(Boolean, default=False)  # ML-DSA
     fips_205_deployed = Column(Boolean, default=False)  # SLH-DSA
@@ -30,3 +31,6 @@ class ComplianceResult(Base):
     compliance_pct = Column(Float, default=0.0)  # overall compliance %
     checks_json = Column(JSON, nullable=True)  # detailed check results
     computed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    # Relationship for efficient joins
+    asset = relationship("Asset", lazy="noload")
