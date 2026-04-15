@@ -1031,14 +1031,20 @@ def compute_cert_crqc_race(scan_id: str, db) -> dict:
     status_order = {"at_risk": 0, "expired": 1, "natural_rotation": 2, "safe": 3}
     cert_results.sort(key=lambda x: status_order.get(x["race_status"], 99))
 
+    total = len(certificates)
     result = {
         "scan_id": scan_id,
-        "total_certificates": len(certificates),
-        "summary": summary,
+        "total_certificates": total,
+        "safe": summary.get("safe", 0),
+        "natural_rotation": summary.get("natural_rotation", 0),
+        "at_risk": summary.get("at_risk", 0),
+        "expired": summary.get("expired", 0),
+        "pct_at_risk": summary.get("at_risk", 0) / max(total, 1),
+        "crqc_median_arrival": CRQC_SCENARIOS["median"],
         "analysis_date": now.isoformat(),
         "crqc_scenarios": CRQC_SCENARIOS,
         "certificates": cert_results,
-        "headline": _generate_race_headline(summary, len(certificates)),
+        "headline": _generate_race_headline(summary, total),
     }
 
     logger.info(
