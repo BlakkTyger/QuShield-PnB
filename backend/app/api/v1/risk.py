@@ -5,7 +5,7 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.database import get_db
 from app.models.risk import RiskScore, RiskFactor
@@ -29,7 +29,10 @@ def list_risk_scores(
     db: Session = Depends(get_db),
 ):
     """List all risk scores for a scan."""
-    query = db.query(RiskScore).filter(RiskScore.scan_id == scan_id)
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    query = db.query(RiskScore).options(
+        joinedload(RiskScore.asset)
+    ).filter(RiskScore.scan_id == scan_id)
     if risk_class:
         query = query.filter(RiskScore.risk_classification == risk_class)
 
@@ -43,7 +46,7 @@ def list_risk_scores(
     risks = query.all()
     items = []
     for r in risks:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
+        asset = r.asset  # Use preloaded asset from joinedload
         items.append({
             "id": str(r.id),
             "asset_id": str(r.asset_id),
@@ -70,13 +73,16 @@ def get_risk_heatmap(
     Risk heatmap data — risk score + classification for each asset,
     structured for frontend visualization.
     """
-    risks = db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    risks = db.query(RiskScore).options(
+        joinedload(RiskScore.asset)
+    ).filter(RiskScore.scan_id == scan_id).all()
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
 
     heatmap = []
     for r in risks:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
+        asset = r.asset  # Use preloaded asset from joinedload
         heatmap.append({
             "asset_id": str(r.asset_id),
             "hostname": asset.hostname if asset else "unknown",
@@ -153,7 +159,10 @@ def get_hndl_exposure(
     db: Session = Depends(get_db),
 ):
     """HNDL (Harvest Now, Decrypt Later) exposure for all assets in a scan."""
-    risks = db.query(RiskScore).filter(RiskScore.scan_id == scan_id).all()
+    # Use joinedload to fetch assets in a single query, avoiding N+1 problem
+    risks = db.query(RiskScore).options(
+        joinedload(RiskScore.asset)
+    ).filter(RiskScore.scan_id == scan_id).all()
     if not risks:
         raise HTTPException(status_code=404, detail="No risk data for this scan")
 
@@ -162,7 +171,7 @@ def get_hndl_exposure(
     exposed = []
     safe = []
     for r in risks:
-        asset = db.query(Asset).filter(Asset.id == r.asset_id).first()
+        asset = r.asset  # Use preloaded asset from joinedload
         asset_type = asset.asset_type if asset else "unknown"
         multiplier = SENSITIVITY_MULTIPLIERS.get(asset_type, 1.0)
         weighted_x = round((r.mosca_x or 0) * multiplier, 2)
@@ -540,14 +549,19 @@ def simulate_portfolio_monte_carlo(
     if not assets_db:
         raise HTTPException(status_code=404, detail="No assets found for this scan")
 
+    # Bulk query all compliance results for this scan to avoid N+1 problem
+    compliances = db.query(ComplianceResult).filter(
+        ComplianceResult.scan_id == scan_id
+    ).all()
+    # Build lookup dict by asset_id for O(1) access
+    compliance_by_asset = {str(c.asset_id): c for c in compliances}
+
     # Build asset list with Mosca parameters
     asset_list = []
     for a in assets_db:
         asset_type = _infer_asset_type(a.hostname)
-        comp = db.query(ComplianceResult).filter(
-            ComplianceResult.asset_id == a.id,
-            ComplianceResult.scan_id == scan_id,
-        ).first()
+        # Use preloaded compliance data from dict instead of querying per asset
+        comp = compliance_by_asset.get(str(a.id))
 
         agility = comp.crypto_agility_score if comp else 50.0
         migration = compute_migration_complexity(asset_type, agility)

@@ -58,7 +58,7 @@ def apply_indexes():
                 failed.append((index_name, str(e)))
                 print(f"❌ Failed to create index {index_name}: {e}")
 
-    print(f"\n📊 Summary: {len(created)} indexes created, {len(failed)} failed")
+    print(f"\n Summary: {len(created)} indexes created, {len(failed)} failed")
 
     if failed:
         print("\n⚠️ Failed indexes:")
@@ -66,12 +66,7 @@ def apply_indexes():
             print(f"  - {name}: {error}")
         return 1
 
-    print("\n🚀 All performance indexes applied successfully!")
-    print("\nNext steps:")
-    print("  1. Restart your backend service on GCP")
-    print("  2. Test the assets, FIPS matrix, and CBOM endpoints")
-    print("  3. Monitor query performance improvements")
-
+    print("\nAll performance indexes applied successfully!")
     return 0
 
 if __name__ == "__main__":

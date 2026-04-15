@@ -26,6 +26,7 @@ class RiskScore(Base):
     computed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     factors = relationship("RiskFactor", back_populates="risk_score", cascade="all, delete-orphan")
+    asset = relationship("Asset", lazy="noload")
 
 
 class RiskFactor(Base):
