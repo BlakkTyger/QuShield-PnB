@@ -230,7 +230,7 @@ export default function AIAssistantPage() {
             <div className="mb-3 p-2.5 rounded-lg border" style={{ background: "var(--bg-primary)", borderColor: "var(--border-subtle)" }}>
               <div className="flex items-center justify-between text-[11px] mb-1">
                 <span style={{ color: "var(--text-muted)" }}>Model</span>
-                <span className="font-mono font-bold text-yellow-400">llama-3.3-70b</span>
+                <span className="font-mono font-bold text-orange-600">llama-3.3-70b</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
                 <span style={{ color: "var(--text-muted)" }}>Provider</span>
@@ -267,14 +267,14 @@ export default function AIAssistantPage() {
                 title={opt.disabled ? `Requires ${opt.tierRequired} tier` : undefined}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all text-[12px] border ${
                   mode === opt.value
-                    ? "bg-yellow-500/15 border-yellow-500/40 text-yellow-400 shadow-sm"
+                    ? "bg-orange-600/15 border-orange-600/40 text-orange-700 shadow-sm"
                     : opt.disabled
                       ? "border-transparent opacity-50 cursor-not-allowed text-gray-500"
                       : "border-transparent hover:bg-white/5 hover:border-white/10 text-gray-400"
                 }`}
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                  mode === opt.value ? "bg-yellow-500/20" : opt.disabled ? "bg-white/5" : "bg-white/5"
+                  mode === opt.value ? "bg-orange-600/20" : opt.disabled ? "bg-white/5" : "bg-white/5"
                 }`}>
                   {opt.disabled ? <Lock size={14} /> : opt.icon}
                 </div>
@@ -283,7 +283,7 @@ export default function AIAssistantPage() {
                     <span className="font-bold text-[13px]">{opt.label}</span>
                     {opt.badge && (
                       <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-black tracking-wide ${
-                        mode === opt.value ? "bg-yellow-400 text-black" : "bg-yellow-500/30 text-yellow-400"
+                        mode === opt.value ? "bg-orange-600 text-black" : "bg-orange-600/30 text-orange-600"
                       }`}>{opt.badge}</span>
                     )}
                     {opt.disabled && opt.tierRequired && (
@@ -295,7 +295,7 @@ export default function AIAssistantPage() {
                   <div className="text-[10px] opacity-60">{opt.desc}</div>
                 </div>
                 {mode === opt.value && (
-                  <div className="w-2 h-2 rounded-full bg-yellow-400 shrink-0 shadow-[0_0_6px_rgba(234,179,8,0.8)]" />
+                  <div className="w-2 h-2 rounded-full bg-orange-600 shrink-0 shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
                 )}
               </button>
             ))}
@@ -309,10 +309,10 @@ export default function AIAssistantPage() {
           {/* Deployment Mode */}
           <p className="text-[9px] uppercase tracking-widest mb-1.5 font-semibold" style={{ color: "var(--text-muted)" }}>Deployment</p>
           <div className="flex gap-1.5 mb-3">
-            <div className="flex-1 flex items-center gap-1.5 p-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 cursor-default">
-              <Cloud size={11} className="text-yellow-400 shrink-0" />
-              <span className="text-[11px] font-bold text-yellow-400">Cloud</span>
-              <Check size={10} className="text-yellow-400 ml-auto shrink-0" />
+            <div className="flex-1 flex items-center gap-1.5 p-2 rounded-lg border border-orange-600/40 bg-orange-600/10 cursor-default">
+              <Cloud size={11} className="text-orange-600 shrink-0" />
+              <span className="text-[11px] font-bold text-orange-600">Cloud</span>
+              <Check size={10} className="text-orange-600 ml-auto shrink-0" />
             </div>
             <div
               className="flex-1 flex items-center gap-1.5 p-2 rounded-lg border opacity-40 cursor-not-allowed"
@@ -329,10 +329,10 @@ export default function AIAssistantPage() {
           <p className="text-[9px] uppercase tracking-widest mb-1.5 font-semibold" style={{ color: "var(--text-muted)" }}>Tier</p>
           <div className="space-y-1">
             {/* Free — active */}
-            <div className="flex items-center gap-2 p-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 cursor-default">
-              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-[11px] font-bold text-yellow-400 flex-1">Free</span>
-              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-yellow-400 text-black font-black">ACTIVE</span>
+            <div className="flex items-center gap-2 p-2 rounded-lg border border-orange-600/40 bg-orange-600/10 cursor-default">
+              <div className="w-1.5 h-1.5 rounded-full bg-orange-600 shrink-0" />
+              <span className="text-[11px] font-bold text-orange-600 flex-1">Free</span>
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-orange-600 text-black font-black">ACTIVE</span>
             </div>
             {/* Professional — locked */}
             <div
@@ -407,13 +407,13 @@ export default function AIAssistantPage() {
         {/* Header */}
         <div className="px-6 py-4 border-b flex items-center justify-between shrink-0" style={{ background: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-yellow-500/20">
-              <Bot size={18} className="text-yellow-400" />
+            <div className="p-2 rounded-lg bg-orange-600/20">
+              <Bot size={18} className="text-orange-600" />
             </div>
             <div>
               <h1 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>
                 QuShield AI Assistant
-                <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold align-middle">
+                <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-orange-600/20 text-orange-700 font-bold align-middle">
                   {mode === "agent" ? "ReAct Agent" : mode.toUpperCase()}
                 </span>
               </h1>
@@ -437,7 +437,7 @@ export default function AIAssistantPage() {
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 opacity-60">
-              <Bot size={48} className="text-yellow-400" />
+              <Bot size={48} className="text-orange-600" />
               <div>
                 <p className="text-base font-bold" style={{ color: "var(--text-primary)" }}>QuShield AI Ready</p>
                 <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
@@ -450,7 +450,7 @@ export default function AIAssistantPage() {
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
               {/* Avatar */}
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${msg.role === "user" ? "bg-yellow-500/20 text-yellow-400" : "bg-blue-500/20 text-blue-400"}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${msg.role === "user" ? "bg-orange-600/20 text-orange-700" : "bg-blue-500/20 text-blue-400"}`}>
                 {msg.role === "user" ? "U" : <Bot size={14} />}
               </div>
 
@@ -460,7 +460,7 @@ export default function AIAssistantPage() {
                   <div className="w-full">
                     <button
                       onClick={() => toggleTrace(idx)}
-                      className="flex items-center gap-1.5 text-[10px] text-gray-500 hover:text-yellow-400 transition mb-1"
+                      className="flex items-center gap-1.5 text-[10px] text-gray-500 hover:text-orange-600 transition mb-1"
                     >
                       {expandedTraces.has(idx) ? <ChevronDown size={10}/> : <ChevronRight size={10}/>}
                       Reasoning trace ({msg.trace.length} steps)
@@ -480,8 +480,8 @@ export default function AIAssistantPage() {
 
                 {/* Live status pill — shown while agent is working */}
                 {msg.role === "assistant" && msg.isStreaming && msg.liveStatus && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-medium bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 w-fit max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse shrink-0" />
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-medium bg-orange-600/10 border border-orange-600/20 text-orange-700 w-fit max-w-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse shrink-0" />
                     <span className="truncate">{msg.liveStatus}</span>
                   </div>
                 )}
@@ -490,7 +490,7 @@ export default function AIAssistantPage() {
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-yellow-500/15 border border-yellow-500/20"
+                      ? "bg-orange-600/15 border border-orange-600/20"
                       : "border"
                   }`}
                   style={{
@@ -508,7 +508,7 @@ export default function AIAssistantPage() {
                     </span>
                   )}
                   {msg.isStreaming && msg.content && (
-                    <span className="inline-block w-1.5 h-4 bg-yellow-400 animate-pulse ml-0.5 align-middle" />
+                    <span className="inline-block w-1.5 h-4 bg-orange-600 animate-pulse ml-0.5 align-middle" />
                   )}
                 </div>
 
@@ -544,13 +544,13 @@ export default function AIAssistantPage() {
               }
               rows={2}
               disabled={isLoading}
-              className="flex-1 resize-none rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400 transition disabled:opacity-50"
+              className="flex-1 resize-none rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-orange-600 transition disabled:opacity-50"
               style={{ background: "var(--bg-primary)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}
             />
             <button
               onClick={() => sendMessage(input)}
               disabled={isLoading || !input.trim()}
-              className="p-3 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-bold transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              className="p-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-black font-bold transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             >
               {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
             </button>

@@ -63,7 +63,7 @@
   --bg-primary: #f9f9fc;
   --bg-secondary: #f3f3f6;
   --bg-document: #ffffff;
-  --header-bg: #ffffff;
+  --header-bg: #2a2a3e;
   --bg-card: #ffffff;
   --bg-card-hover: #f9f9fc;
   --border-subtle: #e2e2e5;
@@ -102,6 +102,10 @@
   --tooltip-border: #d1d5db;
   --tooltip-text: #0f172a;
   --console-bg: #f8fafc;
+  --header-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --header-text-primary: #ffffff;
+  --header-text-secondary: rgba(255, 255, 255, 0.8);
+  --header-text-muted: rgba(255, 255, 255, 0.6);
 }
 
 /* ─── Base Resets ──────────────────────────────────────────────────── */

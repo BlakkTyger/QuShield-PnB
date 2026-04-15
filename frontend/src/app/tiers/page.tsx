@@ -66,7 +66,7 @@ function TierCard({
           </div>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <h3 className="text-xl font-bold text-white">{tier}</h3>
+              <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{tier}</h3>
               <span
                 className="px-3 py-1 rounded-full text-sm font-semibold"
                 style={{ background: color, color: "#000" }}
