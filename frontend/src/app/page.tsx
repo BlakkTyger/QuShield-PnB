@@ -12,7 +12,7 @@ type ScanTier = "shallow" | "deep";
 
 const SCAN_TIERS = [
   { value: "shallow" as ScanTier, label: "Shallow", time: "30–90s", desc: "CT discovery + top-N TLS", icon: Clock },
-  { value: "deep" as ScanTier, label: "Deep", time: "10–15 min", desc: "Full infrastructure audit", icon: Layers },
+  { value: "deep" as ScanTier, label: "Deep", time: "15-30 min", desc: "Full infrastructure audit", icon: Layers },
 ];
 
 const EXAMPLE_DOMAINS = ["pnb.bank.in", "hdfcbank.com", "sbi.co.in"];
