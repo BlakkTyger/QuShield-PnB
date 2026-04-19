@@ -292,7 +292,7 @@ export default function LoginPage() {
             </div>
 
             <div className="login-form-footer">
-              <span>Secured with AES-256 &amp; Quantum-Resistant Protocols</span>
+              <span>Sample Credentials: admin@test.com &amp; Admin@123</span>
             </div>
           </div>
         </div>
